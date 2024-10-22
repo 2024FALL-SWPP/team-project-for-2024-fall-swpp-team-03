@@ -1,3 +1,5 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
     <uie:PropertyField label="Mesh Filter" binding-path="_meshFilter" style="-unity-font: url(&quot;project://database/Library/unity%20default%20resources?fileID=10102&amp;guid=0000000000000000e000000000000000&amp;type=0#Arial&quot;);" />
+    <uie:PropertyField label="Colliders Root" binding-path="_collidersRoot" style="-unity-font: url(&quot;project://database/Library/unity%20default%20resources?fileID=10102&amp;guid=0000000000000000e000000000000000&amp;type=0#Arial&quot;);" />
+    <ui:Button text="Initialize Colliders" display-tooltip-when-elided="true" name="InitializeButton" />
 </ui:UXML>
