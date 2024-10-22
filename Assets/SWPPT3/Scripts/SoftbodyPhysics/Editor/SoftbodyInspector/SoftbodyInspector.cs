@@ -71,10 +71,10 @@ namespace SWPPT3.SoftbodyPhysics.Editor.SoftbodyInspector
                 DestroyImmediate(s);
             }
 
-            var fibAngles = FibonacciAngles(20);
-            var bones = new Vector3[20];
+            var fibAngles = FibonacciAngles(30);
+            var bones = new Vector3[30];
 
-            for (var i = 0; i < 20; i++)
+            for (var i = 0; i < 30; i++)
             {
                 var go = new GameObject($"Collider {i}", typeof(SphereCollider), typeof(Rigidbody));
                 go.transform.SetParent(collidersRoot, false);

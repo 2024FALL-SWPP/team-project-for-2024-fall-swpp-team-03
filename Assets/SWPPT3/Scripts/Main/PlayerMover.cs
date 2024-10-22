@@ -17,7 +17,7 @@ namespace SWPPT3.Main
 
         private void Update()
         {
-            var force = new Vector3(_moveVector.x, 0, _moveVector.y) * (5);
+            var force = new Vector3(_moveVector.x, 0, _moveVector.y) * (3);
             _rb.AddForce(force, ForceMode.VelocityChange);
         }
 
