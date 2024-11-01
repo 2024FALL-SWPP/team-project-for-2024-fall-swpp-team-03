@@ -112,6 +112,7 @@ GameObject:
   - component: {fileID: 6337703770924462613}
   - component: {fileID: 5725037847605902684}
   - component: {fileID: 8598749747895036467}
+  - component: {fileID: 718215274498361094}
   m_Layer: 10
   m_Name: TorchLight
   m_TagString: Untagged
@@ -146,7 +147,7 @@ Light:
   m_Type: 2
   m_Shape: 0
   m_Color: {r: 0.9529412, g: 0.81960785, b: 0.45490196, a: 1}
-  m_Intensity: 2
+  m_Intensity: 0.3
   m_Range: 5
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -208,3 +209,23 @@ Halo:
     serializedVersion: 2
     rgba: 4288406783
   m_Size: 0.08
+--- !u!114 &718215274498361094
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9222988866110790705}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 474bcb49853aa07438625e644c072ee6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Version: 1
+  m_UsePipelineSettings: 1
+  m_AdditionalLightsShadowResolutionTier: 2
+  m_LightLayerMask: 1
+  m_CustomShadowLayers: 0
+  m_ShadowLayerMask: 1
+  m_LightCookieSize: {x: 1, y: 1}
+  m_LightCookieOffset: {x: 0, y: 0}
