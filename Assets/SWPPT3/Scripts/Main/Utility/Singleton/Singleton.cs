@@ -1,7 +1,10 @@
+using System;
+
 namespace SWPPT3.Main.Utility.Singleton
 {
-    public class Singleton
+    public abstract class Singleton<T> where T: new()
     {
-        
+        private static readonly Lazy<T> s_instance = new(() => new T());
+        public static T Instance => s_instance.Value;
     }
 }
