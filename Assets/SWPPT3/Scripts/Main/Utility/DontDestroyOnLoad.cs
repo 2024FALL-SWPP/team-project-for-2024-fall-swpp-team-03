@@ -10,7 +10,7 @@ namespace SWPPT3.Main.Utility
         {
             if (transform.parent != null)
             {
-                Debug.Log("DDOL should be placed on root object!");
+                Debug.LogError("DDOL should be placed on root object!");
             }
         }
     }
