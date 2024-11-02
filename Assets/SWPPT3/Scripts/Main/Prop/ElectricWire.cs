@@ -1,7 +1,7 @@
 namespace SWPPT3.Main.Prop
 {
-    public class ElectricWire
+    public class ElectricWire : StatePropBase
     {
-        
+
     }
 }

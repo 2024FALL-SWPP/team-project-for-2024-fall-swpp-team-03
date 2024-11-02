@@ -1,13 +1,8 @@
-using Unity;
-using UnityEditor;
-using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
-
 using SWPPT3.Main.Player;
-namespace SWPPT3.Main.Obstacle
+
+namespace SWPPT3.Main.Prop
 {
-    public class ItemBox : ObstacleBase
+    public class ItemBox : NonStatePropBase
     {
         private States _state;
 
@@ -18,7 +13,7 @@ namespace SWPPT3.Main.Obstacle
 
         public override void InteractWithPlayer()
         {
-            Destroy(gameObject);
+            // Destroy(gameObject);
         }
     }
 }

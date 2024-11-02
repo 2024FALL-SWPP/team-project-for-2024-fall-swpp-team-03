@@ -1,18 +1,17 @@
-using SWPPT3.Scripts.Obstacle;
+using SWPPT3.Main.Prop;
 
-namespace SWPPT3.Scripts.Player
+namespace SWPPT3.Main.Player
 {
-    public enum State
+    public enum States
     {
-        Slime,
+        Slime = 0,
         Metal,
         Rubber,
     }
-    public class PlayerState
-    {
-        private State _state;
 
-        private void interactWithObstacle(Obstacle obstacle)
+    public abstract class PlayerState
+    {
+        public virtual void InteractWithProp(PropBase obstacle)
         {
 
         }

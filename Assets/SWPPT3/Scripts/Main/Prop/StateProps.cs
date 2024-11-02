@@ -1,6 +1,6 @@
 namespace SWPPT3.Main.Prop
 {
-    public class StatePropBase : PropBase
+    public abstract class StatePropBase : PropBase
     {
 
     }

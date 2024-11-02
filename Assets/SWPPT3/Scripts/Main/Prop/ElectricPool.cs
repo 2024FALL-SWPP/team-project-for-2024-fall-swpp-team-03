@@ -1,6 +1,6 @@
-namespace SWPPT3.Main.Obstacle
+namespace SWPPT3.Main.Prop
 {
-    public class ElectricPool : ObstacleBase
+    public class ElectricPool : NonStatePropBase
     {
 
     }

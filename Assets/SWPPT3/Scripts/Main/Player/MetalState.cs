@@ -1,10 +1,15 @@
-namespace SWPPT3.Scripts.Player
+using SWPPT3.Main.Prop;
+using UnityEngine;
+
+namespace SWPPT3.Main.Player
 {
     public class MetalState : PlayerState
     {
-        public void interactWithObstacle()
+        public override void InteractWithProp(PropBase obstacle)
         {
-
+            // player의 변화
+            obstacle.InteractWithPlayer();
         }
+
     }
 }

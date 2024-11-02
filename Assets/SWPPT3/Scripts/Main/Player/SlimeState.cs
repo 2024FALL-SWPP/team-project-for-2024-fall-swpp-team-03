@@ -1,10 +1,13 @@
-namespace SWPPT3.Scripts.Player
+using SWPPT3.Main.Prop;
+
+namespace SWPPT3.Main.Player
 {
     public class SlimeState : PlayerState
     {
-        public void interactWithObstacle()
+        public override void InteractWithProp(PropBase obstacle)
         {
-
+            // player의 변화
+            obstacle.InteractWithPlayer();
         }
     }
 }
