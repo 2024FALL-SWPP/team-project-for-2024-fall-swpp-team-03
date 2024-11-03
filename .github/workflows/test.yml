@@ -20,7 +20,7 @@ jobs:
     unity-playmode-test-win:
         runs-on: ["self-hosted", "windows"]
         env:
-            UNITY_BINARY_PATH: "C:/Program Files/Unity/Hub/Editor/2021.3.42f1/Editor/Unity.exe"
+            UNITY_BINARY_PATH: "C:\\Program Files\\Unity\\Hub\\Editor\\2021.3.42f1\\Editor\\Unity.exe"
         steps:
             - run: echo "Hello world!"
             - run: "&\"${{env.UNITY_BINARY_PATH}}\" --batchmode --projectPath ${{github.workspace}} --runTests --testPlatform PlayMode"
