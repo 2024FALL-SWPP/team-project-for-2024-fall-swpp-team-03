@@ -1,0 +1,13 @@
+on: push
+name: Test
+
+jobs:
+    unity-editmode-test:
+        runs-on: "self-hosted"
+        steps:
+            - run: echo "Hello world!"
+
+    unity-playmode-test:
+        runs-on: "self-hosted"
+        steps:
+            - run: echo "Hello world!"
