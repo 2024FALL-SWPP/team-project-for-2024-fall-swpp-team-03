@@ -2,12 +2,22 @@ on: push
 name: Test
 
 jobs:
-    unity-editmode-test:
-        runs-on: "self-hosted"
+    unity-editmode-test-mac:
+        runs-on: ["self-hosted", "macos"]
         steps:
             - run: echo "Hello world!"
 
-    unity-playmode-test:
-        runs-on: "self-hosted"
+    unity-playmode-test-mac:
+        runs-on: ["self-hosted", "macos"]
+        steps:
+            - run: echo "Hello world!"
+
+    unity-editmode-test-win:
+        runs-on: ["self-hosted", "windows"]
+        steps:
+            - run: echo "Hello world!"
+
+    unity-playmode-test-win:
+        runs-on: ["self-hosted", "windows"]
         steps:
             - run: echo "Hello world!"
