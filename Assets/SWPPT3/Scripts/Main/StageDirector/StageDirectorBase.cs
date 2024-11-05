@@ -60,7 +60,7 @@ namespace SWPPT3.Main.StageDirector
             // prop과 player에 각 stage에 맞는 spawn positoin, rotation 추가.
             // foreach (ProbBase prop in PropList)
             // {
-            //     Instantiate((GameObject)prop, prom.position, prop.rotation);
+            //     Instantiate((GameObject)prop, prop.position, prop.rotation);
             // }
         }
 
