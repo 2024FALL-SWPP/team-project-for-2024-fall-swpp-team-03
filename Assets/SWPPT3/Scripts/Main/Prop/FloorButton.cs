@@ -1,7 +1,10 @@
 namespace SWPPT3.Main.Prop
 {
-    public class FloorButton : StatePropBase
+    public class FloorButton : StateSource
     {
+        public override void ActivateState(StatefulProp prop)
+        {
 
+        }
     }
 }

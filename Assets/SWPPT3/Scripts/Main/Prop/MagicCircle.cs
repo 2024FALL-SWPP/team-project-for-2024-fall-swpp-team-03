@@ -1,6 +1,6 @@
 namespace SWPPT3.Main.Prop
 {
-    public class PoisonPool : StatelessProp
+    public class MagicCircle : StatefulProp
     {
 
     }
