@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Unity;
 using UnityEngine;
 using SWPPT3.Main.Prop;
+using SWPPT3.Main.Player.State;
 
 namespace SWPPT3.Main.Player
 {

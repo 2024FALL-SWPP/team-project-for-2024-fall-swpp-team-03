@@ -1,7 +1,7 @@
 using SWPPT3.Main.Prop;
 using UnityEngine;
 
-namespace SWPPT3.Main.Player
+namespace SWPPT3.Main.Player.State
 {
     public class MetalState : PlayerState
     {
