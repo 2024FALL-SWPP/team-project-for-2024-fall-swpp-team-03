@@ -9,7 +9,7 @@ jobs:
     steps:
       - run: echo "Hello world!"
       - uses: actions/checkout@v4
-      - run: ${{env.UNITY_BINARY_PATH}} --batchmode --projectPath ${{github.workspace}} --runTests --testPlatform EditMode"
+      - run: ${{env.UNITY_BINARY_PATH}} --batchmode --projectPath ${{github.workspace}} --runTests --testPlatform EditMode
 
   unity-playmode-test-mac:
     runs-on: ["self-hosted", "macos"]
@@ -18,7 +18,7 @@ jobs:
     steps:
       - run: echo "Hello world!"
       - uses: actions/checkout@v4
-      - run: ${{env.UNITY_BINARY_PATH}} --batchmode --projectPath ${{github.workspace}} --runTests --testPlatform PlayMode"
+      - run: ${{env.UNITY_BINARY_PATH}} --batchmode --projectPath ${{github.workspace}} --runTests --testPlatform PlayMode
 
   unity-editmode-test-win:
     runs-on: ["self-hosted", "windows"]
