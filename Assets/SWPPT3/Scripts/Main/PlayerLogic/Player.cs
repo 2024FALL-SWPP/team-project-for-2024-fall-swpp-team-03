@@ -2,9 +2,9 @@ using System.Collections.Generic;
 using Unity;
 using UnityEngine;
 using SWPPT3.Main.Prop;
-using SWPPT3.Main.Player.State;
+using SWPPT3.Main.PlayerLogic.State;
 
-namespace SWPPT3.Main.Player
+namespace SWPPT3.Main.PlayerLogic
 {
     public class Player : MonoBehaviour
     {

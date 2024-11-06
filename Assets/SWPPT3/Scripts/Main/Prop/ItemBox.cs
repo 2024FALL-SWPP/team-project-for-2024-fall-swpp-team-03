@@ -1,5 +1,5 @@
-using SWPPT3.Main.Player;
-using SWPPT3.Main.Player.State;
+using SWPPT3.Main.PlayerLogic;
+using SWPPT3.Main.PlayerLogic.State;
 
 namespace SWPPT3.Main.Prop
 {

@@ -1,6 +1,6 @@
 using SWPPT3.Main.Prop;
 
-namespace SWPPT3.Main.Player.State
+namespace SWPPT3.Main.PlayerLogic.State
 {
     public enum States
     {

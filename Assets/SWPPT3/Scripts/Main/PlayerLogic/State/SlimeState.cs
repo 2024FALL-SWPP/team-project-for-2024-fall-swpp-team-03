@@ -1,8 +1,8 @@
 using SWPPT3.Main.Prop;
 
-namespace SWPPT3.Main.Player.State
+namespace SWPPT3.Main.PlayerLogic.State
 {
-    public class RubberState : PlayerState
+    public class SlimeState : PlayerState
     {
         public override void InteractWithProp(PropBase obstacle)
         {
