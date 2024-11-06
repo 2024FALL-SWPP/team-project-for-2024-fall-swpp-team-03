@@ -1,0 +1,38 @@
+on: push
+name: Test
+
+jobs:
+  unity-editmode-test-mac:
+    runs-on: ["self-hosted", "macos"]
+    env:
+      UNITY_BINARY_PATH: "/Applications/Unity/Hub/Editor/2021.3.42f1/Unity.app/Contents/MacOS/Unity"
+    steps:
+      - run: echo "Hello world!"
+      - uses: actions/checkout@v4
+      - run: ${{env.UNITY_BINARY_PATH}} --batchmode --quit --projectPath ${{github.workspace}} --runTests --testPlatform EditMode
+
+  unity-playmode-test-mac:
+    runs-on: ["self-hosted", "macos"]
+    env:
+      UNITY_BINARY_PATH: "/Applications/Unity/Hub/Editor/2021.3.42f1/Unity.app/Contents/MacOS/Unity"
+    steps:
+      - run: echo "Hello world!"
+      - uses: actions/checkout@v4
+      - run: ${{env.UNITY_BINARY_PATH}} --batchmode --quit --projectPath ${{github.workspace}} --runTests --testPlatform PlayMode
+
+  unity-editmode-test-win:
+    runs-on: ["self-hosted", "windows"]
+    env:
+      UNITY_BINARY_PATH: "C:\\Program Files\\Unity\\Hub\\Editor\\2021.3.42f1\\Editor\\Unity.exe"
+    steps:
+        - uses: actions/checkout@v4
+        - run: "&\"${{env.UNITY_BINARY_PATH}}\" --batchmode --quit --projectPath ${{github.workspace}} --runTests --testPlatform EditMode"
+
+  unity-playmode-test-win:
+    runs-on: ["self-hosted", "windows"]
+    env:
+        UNITY_BINARY_PATH: "C:\\Program Files\\Unity\\Hub\\Editor\\2021.3.42f1\\Editor\\Unity.exe"
+    steps:
+        - run: echo "Hello world!"
+        - uses: actions/checkout@v4
+        - run: "&\"${{env.UNITY_BINARY_PATH}}\" --batchmode --quit --projectPath ${{github.workspace}} --runTests --testPlatform PlayMode"
