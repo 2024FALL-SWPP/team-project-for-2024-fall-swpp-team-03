@@ -1,6 +1,6 @@
 namespace SWPPT3.Main.Prop
 {
-    public class WoodBox : NonStatePropBase
+    public class WoodBox : StatelessPropBase
     {
 
     }

@@ -2,7 +2,7 @@ using SWPPT3.Main.Player;
 
 namespace SWPPT3.Main.Prop
 {
-    public class ItemBox : NonStatePropBase
+    public class ItemBox : StatelessPropBase
     {
         private States _state;
 
