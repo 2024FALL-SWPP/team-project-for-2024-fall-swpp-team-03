@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_SupportedDevices:
   - Keyboard
-  - Mouse
+  - Pointer
   - Gamepad
   m_UpdateMode: 1
   m_MaxEventBytesPerUpdate: 5242880
