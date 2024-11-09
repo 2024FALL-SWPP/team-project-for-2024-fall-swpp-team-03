@@ -1,35 +1,37 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace SWPPT3.Main.Prop
 {
     public class FloorButton : StateSource
     {
-        public StatefulProp targetProp;
-        public ElectricWire electricWire;
+        public List<StatefulProp> targetProps = new List<StatefulProp>();
+
+        public override void ActivateProp(StatefulProp prop, int state)
+        {
+            if (state == On) prop.Activate();
+            else prop.Deactivate();
+            prop.StateChangeEvent();
+        }
 
         public override void StateChangeEvent()
         {
-            if (this.State == (int)StateLevel.On)
+            foreach (StatefulProp prop in targetProps)
             {
-                ActivateState(targetProp, StateLevel.On);
-                ActivateState(electricWire, StateLevel.On);
-            }
-            else
-            {
-                ActivateState(targetProp, StateLevel.Off);
-                ActivateState(electricWire, StateLevel.Off);
+                ActivateProp(prop, this.State);
             }
         }
+
         private void OnCollisionEnter(Collision other)
         {
-            this.State = (int)StateLevel.On;
+            this.State = On;
             StateChangeEvent();
         }
 
         private void OnCollisionExit(Collision other)
         {
-            this.State = (int)StateLevel.Off;
+            this.State = Off;
             StateChangeEvent();
         }
     }

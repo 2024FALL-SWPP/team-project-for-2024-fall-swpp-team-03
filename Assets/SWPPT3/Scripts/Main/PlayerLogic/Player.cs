@@ -139,7 +139,7 @@ namespace SWPPT3.Main.PlayerLogic
                 PlayerState.ChangeRigidbody(_rb);
                 PlayerState.ChangePhysics(_collider, _physicMaterial);
                 UpdateJumpForce();
-                Debug.Log($"New state: {newState} mass: {_rb.mass} kg");
+                // Debug.Log($"New state: {newState} mass: {_rb.mass} kg");
             }
         }
 

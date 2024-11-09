@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 namespace SWPPT3.Main.Prop
@@ -28,12 +29,12 @@ namespace SWPPT3.Main.Prop
         {
             if (_objectMaterial != null)
             {
-                if (this.State == (int)StateLevel.On)
+                if (this.State == On)
                 {
                     _objectMaterial.EnableKeyword("_EMISSION");
                     _objectMaterial.SetColor("_EmissionColor", emissionColor * emissionIntensityOn);
                 }
-                else if (this.State == (int)StateLevel.Off)
+                else if (this.State == Off)
                 {
                     _objectMaterial.DisableKeyword("_EMISSION");
                     _objectMaterial.SetColor("_EmissionColor", emissionColor * emissionIntensityOff);

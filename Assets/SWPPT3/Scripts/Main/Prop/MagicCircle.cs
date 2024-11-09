@@ -1,29 +1,31 @@
+using UnityEngine;
+
 namespace SWPPT3.Main.Prop
 {
     public class MagicCircle : StatefulProp
     {
+        [SerializeField]
+        private int stateChangeAmount;
         public override void StateChangeEvent()
         {
-            if (this.State == (int)StateLevel.Off)
+            if (this.State == Full)
             {
 
             }
-            else if (this.State == (int)StateLevel.Quarter)
+            else if (this.State == Off)
             {
 
             }
-            else if (this.State == (int)StateLevel.Half)
-            {
+        }
 
-            }
-            else if (this.State == (int)StateLevel.ThreeQuarters)
-            {
+        public override void Activate()
+        {
+            this.State += stateChangeAmount;
+        }
 
-            }
-            else if (this.State == (int)StateLevel.On)
-            {
-
-            }
+        public override void Deactivate()
+        {
+            this.State -= stateChangeAmount;
         }
     }
 }
