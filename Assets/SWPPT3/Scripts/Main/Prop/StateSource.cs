@@ -2,6 +2,10 @@ namespace SWPPT3.Main.Prop
 {
     public abstract class StateSource : StatefulProp
     {
-        public abstract void ActivateState(StatefulProp prop);
+        protected virtual void ActivateState(StatefulProp prop, StateLevel level)
+        {
+            prop.State = (int)level;
+            prop.StateChangeEvent();
+        }
     }
 }
