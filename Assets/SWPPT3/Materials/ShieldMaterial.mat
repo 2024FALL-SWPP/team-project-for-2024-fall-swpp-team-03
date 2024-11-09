@@ -20,7 +20,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: SwitchGlassMaterial
+  m_Name: ShieldMaterial
   m_Shader: {fileID: -6465566751694194690, guid: 9470d7c3f97ee47a6be598a9d59111bd,
     type: 3}
   m_ValidKeywords: []
@@ -128,5 +128,5 @@ Material:
     - _Color: {r: 0.83346844, g: 0, b: 1, a: 0.43137255}
     - _EmissionColor: {r: 1.0118899, g: 0.4822001, b: 1.6226416, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
-    - _TopColor: {r: 0.00035008846, g: 0.00035008846, b: 0.00035008846, a: 0}
+    - _TopColor: {r: 0.63529414, g: 0, b: 1.1137255, a: 0}
   m_BuildTextureStacks: []
