@@ -60,11 +60,17 @@ namespace SWPPT3.Main.PlayerLogic
 
         private void OnEnable()
         {
+            _inputActions.PlayerActions.Move.Enable();
+            _inputActions.PlayerActions.Jump.Enable();
+            _inputActions.PlayerActions.ChangeState.Enable();
             _inputActions.Enable();
         }
 
         private void OnDisable()
         {
+            _inputActions.PlayerActions.Move.Disable();
+            _inputActions.PlayerActions.Jump.Disable();
+            _inputActions.PlayerActions.ChangeState.Disable();
             _inputActions.Disable();
         }
 
@@ -74,19 +80,21 @@ namespace SWPPT3.Main.PlayerLogic
             {
 
             }
-
-            if (_moveDirection != Vector3.zero)
+            else
             {
-                transform.rotation = Quaternion.LookRotation(_moveDirection);
-                transform.Translate(Vector3.forward * (_moveSpeed * Time.deltaTime));
-            }
+                if (_moveDirection != Vector3.zero)
+                {
+                    transform.rotation = Quaternion.LookRotation(_moveDirection);
+                    transform.Translate(Vector3.forward * (_moveSpeed * Time.deltaTime));
+                }
 
-            if (_currentState == States.Rubber && !IsGrounded() && _isHoldingJump)
-            {
-                _physicMaterial.bounciness = 1.0f;
-                _physicMaterial.bounceCombine = PhysicMaterialCombine.Maximum;
+                if (_currentState == States.Rubber && !IsGrounded() && _isHoldingJump)
+                {
+                    _physicMaterial.bounciness = 1.0f;
+                    _physicMaterial.bounceCombine = PhysicMaterialCombine.Maximum;
 
-                _collider.material = _physicMaterial;
+                    _collider.material = _physicMaterial;
+                }
             }
         }
 
@@ -98,6 +106,7 @@ namespace SWPPT3.Main.PlayerLogic
 
         public void OnJump(InputAction.CallbackContext context)
         {
+            if (_isGameOver) return;
             if (IsGrounded())
             {
                 _rb.AddForce(Vector3.up * _jumpForce, ForceMode.Impulse);
@@ -123,6 +132,7 @@ namespace SWPPT3.Main.PlayerLogic
 
         public void OnChangeState(InputAction.CallbackContext context)
         {
+            if (_isGameOver) return;
             string keyPressed = context.control.displayName;
 
             States newState = keyPressed switch
@@ -160,6 +170,8 @@ namespace SWPPT3.Main.PlayerLogic
         public void GameOver()
         {
             _isGameOver = true;
+            OnDisable();
+            Debug.Log("Game Over");
         }
 
         public void UpdateJumpForce()

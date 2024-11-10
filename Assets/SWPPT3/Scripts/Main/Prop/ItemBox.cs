@@ -9,7 +9,7 @@ namespace SWPPT3.Main.Prop
     {
         public States ItemState;
 
-        public override void InteractWithPlayer(States state)
+        public override void InteractWithPlayer()
         {
             Destroy(gameObject);
         }
