@@ -9,7 +9,7 @@ namespace SWPPT3.Main.Prop
         {
 
         }
-        public virtual void InteractWithPlayer(States state)
+        public virtual void InteractWithPlayer(PlayerStates state)
         {
 
         }

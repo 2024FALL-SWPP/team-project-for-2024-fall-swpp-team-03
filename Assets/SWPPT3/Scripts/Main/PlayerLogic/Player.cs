@@ -9,14 +9,14 @@ namespace SWPPT3.Main.PlayerLogic
 {
     public class Player : MonoBehaviour
     {
-        private States _currentState = States.Slime;
+        private PlayerStates _currentState = PlayerStates.Slime;
         private Vector2 _inputMovement;
         private Vector3 _moveDirection;
         private float _moveSpeed = 4f;
 
         private bool _isGameOver = false;
 
-        private bool _isJumping;
+        private int _isGrounded;
         private bool _isHoldingJump;
 
         [SerializeField]
@@ -26,22 +26,24 @@ namespace SWPPT3.Main.PlayerLogic
         private Collider _collider;
         private float _jumpForce = 2f;
 
-        public Dictionary<States, int> Item = new()
+        // private HashSet<GameObject> _colliderObjects= new HashSet<GameObject>();
+
+        public Dictionary<PlayerStates, int> Item = new()
         {
-            { States.Slime, 0 },
-            { States.Metal, 0 },
-            { States.Rubber, 0 },
+            { PlayerStates.Slime, 0 },
+            { PlayerStates.Metal, 0 },
+            { PlayerStates.Rubber, 0 },
         };
 
         private PlayerState PlayerState => _playerStates[_currentState];
 
         private PlayerInputActions _inputActions;
 
-        private readonly Dictionary<States, PlayerState> _playerStates = new()
+        private readonly Dictionary<PlayerStates, PlayerState> _playerStates = new()
         {
-            { States.Metal, new MetalState() },
-            { States.Rubber, new RubberState() },
-            { States.Slime, new SlimeState() },
+            { PlayerStates.Metal, new MetalState() },
+            { PlayerStates.Rubber, new RubberState() },
+            { PlayerStates.Slime, new SlimeState() },
         };
 
         private void Awake()
@@ -50,6 +52,7 @@ namespace SWPPT3.Main.PlayerLogic
             _collider = GetComponent<Collider>();
             _physicMaterial = _collider.material;
             _isHoldingJump = false;
+            _isGrounded = 0;
             _inputActions = new PlayerInputActions();
             _inputActions.PlayerActions.Move.performed += OnMove;
             _inputActions.PlayerActions.Move.canceled += OnMove;
@@ -88,7 +91,7 @@ namespace SWPPT3.Main.PlayerLogic
                     transform.Translate(Vector3.forward * (_moveSpeed * Time.deltaTime));
                 }
 
-                if (_currentState == States.Rubber && !IsGrounded() && _isHoldingJump)
+                if (_currentState == PlayerStates.Rubber && !IsGrounded() && _isHoldingJump)
                 {
                     _physicMaterial.bounciness = 1.0f;
                     _physicMaterial.bounceCombine = PhysicMaterialCombine.Maximum;
@@ -116,7 +119,7 @@ namespace SWPPT3.Main.PlayerLogic
         private void OnJumpCanceled(InputAction.CallbackContext context)
         {
             _isHoldingJump = false;
-            if (_currentState == States.Rubber)
+            if (_currentState == PlayerStates.Rubber)
             {
                 _physicMaterial.bounciness = 0.5f;
                 _physicMaterial.bounceCombine = PhysicMaterialCombine.Maximum;
@@ -125,9 +128,20 @@ namespace SWPPT3.Main.PlayerLogic
             }
         }
 
+        // private bool IsGrounded()
+        // {
+        //     foreach (GameObject colliderObject in _colliderObjects)
+        //     {
+        //         if (colliderObject.CompareTag("Ground"))
+        //         {
+        //             return true;
+        //         }
+        //     }
+        //     return false;
+        // }
         private bool IsGrounded()
         {
-            return Physics.Raycast(transform.position, Vector3.down, 1f);
+            return _isGrounded > 0;
         }
 
         public void OnChangeState(InputAction.CallbackContext context)
@@ -135,16 +149,16 @@ namespace SWPPT3.Main.PlayerLogic
             if (_isGameOver) return;
             string keyPressed = context.control.displayName;
 
-            States newState = keyPressed switch
+            PlayerStates newState = keyPressed switch
             {
-                "1" => States.Slime,
-                "2" => States.Metal,
-                "3" => States.Rubber,
+                "1" => PlayerStates.Slime,
+                "2" => PlayerStates.Metal,
+                "3" => PlayerStates.Rubber,
                 _ => _currentState
             };
-            if (newState == States.Slime || Item[newState] > 0)
+            if (newState == PlayerStates.Slime || Item[newState] > 0)
             {
-                if(newState != States.Slime) Item[newState]--;
+                if(newState != PlayerStates.Slime) Item[newState]--;
                 _currentState = newState;
                 PlayerState.ChangeRigidbody(_rb);
                 PlayerState.ChangePhysics(_collider, _physicMaterial);
@@ -165,6 +179,13 @@ namespace SWPPT3.Main.PlayerLogic
             {
                 InteractWithProp(obstacle);
             }
+            // _colliderObjects.Add(collision.gameObject);
+            _isGrounded += collision.gameObject.CompareTag("Ground") ? 1 : 0;
+        }
+
+        private void OnCollisionExit(Collision collision)
+        {
+            _isGrounded -= collision.gameObject.CompareTag("Ground") ? 1 : 0;
         }
 
         public void GameOver()

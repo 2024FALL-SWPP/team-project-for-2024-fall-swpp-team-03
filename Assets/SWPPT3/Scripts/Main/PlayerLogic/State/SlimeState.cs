@@ -22,10 +22,6 @@ namespace SWPPT3.Main.PlayerLogic.State
         }
         public override void ChangePhysics(Collider collider, PhysicMaterial physicMaterial)
         {
-            if (physicMaterial == null)
-            {
-                physicMaterial = new PhysicMaterial();
-            }
             physicMaterial.bounciness = 0f;
             physicMaterial.dynamicFriction = 0f;
             physicMaterial.staticFriction = 0f;

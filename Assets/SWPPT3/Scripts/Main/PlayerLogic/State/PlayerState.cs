@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace SWPPT3.Main.PlayerLogic.State
 {
-    public enum States
+    public enum PlayerStates
     {
         Slime = 0,
         Metal,

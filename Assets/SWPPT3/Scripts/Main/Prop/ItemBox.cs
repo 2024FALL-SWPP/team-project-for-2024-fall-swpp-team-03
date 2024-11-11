@@ -7,7 +7,7 @@ namespace SWPPT3.Main.Prop
 {
     public class ItemBox : StatelessProp
     {
-        public States ItemState;
+        public PlayerStates ItemState;
 
         public override void InteractWithPlayer()
         {
