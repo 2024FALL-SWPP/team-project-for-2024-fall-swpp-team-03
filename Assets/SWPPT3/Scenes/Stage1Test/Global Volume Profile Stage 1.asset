@@ -54,8 +54,8 @@ MonoBehaviour:
   m_Name: Global Volume Profile Stage 1
   m_EditorClassIdentifier: 
   components:
-  - {fileID: -3843201820197560878}
   - {fileID: 1860789358982590924}
+  - {fileID: -3843201820197560878}
 --- !u!114 &1860789358982590924
 MonoBehaviour:
   m_ObjectHideFlags: 3
