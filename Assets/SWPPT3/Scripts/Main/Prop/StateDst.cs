@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace SWPPT3.Main.Prop
@@ -6,16 +7,23 @@ namespace SWPPT3.Main.Prop
     public abstract class StateDst : StatefulProp
     {
         [SerializeField]
-        private StateSource stateSource;
+        private List<StateSource> stateSources;
         private void OnEnable()
         {
-            stateSource.OnStateChanged += OnSourceStateChanged;
+            foreach (StateSource stateSource in stateSources)
+            {
+                stateSource.OnStateChanged += OnSourceStateChanged;
+            }
+
         }
         private void OnDisable()
         {
-            stateSource.OnStateChanged -= OnSourceStateChanged;
+            foreach (StateSource stateSource in stateSources)
+            {
+                stateSource.OnStateChanged -= OnSourceStateChanged;
+            }
         }
-        protected abstract void OnSourceStateChanged(bool state);
+        protected abstract void OnSourceStateChanged(StateSource src, bool state);
 
     }
 }

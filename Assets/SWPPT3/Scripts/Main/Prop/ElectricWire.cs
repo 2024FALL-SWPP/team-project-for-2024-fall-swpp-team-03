@@ -25,7 +25,7 @@ namespace SWPPT3.Main.Prop
             }
         }
 
-        protected override void OnSourceStateChanged(bool state)
+        protected override void OnSourceStateChanged(StateSource src, bool state)
         {
             if (_objectMaterial != null)
             {
