@@ -2,13 +2,13 @@ using UnityEngine;
 
 namespace SWPPT3.Main.Prop
 {
-    public class MagicCircle : StatefulProp
+    public class MagicCircle : StateDst
     {
         [SerializeField]
         private int stateChangeAmount;
-        public override void StateChangeEvent()
+        protected override void OnSourceStateChanged(bool state)
         {
-            if (this.State == Full)
+            if (this.State == On)
             {
 
             }
@@ -16,16 +16,6 @@ namespace SWPPT3.Main.Prop
             {
 
             }
-        }
-
-        public override void Activate()
-        {
-            this.State += stateChangeAmount;
-        }
-
-        public override void Deactivate()
-        {
-            this.State -= stateChangeAmount;
         }
     }
 }

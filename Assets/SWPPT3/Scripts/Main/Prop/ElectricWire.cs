@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace SWPPT3.Main.Prop
 {
-    public class ElectricWire : StatefulProp
+    public class ElectricWire : StateDst
     {
         public Color emissionColor = Color.yellow;
         public float emissionIntensityOn = 1.5f;
@@ -25,7 +25,7 @@ namespace SWPPT3.Main.Prop
             }
         }
 
-        public override void StateChangeEvent()
+        protected override void OnSourceStateChanged(bool state)
         {
             if (_objectMaterial != null)
             {

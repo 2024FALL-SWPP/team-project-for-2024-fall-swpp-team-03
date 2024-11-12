@@ -1,8 +1,21 @@
+using System;
+
 namespace SWPPT3.Main.Prop
 {
-    public abstract class StateSource : StatefulProp
+    public abstract class StateSource: StatefulProp
     {
-        public abstract void ActivateProp(StatefulProp prop, int state);
-
+        public event Action<bool> OnStateChanged;
+        public override bool State
+        {
+            get => PropState;
+            set
+            {
+                if (PropState != value)
+                {
+                    PropState = value;
+                    OnStateChanged?.Invoke(PropState);
+                }
+            }
+        }
     }
 }

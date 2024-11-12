@@ -899,11 +899,11 @@ PlayerSettings:
   apiCompatibilityLevel: 6
   activeInputHandler: 2
   windowsGamepadBackendHint: 0
-  cloudProjectId: 
+  cloudProjectId: 14caa926-cdc6-4da2-af6a-3937562d3e7d
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []
-  projectName: 
-  organizationId: 
+  projectName: team-project-for-2024-fall-swpp-team-03
+  organizationId: glater
   cloudEnabled: 0
   legacyClampBlendShapeWeights: 0
   playerDataPath: 
