@@ -170,37 +170,37 @@ PrefabInstance:
     - target: {fileID: 6405360909342708198, guid: 8bb6b7b218eca4503927aea1428e3cbb,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.12
+      value: 0.085
       objectReference: {fileID: 0}
     - target: {fileID: 6405360909342708198, guid: 8bb6b7b218eca4503927aea1428e3cbb,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: -0.085
       objectReference: {fileID: 0}
     - target: {fileID: 6405360909342708198, guid: 8bb6b7b218eca4503927aea1428e3cbb,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.70705515
+      value: 0.8535535
       objectReference: {fileID: 0}
     - target: {fileID: 6405360909342708198, guid: 8bb6b7b218eca4503927aea1428e3cbb,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0.7070552
+      value: 0.35355338
       objectReference: {fileID: 0}
     - target: {fileID: 6405360909342708198, guid: 8bb6b7b218eca4503927aea1428e3cbb,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.008544866
+      value: -0.1464466
       objectReference: {fileID: 0}
     - target: {fileID: 6405360909342708198, guid: 8bb6b7b218eca4503927aea1428e3cbb,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0.008544853
+      value: 0.35355338
       objectReference: {fileID: 0}
     - target: {fileID: 6405360909342708198, guid: 8bb6b7b218eca4503927aea1428e3cbb,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
-      value: -90
+      value: 45
       objectReference: {fileID: 0}
     - target: {fileID: 6405360909342708198, guid: 8bb6b7b218eca4503927aea1428e3cbb,
         type: 3}
@@ -210,7 +210,7 @@ PrefabInstance:
     - target: {fileID: 6405360909342708198, guid: 8bb6b7b218eca4503927aea1428e3cbb,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
-      value: 1.385
+      value: 45
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8bb6b7b218eca4503927aea1428e3cbb, type: 3}
