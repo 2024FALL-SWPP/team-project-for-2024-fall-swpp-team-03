@@ -1,7 +1,7 @@
 using SWPPT3.Main.Utility.Singleton;
-using UnityEditor.SceneManagement;
 using UnityEngine;
-using UnityEngine.Assertions;
+using UnityEngine.InputSystem;
+using System;
 
 namespace SWPPT3.Main.StageDirector
 {
@@ -16,98 +16,122 @@ namespace SWPPT3.Main.StageDirector
 
     public abstract class StageDirectorBase : MonoWeakSingleton<StageDirectorBase>
     {
-        // public List<PropBase> PropList; //PR 후 추가.
-        // private MagicCircleSystem _magicCircle;
+        // private UIInputActions _inputActions;
 
         public StagePlayingState StagePlayingState { get; protected set; } = StagePlayingState.BeforeStart;
 
+        public event Action<StagePlayingState> OnStageStateChanged;
+
+        protected void Awake()
+        {
+            // Input Actions 초기화 및 이벤트 등록
+            // _inputActions = new UIInputActions();
+            // _inputActions.UI.StagePause.performed += StagePause;
+        }
+
+        private void OnEnable()
+        {
+            // _inputActions.UI.Enable();
+        }
+
+        private void OnDisable()
+        {
+            // _inputActions.UI.Disable();
+        }
+
         private void Start()
         {
-            // _magicCircle = ; // SystemObject인 MagicCircle와 연결될 수 있게
             if (StagePlayingState == StagePlayingState.BeforeStart)
             {
-                SpawnObjects();
+                StartStage();
             }
+
+            InitializeInput();
         }
-        private void Update()
+
+        private void StagePause(InputAction.CallbackContext context)
         {
-            // 특정 조건일때 pause하도록 일단은 keydown으로 설정 나중에 수정
-            if (StagePlayingState == StagePlayingState.Playing && Input.GetKeyDown(KeyCode.P))
+            if (StagePlayingState == StagePlayingState.Playing)
             {
                 PauseStage();
             }
-            // 특정 조건일때 resume하도록 일단은 keydown으로 설정 나중에 수정
-            else if (StagePlayingState == StagePlayingState.Paused && Input.GetKeyDown(KeyCode.R))
+            else if (StagePlayingState == StagePlayingState.Paused)
             {
                 ResumeStage();
             }
-
-
-            // if (StagePlayingState == StagePlayingState.Playing && Player.life && _magicCircle.isClear())
-            // {
-            //     ClearStage();
-            // }
-            //
-            // if (StagePlayingState == StagePlayingState.Playing && !Player.life)
-            // {
-            //     FailStage();
-            // }
         }
 
-
-        public void SpawnObjects()
+        private void InitializeInput()
         {
-            // prop과 player에 각 stage에 맞는 spawn positoin, rotation 추가.
-            // foreach (ProbBase prop in PropList)
-            // {
-            //     Instantiate((GameObject)prop, prop.position, prop.rotation);
-            // }
-        }
-
-        public void DestroyObjects()
-        {
-            // foreach ()
-            // {
-            //     Destory()
-            // }
-        }
-
-        public void SpawnPlayer()
-        {
-
+            HandleInputState(StagePlayingState);
         }
 
         public void StartStage()
         {
-            StagePlayingState = StagePlayingState.Playing;
-            SpawnPlayer();
+            ChangeStageState(StagePlayingState.Playing);
         }
 
         public void PauseStage()
         {
-            StagePlayingState = StagePlayingState.Paused;
-            // key input이 player에게 가지 않도록 설정
+            ChangeStageState(StagePlayingState.Paused);
+            Time.timeScale = 0f;
         }
 
         public void ResumeStage()
         {
-            StagePlayingState = StagePlayingState.Playing;
-            // key input이 player에게 가도록 설정
+            ChangeStageState(StagePlayingState.Playing);
+            Time.timeScale = 1f;
         }
 
         public void FailStage()
         {
-            StagePlayingState = StagePlayingState.PlayerFailed;
+            ChangeStageState(StagePlayingState.PlayerFailed);
         }
 
         public void ClearStage()
         {
-            StagePlayingState = StagePlayingState.Cleared;
-            LoadNextStage();
-            DestroyObjects();
+            ChangeStageState(StagePlayingState.Cleared);
         }
 
-        public abstract void LoadNextStage();
+        protected void ChangeStageState(StagePlayingState newState)
+        {
+            StagePlayingState = newState;
+            OnStageStateChanged?.Invoke(newState);
+            HandleInputState(newState);
+        }
 
+        private void HandleInputState(StagePlayingState newState)
+        {
+            switch (newState)
+            {
+                case StagePlayingState.Playing:
+                    EnableUIInput(false);
+                    break;
+                case StagePlayingState.Paused:
+                    EnableUIInput(true);
+                    break;
+                case StagePlayingState.PlayerFailed:
+                case StagePlayingState.Cleared:
+                    EnableUIInput(true);
+                    break;
+                default:
+                    EnableUIInput(false);
+                    break;
+            }
+        }
+
+        protected void EnableUIInput(bool enable)
+        {
+            if (enable)
+            {
+                // _inputActions.UI.Enable();
+            }
+            else
+            {
+                // _inputActions.UI.Disable();
+            }
+        }
+
+        public abstract void InitializeStage();
     }
 }
