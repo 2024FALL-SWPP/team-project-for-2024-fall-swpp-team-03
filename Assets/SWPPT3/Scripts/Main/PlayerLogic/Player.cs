@@ -16,8 +16,9 @@ namespace SWPPT3.Main.PlayerLogic
 
         private bool _isGameOver = false;
 
-        private int _isGrounded;
         private bool _isHoldingJump;
+
+        private bool _isGrounded;
 
         [SerializeField]
         private Rigidbody _rb;
@@ -26,7 +27,7 @@ namespace SWPPT3.Main.PlayerLogic
         private Collider _collider;
         private float _jumpForce = 2f;
 
-        // private HashSet<GameObject> _colliderObjects= new HashSet<GameObject>();
+        private HashSet<GameObject> _groundedObjects= new HashSet<GameObject>();
 
         public Dictionary<PlayerStates, int> Item = new()
         {
@@ -52,7 +53,7 @@ namespace SWPPT3.Main.PlayerLogic
             _collider = GetComponent<Collider>();
             _physicMaterial = _collider.material;
             _isHoldingJump = false;
-            _isGrounded = 0;
+            _isGrounded = false;
             _inputActions = new PlayerInputActions();
             _inputActions.PlayerActions.Move.performed += OnMove;
             _inputActions.PlayerActions.Move.canceled += OnMove;
@@ -91,7 +92,7 @@ namespace SWPPT3.Main.PlayerLogic
                     transform.Translate(Vector3.forward * (_moveSpeed * Time.deltaTime));
                 }
 
-                if (_currentState == PlayerStates.Rubber && !IsGrounded() && _isHoldingJump)
+                if (_currentState == PlayerStates.Rubber && !_isGrounded  && _isHoldingJump)
                 {
                     _physicMaterial.bounciness = 1.0f;
                     _physicMaterial.bounceCombine = PhysicMaterialCombine.Maximum;
@@ -110,9 +111,10 @@ namespace SWPPT3.Main.PlayerLogic
         public void OnJump(InputAction.CallbackContext context)
         {
             if (_isGameOver) return;
-            if (IsGrounded())
+            if (_isGrounded)
             {
                 _rb.AddForce(Vector3.up * _jumpForce, ForceMode.Impulse);
+
             }
             _isHoldingJump = true;
         }
@@ -126,22 +128,6 @@ namespace SWPPT3.Main.PlayerLogic
 
                 _collider.material = _physicMaterial;
             }
-        }
-
-        // private bool IsGrounded()
-        // {
-        //     foreach (GameObject colliderObject in _colliderObjects)
-        //     {
-        //         if (colliderObject.CompareTag("Ground"))
-        //         {
-        //             return true;
-        //         }
-        //     }
-        //     return false;
-        // }
-        private bool IsGrounded()
-        {
-            return _isGrounded > 0;
         }
 
         public void OnChangeState(InputAction.CallbackContext context)
@@ -174,18 +160,23 @@ namespace SWPPT3.Main.PlayerLogic
 
         private void OnCollisionEnter(Collision collision)
         {
+
+            var contactPoint = collision.contacts[0];
+            if (contactPoint.normal.y > 0.7f)
+            {
+                _groundedObjects.Add(collision.gameObject);
+                _isGrounded = true;
+            }
             var obstacle = collision.gameObject.GetComponent<PropBase>();
             if (obstacle != null)
             {
                 InteractWithProp(obstacle);
             }
-            // _colliderObjects.Add(collision.gameObject);
-            _isGrounded += collision.gameObject.CompareTag("Ground") ? 1 : 0;
         }
-
         private void OnCollisionExit(Collision collision)
         {
-            _isGrounded -= collision.gameObject.CompareTag("Ground") ? 1 : 0;
+            _groundedObjects.Remove(collision.gameObject);
+            _isGrounded = _groundedObjects.Count > 0;
         }
 
         public void GameOver()
