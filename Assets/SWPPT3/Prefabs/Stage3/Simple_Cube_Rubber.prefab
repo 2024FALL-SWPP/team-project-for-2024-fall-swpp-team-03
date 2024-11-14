@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 8019699661575331395}
   - component: {fileID: 5237480843715570313}
   m_Layer: 0
-  m_Name: Simple_Cube_Metal
+  m_Name: Simple_Cube_Rubber
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -40,7 +40,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6030242264167205724}
-  m_Mesh: {fileID: -5495902117074765545, guid: effe0678e7fe34e42ac81abc28aee648, type: 3}
+  m_Mesh: {fileID: -5495902117074765545, guid: 6c318390c7a8b42ac9b421104acdaccd, type: 3}
 --- !u!23 &5237480843715570313
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -61,7 +61,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 264f74bf3bd1b48c199dabcbaf507a00, type: 2}
+  - {fileID: 2100000, guid: 21165d66baa9949edbc4302d0636e546, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
