@@ -9,7 +9,7 @@ namespace SWPPT3.Main.PlayerLogic.State
         {
             if (false)
             {
-
+                obstacle.InteractWithPlayer();
             }
             else
             {
@@ -32,6 +32,5 @@ namespace SWPPT3.Main.PlayerLogic.State
 
             collider.material = physicMaterial;
         }
-
     }
 }
