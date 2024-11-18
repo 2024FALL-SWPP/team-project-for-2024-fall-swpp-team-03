@@ -1,6 +1,6 @@
 namespace SWPPT3.Main.Prop
 {
-    public class ElectricPool : StatefulProp
+    public class ElectricPool : StatelessProp
     {
 
     }
