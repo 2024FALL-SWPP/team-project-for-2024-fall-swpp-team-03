@@ -11,28 +11,28 @@ namespace SWPPT3.Main.Prop
         private int stateChangeAmount;
 
         private int _progress = 0;
-        private Dictionary<StateSource, bool> circleStates;
+        private Dictionary<StateSource, bool> _circleStates;
 
         public void Awake()
         {
-            circleStates = new Dictionary<StateSource, bool>();
+            _circleStates = new Dictionary<StateSource, bool>();
             StateSource[] sources = GetComponentsInChildren<StateSource>();
             foreach (var source in sources)
             {
-                circleStates[source] = false;
+                _circleStates[source] = false;
             }
         }
 
         protected override void OnSourceStateChanged(StateSource src, bool state)
         {
-            circleStates[src] = state;
+            _circleStates[src] = state;
             _progress = 0;
-            foreach (bool circleState in circleStates.Values)
+            foreach (bool circleState in _circleStates.Values)
             {
                 if(circleState) _progress ++;
             }
 
-            if (_progress >= circleStates.Count)
+            if (_progress >= _circleStates.Count)
             {
                 ActivateMagicCircle();
                 State = On;

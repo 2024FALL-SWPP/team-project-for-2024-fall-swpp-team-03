@@ -4,6 +4,7 @@ using UnityEngine;
 using SWPPT3.Main.Prop;
 using UnityEngine.InputSystem;
 using SWPPT3.Main.PlayerLogic.State;
+using SWPPT3.Main.Utility;
 
 namespace SWPPT3.Main.PlayerLogic
 {
@@ -12,20 +13,24 @@ namespace SWPPT3.Main.PlayerLogic
         private PlayerStates _currentState = PlayerStates.Slime;
         private Vector2 _inputMovement;
         private Vector3 _moveDirection;
-        private float _moveSpeed = 4f;
+        [SerializeField]
+        private PlayerSettings settings;
 
         private bool _isGameOver = false;
 
         private bool _isHoldingJump;
 
-        private bool _isGrounded;
+        public bool IsGrounded
+        {
+            get;
+            set;
+        }
 
         [SerializeField]
         private Rigidbody _rb;
 
         private PhysicMaterial _physicMaterial;
         private Collider _collider;
-        private float _jumpForce = 2f;
 
         private HashSet<GameObject> _groundedObjects= new HashSet<GameObject>();
 
@@ -53,7 +58,7 @@ namespace SWPPT3.Main.PlayerLogic
             _collider = GetComponent<Collider>();
             _physicMaterial = _collider.material;
             _isHoldingJump = false;
-            _isGrounded = false;
+            IsGrounded = false;
             _inputActions = new PlayerInputActions();
             _inputActions.PlayerActions.Move.performed += OnMove;
             _inputActions.PlayerActions.Move.canceled += OnMove;
@@ -89,10 +94,10 @@ namespace SWPPT3.Main.PlayerLogic
                 if (_moveDirection != Vector3.zero)
                 {
                     transform.rotation = Quaternion.LookRotation(_moveDirection);
-                    transform.Translate(Vector3.forward * (_moveSpeed * Time.deltaTime));
+                    transform.Translate(Vector3.forward * (settings.moveSpeed * Time.deltaTime));
                 }
 
-                if (_currentState == PlayerStates.Rubber && !_isGrounded  && _isHoldingJump)
+                if (_currentState == PlayerStates.Rubber && !IsGrounded  && _isHoldingJump)
                 {
                     _physicMaterial.bounciness = 1.0f;
                     _physicMaterial.bounceCombine = PhysicMaterialCombine.Maximum;
@@ -111,9 +116,9 @@ namespace SWPPT3.Main.PlayerLogic
         public void OnJump(InputAction.CallbackContext context)
         {
             if (_isGameOver) return;
-            if (_isGrounded)
+            if (IsGrounded)
             {
-                _rb.AddForce(Vector3.up * _jumpForce, ForceMode.Impulse);
+                _rb.AddForce(Vector3.up * settings.jumpForce, ForceMode.Impulse);
 
             }
             _isHoldingJump = true;
@@ -160,12 +165,11 @@ namespace SWPPT3.Main.PlayerLogic
 
         private void OnCollisionEnter(Collision collision)
         {
-
             var contactPoint = collision.contacts[0];
-            if (contactPoint.normal.y > 0.7f)
+            if (contactPoint.normal.y > settings.groundThreshold)
             {
                 _groundedObjects.Add(collision.gameObject);
-                _isGrounded = true;
+                IsGrounded = true;
             }
             var obstacle = collision.gameObject.GetComponent<PropBase>();
             if (obstacle != null)
@@ -176,7 +180,7 @@ namespace SWPPT3.Main.PlayerLogic
         private void OnCollisionExit(Collision collision)
         {
             _groundedObjects.Remove(collision.gameObject);
-            _isGrounded = _groundedObjects.Count > 0;
+            IsGrounded = _groundedObjects.Count > 0;
         }
 
         public void GameOver()
@@ -188,7 +192,7 @@ namespace SWPPT3.Main.PlayerLogic
 
         public void UpdateJumpForce()
         {
-            _jumpForce = 2.0f * _rb.mass;
+            settings.jumpForce = 2.0f * _rb.mass;
         }
     }
 }
