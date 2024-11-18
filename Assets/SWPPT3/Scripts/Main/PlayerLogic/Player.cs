@@ -42,7 +42,6 @@ namespace SWPPT3.Main.PlayerLogic
         };
 
         private PlayerState PlayerState => _playerStates[_currentState];
-        public PlayerStates CurrentState => _currentState;
 
         private PlayerInputActions _inputActions;
 
@@ -52,14 +51,6 @@ namespace SWPPT3.Main.PlayerLogic
             { PlayerStates.Rubber, new RubberState() },
             { PlayerStates.Slime, new SlimeState() },
         };
-
-        public ElectroWire ElectroWireObject;
-
-        private List<GameObject> _connectedElectroObjects = new List<GameObject>();
-        public List<GameObject> GetConnectedObjects()
-        {
-            return _connectedElectroObjects;
-        }
 
         private void Awake()
         {
@@ -180,30 +171,16 @@ namespace SWPPT3.Main.PlayerLogic
                 _groundedObjects.Add(collision.gameObject);
                 IsGrounded = true;
             }
-
-            var electroObject = collision.gameObject.GetComponent<ElectroBox>();
-            if (electroObject != null)
-            {
-                _connectedElectroObjects.Add(electroObject.gameObject);
-                ElectroWireObject?.CheckConnection();
-            }
             var obstacle = collision.gameObject.GetComponent<PropBase>();
             if (obstacle != null)
             {
                 InteractWithProp(obstacle);
             }
         }
-
         private void OnCollisionExit(Collision collision)
         {
             _groundedObjects.Remove(collision.gameObject);
             IsGrounded = _groundedObjects.Count > 0;
-            var electroObject = collision.gameObject.GetComponent<ElectroBox>();
-            if (electroObject != null)
-            {
-                _connectedElectroObjects.Remove(electroObject.gameObject);
-                ElectroWireObject?.CheckConnection();
-            }
         }
 
         public void GameOver()

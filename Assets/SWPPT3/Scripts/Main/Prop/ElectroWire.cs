@@ -1,114 +1,73 @@
-using System;
 using System.Collections.Generic;
-using SWPPT3.Main.PlayerLogic;
-using SWPPT3.Main.PlayerLogic.State;
 using UnityEngine;
 
 namespace SWPPT3.Main.Prop
 {
-    public class ElectroWire : StateSource
+    public class ElectricWire : StatefulProp
     {
-        // +극, -극을 합쳐서 상위 object를 만든다.
-        // 각각 전기가 통하는 물체들은 접촉하고 있는 전도체와 player를 관리한다.
-        // +극에서 bfs를 해서 -극까지 연결되면 된다.
-        // CheckConnection은 전도체들에서 ElectroWire를 attribute로 가지고
-        // connections list들이 바뀔때마다 호출해서 Update에 비해 overhead를 줄임.
         public GameObject PositiveElectrode;
         public GameObject NegativeElectrode;
 
-        private List<GameObject> _connectionsPos = new List<GameObject>();
-        private List<GameObject> _connectionsNeg = new List<GameObject>();
+        private Dictionary<GameObject, List<GameObject>> connections = new Dictionary<GameObject, List<GameObject>>();
 
-        public void OnElectrodeCollisionEnter(GameObject electrode, GameObject otherObject)
+        private void OnCollisionEnter(Collision collision)
         {
-            if (electrode == PositiveElectrode)
+            var otherObject = collision.gameObject;
+
+            // MetalStateProp 객체인지 확인
+            if (otherObject.TryGetComponent(out MetalStateProp metalStateProp))
             {
-                _connectionsPos.Add(otherObject);
+                // Dictionary에 MetalStateProp 추가
+                if (!connections.ContainsKey(otherObject))
+                {
+                    connections[otherObject] = new List<GameObject>();
+                }
+
+                // 충돌한 객체의 연결을 추가
+                foreach (var contact in collision.contacts)
+                {
+                    var connectedObject = contact.otherCollider.gameObject;
+                    if (connectedObject.TryGetComponent(out MetalStateProp _))
+                    {
+                        if (!connections[otherObject].Contains(connectedObject))
+                        {
+                            connections[otherObject].Add(connectedObject);
+                        }
+                    }
+                }
+
+                if (IsPathFromPositiveToNegative())
+                {
+                    Debug.Log("Path found between Positive and Negative electrodes!");
+                }
             }
-            else if (electrode == NegativeElectrode)
-            {
-                _connectionsNeg.Add(otherObject);
-            }
-            CheckConnection();
         }
 
-        public void OnElectrodeCollisionExit(GameObject electrode, GameObject otherObject)
-        {
-            if (electrode == PositiveElectrode)
-            {
-                _connectionsPos.Remove(otherObject);
-            }
-            else if (electrode == NegativeElectrode)
-            {
-                _connectionsNeg.Remove(otherObject);
-            }
-            CheckConnection();
-        }
-
-        public bool CheckConnection()
+        private bool IsPathFromPositiveToNegative()
         {
             HashSet<GameObject> visited = new HashSet<GameObject>();
-            Queue<GameObject> queue = new Queue<GameObject>();
-
-            foreach (GameObject obj in _connectionsPos)
-            {
-                if (obj != null)
-                {
-                    queue.Enqueue(obj);
-                    visited.Add(obj);
-                }
-            }
-
-            while (queue.Count > 0)
-            {
-                GameObject current = queue.Dequeue();
-
-                if (_connectionsNeg.Contains(current))
-                {
-                    State = On;
-                    return true;
-                }
-
-                if (visited.Contains(current))
-                {
-                    continue;
-                }
-                visited.Add(current);
-
-                Player player = current.GetComponent<Player>();
-                if (player != null)
-                {
-                    if (player.CurrentState != PlayerStates.Metal)
-                    {
-                        continue;
-                    }
-
-                    foreach (GameObject neighbor in player.GetConnectedObjects())
-                    {
-                        if (neighbor != null && !visited.Contains(neighbor))
-                        {
-                            queue.Enqueue(neighbor);
-                        }
-                    }
-                    continue;
-                }
-
-                ElectroBox prop = current.GetComponent<ElectroBox>();
-                if (prop != null)
-                {
-                    foreach (GameObject neighbor in prop.GetConnectedObjects())
-                    {
-                        if (neighbor != null && !visited.Contains(neighbor))
-                        {
-                            queue.Enqueue(neighbor);
-                        }
-                    }
-                }
-            }
-
-            State = Off;
-            return false;
+            return CheckPath(PositiveElectrode, NegativeElectrode, visited);
         }
 
+        private bool CheckPath(GameObject current, GameObject target, HashSet<GameObject> visited)
+        {
+            if (visited.Contains(current)) return false;
+
+            visited.Add(current);
+
+            if (current == target) return true;
+
+            if (connections.TryGetValue(current, out var connectedObjects))
+            {
+                foreach (var connectedObject in connectedObjects)
+                {
+                    if (CheckPath(connectedObject, target, visited))
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
     }
-}
