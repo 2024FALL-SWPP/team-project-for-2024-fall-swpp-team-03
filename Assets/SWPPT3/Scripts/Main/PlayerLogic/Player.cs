@@ -38,6 +38,8 @@ namespace SWPPT3.Main.PlayerLogic
 
         private PlayerState PlayerState => _playerStates[_currentState];
 
+        public PlayerStates CurrentState => _currentState;
+
         private PlayerInputActions _inputActions;
 
         private readonly Dictionary<PlayerStates, PlayerState> _playerStates = new()
