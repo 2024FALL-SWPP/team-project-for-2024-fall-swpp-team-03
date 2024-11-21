@@ -1,7 +1,13 @@
+using UnityEngine;
+
 namespace SWPPT3.Main.Prop
 {
     public abstract class StatefulProp : PropBase
     {
-        public int State { get; set; } = 0;
+        public const bool On = true;
+        public const bool Off = false;
+        public virtual bool State { get; set; }
+        protected bool PropState;
     }
+
 }

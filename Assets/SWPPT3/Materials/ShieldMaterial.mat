@@ -21,7 +21,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: ShieldMaterial
-  m_Shader: {fileID: -6465566751694194690, guid: 9470d7c3f97ee47a6be598a9d59111bd,
+  m_Shader: {fileID: -6465566751694194690, guid: 53df02d5892edd5468ae714c923aa26e,
     type: 3}
   m_ValidKeywords: []
   m_InvalidKeywords: []
@@ -55,6 +55,10 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _EmissionMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _GlowTex:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
@@ -101,11 +105,14 @@ Material:
     - _Cutoff: 0.5
     - _DetailAlbedoMapScale: 1
     - _DetailNormalMapScale: 1
+    - _DoorOpenRatio: 0
     - _DstBlend: 10
     - _EnvironmentReflections: 1
     - _GlossMapScale: 0.867
     - _Glossiness: 0.632
     - _GlossyReflections: 1
+    - _GlowTexIntensity: 0
+    - _MainTexIntensity: 0
     - _Metalic: 0.445
     - _Metallic: 0.673
     - _Mode: 3
@@ -123,10 +130,14 @@ Material:
     - _WorkflowMode: 1
     - _ZWrite: 0
     m_Colors:
-    - _BaseColor: {r: 0.36078432, g: 0, b: 0.7490196, a: 0.43137255}
+    - _BaseColor: {r: 0.028390896, g: 0.046924327, b: 0.20754719, a: 0.43137255}
     - _BottomColor: {r: 1, g: 1, b: 1, a: 1}
     - _Color: {r: 0.83346844, g: 0, b: 1, a: 0.43137255}
+    - _DissolveEdgeColor: {r: 0.9811321, g: 0.06941971, b: 0.8215392, a: 0}
+    - _EdgeColor: {r: 1.4980392, g: 0.05490198, b: 1.2383388, a: 0}
     - _EmissionColor: {r: 1.0118899, g: 0.4822001, b: 1.6226416, a: 1}
+    - _GlowColor: {r: 0.4163592, g: 0.0033983497, b: 0.72044843, a: 0}
+    - _GlowTexColor: {r: 0, g: 0, b: 0, a: 0}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
-    - _TopColor: {r: 0.63529414, g: 0, b: 1.1137255, a: 0}
+    - _TopColor: {r: 1.1137255, g: 0, b: 0.042731144, a: 0}
   m_BuildTextureStacks: []
