@@ -21,7 +21,7 @@ namespace SWPPT3.Main.ConductorLogic
             if (_player.CurrentState != _previousState)
             {
                 _previousState = _player.CurrentState;
-                conductorManager.IsDirty = true;
+                ConductorManager.IsDirty = true;
             }
         }
 

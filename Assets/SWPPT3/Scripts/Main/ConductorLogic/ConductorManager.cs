@@ -40,19 +40,16 @@ namespace SWPPT3.Main.ConductorLogic
 
             foreach (var plusElectrode in _plusElectrodes)
             {
-                if (plusElectrode.IsConductive())
-                {
-                    plusElectrode.CurrentFlow = true;
-                    queue.Enqueue(plusElectrode);
-                    visited.Add(plusElectrode);
-                }
+                plusElectrode.CurrentFlow = true;
+                queue.Enqueue(plusElectrode);
+                visited.Add(plusElectrode);
             }
 
             while (queue.Count > 0)
             {
                 var current = queue.Dequeue();
 
-                foreach (var connectionObj in current.GetConnections())
+                foreach (var connectionObj in current.Connections)
                 {
                     var conductor = connectionObj.GetComponent<Conductor>();
 
