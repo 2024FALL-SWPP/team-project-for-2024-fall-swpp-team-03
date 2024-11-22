@@ -11,8 +11,9 @@ GameObject:
   - component: {fileID: 295990116409752026}
   - component: {fileID: 3725685135252534911}
   - component: {fileID: 1463878433879540405}
+  - component: {fileID: -9063531939706666596}
   m_Layer: 0
-  m_Name: pitfall_left
+  m_Name: Pitfall_Left
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -83,3 +84,17 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!64 &-9063531939706666596
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1103454329556263776}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: -5462847723828066589, guid: 6ff125cb5c30b4db59ecaa17f312c686, type: 3}
