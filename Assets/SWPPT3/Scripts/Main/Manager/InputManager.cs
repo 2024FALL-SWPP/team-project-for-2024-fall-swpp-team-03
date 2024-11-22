@@ -51,6 +51,14 @@ namespace SWPPT3.Main.Manager
             inGame.StartTransform.canceled += ctx => OnStartTransform?.Invoke(false);
         }
 
+        private void OnDestroy()
+        {
+            if (_inputActions != null)
+            {
+                _inputActions.Disable();
+            }
+        }
+
         private void OnEnable()
         {
             _inputActions.Enable();

@@ -1,5 +1,6 @@
 using UnityEngine;
 using SWPPT3.Main.Manager;
+using SWPPT3.Main.Utility;
 
 namespace SWPPT3.Main
 {
@@ -9,7 +10,10 @@ namespace SWPPT3.Main
         private Transform _player;
 
         [SerializeField]
-        private float _mouseSensitivity = 1f;
+        private float _mouseSensitivity;
+
+        [SerializeField]
+        private CameraScript _cameraScript;
 
         private float _distanceFromPlayer = 10f;
         private float _cameraHeight = 2f;
@@ -57,6 +61,7 @@ namespace SWPPT3.Main
                 transform.position = _player.position + offset;
                 transform.LookAt(_player);
             }
+            _mouseSensitivity = _cameraScript ?  _cameraScript.MouseSensitivity : 1f;
         }
 
         private void HandleLook(Vector2 lookInput)
