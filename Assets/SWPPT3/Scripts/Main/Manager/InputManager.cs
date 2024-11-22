@@ -14,6 +14,8 @@ namespace SWPPT3.Main.Manager
 
         public delegate void JumpAction();
         public event JumpAction OnJump;
+        public delegate void JumpCancelAction();
+        public event JumpCancelAction OnJumpCancel;
 
         public delegate void LookAction(Vector2 lookInput);
         public event LookAction OnLook;
@@ -23,6 +25,11 @@ namespace SWPPT3.Main.Manager
 
         public delegate void StartTransformAction(bool isLeftButton);
         public event StartTransformAction OnStartTransform;
+
+        //나중에 제거될 함수
+        public delegate void ChangeStateAction(InputAction.CallbackContext context);
+        public event ChangeStateAction OnChangeState;
+        //
 
         private void Awake()
         {
@@ -43,12 +50,16 @@ namespace SWPPT3.Main.Manager
             inGame.Move.performed += ctx => OnMove?.Invoke(ctx.ReadValue<Vector2>());
             inGame.Move.canceled += ctx => OnMove?.Invoke(Vector2.zero);
             inGame.Jump.performed += ctx => OnJump?.Invoke();
+            inGame.Jump.canceled += ctx => OnJumpCancel?.Invoke();
             inGame.Look.performed += ctx => OnLook?.Invoke(ctx.ReadValue<Vector2>());
             inGame.Look.canceled += ctx => OnLook?.Invoke(Vector2.zero);
             inGame.StartRotation.performed += ctx => OnStartRotation?.Invoke(true);
             inGame.StartRotation.canceled += ctx => OnStartRotation?.Invoke(false);
             inGame.StartTransform.performed += ctx => OnStartTransform?.Invoke(true);
             inGame.StartTransform.canceled += ctx => OnStartTransform?.Invoke(false);
+            //나중에 제거
+            inGame.ChangeState.performed += ctx => OnChangeState?.Invoke(ctx);
+            //
         }
 
         private void OnDestroy()

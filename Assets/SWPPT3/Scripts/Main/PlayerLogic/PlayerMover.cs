@@ -1,27 +1,33 @@
-using UnityEngine;
+using System.Collections.Generic;
 using SWPPT3.Main.Manager;
+using SWPPT3.Main.PlayerLogic.State;
+using SWPPT3.Main.Prop;
+using UnityEngine;
 
-namespace SWPPT3.Main
+namespace SWPPT3.Main.PlayerLogic
 {
     public class PlayerMover : MonoBehaviour
     {
         [SerializeField]
+        private PlayerScript _playerScript;
+        [SerializeField]
+        private Player _player;
+        [SerializeField]
         private Rigidbody _rb;
 
         [SerializeField]
-        private float _jumpForce = 5f;
+        private float _moveSpeed;
+        [SerializeField]
+        private float _jumpMultiplier;
+
+        private float _jumpForce;
+        [SerializeField]
+        private float _rotationSpeed;
+
+        private HashSet<GameObject> _groundedObjects= new HashSet<GameObject>();
 
         [SerializeField]
-        private float _rotationSpeed = 100f;
-
-        [SerializeField]
-        private float _groundCheckDistance = 1.1f;
-
-        // [SerializeField]
         private Transform _cameraTransform;
-
-        [SerializeField]
-        private GameObject _cameraObject;
 
         private Vector2 _moveVector;
         private Vector2 _lookInput;
@@ -29,17 +35,21 @@ namespace SWPPT3.Main
         private Transform _playerTransform;
 
         private bool isRightButton = false;
+        private bool _isHoldingJump;
 
         private void Start()
         {
+            _isHoldingJump = false;
+            _isGrounded = false;
             _playerTransform = transform;
-            _cameraTransform = _cameraObject.GetComponent<Transform>();
             if (InputManager.Instance != null)
             {
                 InputManager.Instance.OnMove += HandleMove;
                 InputManager.Instance.OnJump += HandleJump;
+                InputManager.Instance.OnJumpCancel += HandleJumpCancel;
                 InputManager.Instance.OnStartRotation += HandleStartRotation;
                 InputManager.Instance.OnLook += HandleLook;
+
             }
             else
             {
@@ -49,15 +59,22 @@ namespace SWPPT3.Main
 
         private void Update()
         {
-            Vector3 moveDirection = GetMoveDirection();
-            Vector3 force = moveDirection * 0.1f;
-            _rb.AddForce(force, ForceMode.VelocityChange);
+            _moveSpeed = _playerScript.MoveSpeed;
+            _jumpMultiplier = _playerScript.JumpMultiplier;
+            _rotationSpeed = _playerScript.RotationSpeed;
 
-            _isGrounded = Physics.Raycast(transform.position, Vector3.down, _groundCheckDistance);
+            UpdateJumpForce();
+            Vector3 moveDirection = GetMoveDirection();
+            Vector3 force = moveDirection * _moveSpeed;
+            _rb.AddForce(force, ForceMode.VelocityChange);
 
             if (isRightButton && _lookInput != Vector2.zero)
             {
                 RotatePlayer();
+            }
+            if (_player.CurrentState == PlayerStates.Rubber && !_isGrounded  && _isHoldingJump)
+            {
+                _player.SetBounciness(1.0f);
             }
         }
 
@@ -94,6 +111,16 @@ namespace SWPPT3.Main
                 _rb.AddForce(Vector3.up * _jumpForce, ForceMode.Impulse);
                 Debug.Log("PlayerMover - Jump performed");
             }
+            _isHoldingJump = true;
+        }
+
+        private void HandleJumpCancel()
+        {
+            _isHoldingJump = false;
+            if (_player.CurrentState == PlayerStates.Rubber)
+            {
+                _player.SetBounciness(0.5f);
+            }
         }
 
         private void HandleStartRotation(bool isRightButtonPressed)
@@ -108,12 +135,39 @@ namespace SWPPT3.Main
             Debug.Log($"PlayerMover - Look Input: {_lookInput}");
         }
 
+        public void UpdateJumpForce()
+        {
+            _jumpForce = _jumpMultiplier * _player.Rigidbody.mass;
+        }
+
+        private void OnCollisionEnter(Collision collision)
+        {
+
+            var contactPoint = collision.contacts[0];
+            if (contactPoint.normal.y > 0.7f)
+            {
+                _groundedObjects.Add(collision.gameObject);
+                _isGrounded = true;
+            }
+            var obstacle = collision.gameObject.GetComponent<PropBase>();
+            if (obstacle != null)
+            {
+                _player.InteractWithProp(obstacle);
+            }
+        }
+        private void OnCollisionExit(Collision collision)
+        {
+            _groundedObjects.Remove(collision.gameObject);
+            _isGrounded = _groundedObjects.Count > 0;
+        }
+
         private void OnDestroy()
         {
             if (InputManager.Instance != null)
             {
                 InputManager.Instance.OnMove -= HandleMove;
                 InputManager.Instance.OnJump -= HandleJump;
+                InputManager.Instance.OnJumpCancel -= HandleJumpCancel;
                 InputManager.Instance.OnStartRotation -= HandleStartRotation;
                 InputManager.Instance.OnLook -= HandleLook;
             }

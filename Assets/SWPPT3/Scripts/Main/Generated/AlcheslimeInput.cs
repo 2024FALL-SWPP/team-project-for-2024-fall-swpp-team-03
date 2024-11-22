@@ -26,7 +26,7 @@ namespace SWPPT3.Main.Generated
     ""name"": ""Alcheslime"",
     ""maps"": [
         {
-            ""name"": ""In Game"",
+            ""name"": ""InGame"",
             ""id"": ""48673783-bbca-4e57-98fe-7b8fffc41fbe"",
             ""actions"": [
                 {
@@ -69,6 +69,15 @@ namespace SWPPT3.Main.Generated
                     ""name"": ""StartRotation"",
                     ""type"": ""Button"",
                     ""id"": ""4b67a299-6874-4896-9f41-6505b57d7c6e"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ChangeState"",
+                    ""type"": ""Button"",
+                    ""id"": ""29ece330-81c9-4e89-ac30-5f6f846d8c3a"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """",
@@ -271,6 +280,39 @@ namespace SWPPT3.Main.Generated
                     ""processors"": """",
                     ""groups"": ""Keyboard&Mouse"",
                     ""action"": ""StartRotation"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""df266fdf-9b8d-4a82-9105-3bf79e3d1469"",
+                    ""path"": ""<Keyboard>/#(1)"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""ChangeState"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""22307426-fefa-4c11-9352-9d576dfb3a78"",
+                    ""path"": ""<Keyboard>/#(2)"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""ChangeState"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""6a896f8d-02de-4fc6-bf4d-be2b9b55f1b8"",
+                    ""path"": ""<Keyboard>/#(3)"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""ChangeState"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -856,13 +898,14 @@ namespace SWPPT3.Main.Generated
         }
     ]
 }");
-            // In Game
-            m_InGame = asset.FindActionMap("In Game", throwIfNotFound: true);
+            // InGame
+            m_InGame = asset.FindActionMap("InGame", throwIfNotFound: true);
             m_InGame_Move = m_InGame.FindAction("Move", throwIfNotFound: true);
             m_InGame_Look = m_InGame.FindAction("Look", throwIfNotFound: true);
             m_InGame_Jump = m_InGame.FindAction("Jump", throwIfNotFound: true);
             m_InGame_StartTransform = m_InGame.FindAction("StartTransform", throwIfNotFound: true);
             m_InGame_StartRotation = m_InGame.FindAction("StartRotation", throwIfNotFound: true);
+            m_InGame_ChangeState = m_InGame.FindAction("ChangeState", throwIfNotFound: true);
             // UI
             m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
             m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -933,7 +976,7 @@ namespace SWPPT3.Main.Generated
             return asset.FindBinding(bindingMask, out action);
         }
 
-        // In Game
+        // InGame
         private readonly InputActionMap m_InGame;
         private List<IInGameActions> m_InGameActionsCallbackInterfaces = new List<IInGameActions>();
         private readonly InputAction m_InGame_Move;
@@ -941,6 +984,7 @@ namespace SWPPT3.Main.Generated
         private readonly InputAction m_InGame_Jump;
         private readonly InputAction m_InGame_StartTransform;
         private readonly InputAction m_InGame_StartRotation;
+        private readonly InputAction m_InGame_ChangeState;
         public struct InGameActions
         {
             private @AlcheslimeInput m_Wrapper;
@@ -950,6 +994,7 @@ namespace SWPPT3.Main.Generated
             public InputAction @Jump => m_Wrapper.m_InGame_Jump;
             public InputAction @StartTransform => m_Wrapper.m_InGame_StartTransform;
             public InputAction @StartRotation => m_Wrapper.m_InGame_StartRotation;
+            public InputAction @ChangeState => m_Wrapper.m_InGame_ChangeState;
             public InputActionMap Get() { return m_Wrapper.m_InGame; }
             public void Enable() { Get().Enable(); }
             public void Disable() { Get().Disable(); }
@@ -974,6 +1019,9 @@ namespace SWPPT3.Main.Generated
                 @StartRotation.started += instance.OnStartRotation;
                 @StartRotation.performed += instance.OnStartRotation;
                 @StartRotation.canceled += instance.OnStartRotation;
+                @ChangeState.started += instance.OnChangeState;
+                @ChangeState.performed += instance.OnChangeState;
+                @ChangeState.canceled += instance.OnChangeState;
             }
 
             private void UnregisterCallbacks(IInGameActions instance)
@@ -993,6 +1041,9 @@ namespace SWPPT3.Main.Generated
                 @StartRotation.started -= instance.OnStartRotation;
                 @StartRotation.performed -= instance.OnStartRotation;
                 @StartRotation.canceled -= instance.OnStartRotation;
+                @ChangeState.started -= instance.OnChangeState;
+                @ChangeState.performed -= instance.OnChangeState;
+                @ChangeState.canceled -= instance.OnChangeState;
             }
 
             public void RemoveCallbacks(IInGameActions instance)
@@ -1180,6 +1231,7 @@ namespace SWPPT3.Main.Generated
             void OnJump(InputAction.CallbackContext context);
             void OnStartTransform(InputAction.CallbackContext context);
             void OnStartRotation(InputAction.CallbackContext context);
+            void OnChangeState(InputAction.CallbackContext context);
         }
         public interface IUIActions
         {
