@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 3524527016520008870}
   - component: {fileID: 524239656166771459}
   - component: {fileID: 2351598607811919817}
+  - component: {fileID: 8894902957937733856}
   m_Layer: 0
   m_Name: Dungeon_Wall_Window_Modified
   m_TagString: Untagged
@@ -83,3 +84,17 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!64 &8894902957937733856
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4297122378758037020}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: -2951020345885914392, guid: c1ad30dd825694c418dacbb8eead28b7, type: 3}

@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Stage4Skybox
+  m_Name: Skybox Stage 4
   m_Shader: {fileID: 4800000, guid: 7705790d9e8e16344ad5d7960c568904, type: 3}
   m_ValidKeywords:
   - _ENABLEFOG_ON
@@ -98,11 +98,11 @@ Material:
     - _Exposure: 1.27
     - _Float0: -0.21
     - _FogFill: 0
-    - _FogHeight: 0.343
-    - _FogIntensity: 0.274
+    - _FogHeight: 0.525
+    - _FogIntensity: 0.301
     - _FogMessage: 0
     - _FogPosition: 0
-    - _FogSmoothness: 0.566
+    - _FogSmoothness: 0.732
     - _Fogg: 1
     - _GlossMapScale: 1
     - _Glossiness: 0.5
@@ -127,5 +127,5 @@ Material:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _Tex_HDR: {r: 1, g: 1, b: 0, a: 0}
-    - _TintColor: {r: 0.39298737, g: 0.3019608, b: 0.58431375, a: 1}
+    - _TintColor: {r: 0.21943499, g: 0.20412071, b: 0.31132078, a: 1}
   m_BuildTextureStacks: []
