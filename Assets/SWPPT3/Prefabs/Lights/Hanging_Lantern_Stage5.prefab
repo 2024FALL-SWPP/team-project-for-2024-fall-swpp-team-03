@@ -1,12 +1,22 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1001 &1931442673790659582
+--- !u!1001 &5098527005842312392
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 654909874603765002, guid: 83a33f5717a7b4f21b16e0252ffd9f29,
+        type: 3}
+      propertyPath: m_Size
+      value: 0.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 654909874603765002, guid: 83a33f5717a7b4f21b16e0252ffd9f29,
+        type: 3}
+      propertyPath: m_Color.rgba
+      value: 4294967295
+      objectReference: {fileID: 0}
     - target: {fileID: 5431398229641318040, guid: 83a33f5717a7b4f21b16e0252ffd9f29,
         type: 3}
       propertyPath: m_Range
@@ -15,12 +25,12 @@ PrefabInstance:
     - target: {fileID: 5431398229641318040, guid: 83a33f5717a7b4f21b16e0252ffd9f29,
         type: 3}
       propertyPath: m_Color.b
-      value: 0.514151
+      value: 0.6462264
       objectReference: {fileID: 0}
     - target: {fileID: 5431398229641318040, guid: 83a33f5717a7b4f21b16e0252ffd9f29,
         type: 3}
       propertyPath: m_Color.g
-      value: 0.7874411
+      value: 0.84409976
       objectReference: {fileID: 0}
     - target: {fileID: 5431398229641318040, guid: 83a33f5717a7b4f21b16e0252ffd9f29,
         type: 3}
@@ -30,17 +40,12 @@ PrefabInstance:
     - target: {fileID: 5431398229641318040, guid: 83a33f5717a7b4f21b16e0252ffd9f29,
         type: 3}
       propertyPath: m_Intensity
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 5431398229641318040, guid: 83a33f5717a7b4f21b16e0252ffd9f29,
-        type: 3}
-      propertyPath: m_BounceIntensity
-      value: 1.5
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 8419883249717589846, guid: 83a33f5717a7b4f21b16e0252ffd9f29,
         type: 3}
       propertyPath: m_Name
-      value: Hanging_Lantern_Stage4
+      value: Hanging_Lantern_Stage5
       objectReference: {fileID: 0}
     - target: {fileID: 9192620449494593004, guid: 83a33f5717a7b4f21b16e0252ffd9f29,
         type: 3}
