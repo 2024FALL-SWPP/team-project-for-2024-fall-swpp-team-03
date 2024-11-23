@@ -1,0 +1,1 @@
+STYLIZED Fantasy Female Character: Hetalia is now available in my store! Enhance your projects by adding these props to the Hetalia model. The cat tails are rigged and ready for you to add physics for a more realistic effect (physics not included)
