@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 7529648208178386674}
   - component: {fileID: 5735994309815165496}
   m_Layer: 0
-  m_Name: Dungeon_CornerCrossing_Extended_Var2
+  m_Name: Dungeon_CornerCrossing_Extended
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
