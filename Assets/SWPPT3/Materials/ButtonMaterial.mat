@@ -107,7 +107,7 @@ Material:
     - _GlossMapScale: 0.867
     - _Glossiness: 0.632
     - _GlossyReflections: 1
-    - _GlowRate: 5
+    - _GlowRate: 2
     - _Metalic: 0.445
     - _Metallic: 0.673
     - _Mode: 3
@@ -130,5 +130,5 @@ Material:
     - _Color: {r: 0.83346844, g: 0, b: 1, a: 0.43137255}
     - _EmissionColor: {r: 1.0118899, g: 0.4822001, b: 1.6226416, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
-    - _TopColor: {r: 0.14859967, g: 0.07727183, b: 0.9332059, a: 0}
+    - _TopColor: {r: 0.14901961, g: 0.078431375, b: 0.93333334, a: 0}
   m_BuildTextureStacks: []
