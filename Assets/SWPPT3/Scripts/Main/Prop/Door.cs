@@ -1,13 +1,21 @@
 
 
+using UnityEngine;
+
 namespace SWPPT3.Main.Prop
 {
     public class Door : StateDst
     {
+        [SerializeField]
+        private Collider collider;
+
+        [SerializeField]
+        private Animator animator;
         protected override void OnSourceStateChanged(StateSource src, bool state)
         {
-            //움직임을 어떻게 정의할지
-
+            State = state;
+            collider.enabled = state;
+            animator.SetBool("DoorActive",state);
         }
     }
 }

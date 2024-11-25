@@ -9,10 +9,14 @@ namespace SWPPT3.Main.Prop
         [SerializeField]
         private Animator animator;
 
+        [SerializeField] private Collider collider;
+
         private Dictionary<StateSource, string> sourceToParamMap;
 
         public void Awake()
         {
+            collider.enabled = false;
+
             sourceToParamMap = new Dictionary<StateSource, string>();
 
             for (int i = 0; i < stateSources.Count; i++)
@@ -49,6 +53,7 @@ namespace SWPPT3.Main.Prop
 
         private void ActivateMagicCircle()
         {
+            collider.enabled = true;
             Debug.Log("Magic Circle Activated");
         }
     }

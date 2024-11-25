@@ -25,7 +25,7 @@ namespace SWPPT3.Main.Prop
             animator.SetBool("IsActive", state);
             if (state)
             {
-                Invoke(nameof(DisableCollider), _colliderDisableDelay); // a초 후 Collider 비활성화
+                Invoke(nameof(DisableCollider), _colliderDisableDelay);
             }
             else
             {
