@@ -9,12 +9,12 @@ namespace SWPPT3.Main.ConductorLogic
         private List<Conductor> _conductors;
 
         [SerializeField]
-        private List<PlusElectrode> _plusElectrodes;
+        private List<Emitter> _emitters;
 
         [SerializeField]
-        private List<MinusElectrode> _minusElectrodes;
+        private List<Receptor> _receptors;
 
-        public bool IsDirty = false;
+        public static bool IsDirty = false;
 
         private void Update()
         {
@@ -28,19 +28,11 @@ namespace SWPPT3.Main.ConductorLogic
         {
             IsDirty = false;
 
-            // Reset all conductors' CurrentFlow to false
-            foreach (var conductor in _conductors)
-            {
-                conductor.CurrentFlow = false;
-            }
-
-            // BFS starting from plus electrodes
             var queue = new Queue<Conductor>();
             var visited = new HashSet<Conductor>();
 
-            foreach (var plusElectrode in _plusElectrodes)
+            foreach (var plusElectrode in _emitters)
             {
-                plusElectrode.CurrentFlow = true;
                 queue.Enqueue(plusElectrode);
                 visited.Add(plusElectrode);
             }
@@ -55,16 +47,22 @@ namespace SWPPT3.Main.ConductorLogic
 
                     if (conductor != null && !visited.Contains(conductor) && conductor.IsConductive())
                     {
-                        conductor.CurrentFlow = true;
                         queue.Enqueue(conductor);
                         visited.Add(conductor);
                     }
                 }
             }
 
-            foreach (var minusElectrode in _minusElectrodes)
+            foreach (var minusElectrode in _receptors)
             {
-                minusElectrode.UpdatePower(minusElectrode.CurrentFlow);
+                if (visited.Contains(minusElectrode))
+                {
+                    minusElectrode.UpdateState(true);
+                }
+                else
+                {
+                    minusElectrode.UpdateState(false);
+                }
             }
         }
     }

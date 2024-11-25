@@ -10,7 +10,6 @@ namespace SWPPT3.Main.ConductorLogic
 
         public List<GameObject> Connections { get ; set; }
 
-        public bool CurrentFlow { get; set; }
 
         public virtual bool IsConductive()
         {
@@ -20,7 +19,6 @@ namespace SWPPT3.Main.ConductorLogic
         private void Awake()
         {
             Connections = new List<GameObject>();
-            CurrentFlow = false;
         }
 
         private void OnCollisionEnter(Collision other)
