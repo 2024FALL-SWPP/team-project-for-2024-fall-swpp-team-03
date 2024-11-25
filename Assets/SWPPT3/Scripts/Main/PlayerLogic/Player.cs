@@ -79,10 +79,16 @@ namespace SWPPT3.Main.PlayerLogic
                 "3" => PlayerStates.Rubber,
                 _ => _currentState
             };
+
+            TryChangeState(newState);
+        }
+
+        public void TryChangeState(PlayerStates newState)
+        {
             if (newState == PlayerStates.Slime || Item[newState] > 0)
             {
-                if(newState != PlayerStates.Slime) Item[newState]--;
-                _currentState = newState;
+                if (newState != PlayerStates.Slime) Item[newState]--;
+
                 PlayerState.ChangeRigidbody(_rb);
                 PlayerState.ChangePhysics(_collider, _physicMaterial);
             }

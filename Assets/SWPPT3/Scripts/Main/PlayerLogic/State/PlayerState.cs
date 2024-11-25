@@ -25,6 +25,10 @@ namespace SWPPT3.Main.PlayerLogic.State
             {
                 player.GameOver();
             }
+            else if (obstacle is Gas gas)
+            {
+                player.TryChangeState(PlayerStates.Slime);
+            }
         }
 
         public abstract void ChangeRigidbody(Rigidbody rb);
