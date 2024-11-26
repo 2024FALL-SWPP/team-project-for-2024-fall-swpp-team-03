@@ -43,22 +43,15 @@ namespace SWPPT3.Main.PlayerLogic
         };
         public void SetBounciness(float bounciness, PhysicMaterialCombine bounceCombine = PhysicMaterialCombine.Average)
         {
-            if (_physicMaterial != null)
-            {
-                _physicMaterial.bounciness = bounciness;
-                _physicMaterial.bounceCombine = bounceCombine;
+            _physicMaterial.bounciness = bounciness;
+            _physicMaterial.bounceCombine = bounceCombine;
 
-                _collider.material = _physicMaterial;
-            }
+            _collider.material = _physicMaterial;
         }
 
         private void Awake()
         {
-
-            _physicMaterial = _collider.material;
-
             InputManager.Instance.OnChangeState += HandleChangeState;
-
         }
 
 
