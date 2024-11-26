@@ -9,7 +9,7 @@ AnimatorStateTransition:
   m_Name: 
   m_Conditions:
   - m_ConditionMode: 1
-    m_ConditionEvent: On
+    m_ConditionEvent: IsOn
     m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: -1100367576290397685}
@@ -86,7 +86,7 @@ AnimatorController:
   m_Name: ElectricWire
   serializedVersion: 5
   m_AnimatorParameters:
-  - m_Name: On
+  - m_Name: IsOn
     m_Type: 4
     m_DefaultFloat: 0
     m_DefaultInt: 0
@@ -114,7 +114,7 @@ AnimatorStateTransition:
   m_Name: 
   m_Conditions:
   - m_ConditionMode: 2
-    m_ConditionEvent: On
+    m_ConditionEvent: IsOn
     m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: 7475121213372551396}
