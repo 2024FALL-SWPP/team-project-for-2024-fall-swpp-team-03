@@ -21,11 +21,13 @@ namespace SWPPT3.Main.Prop
         {
             public Rigidbody rb;
             public Collider collider;
+            public Box Box;
 
-            public ObjectInLiquid(Rigidbody rb, Collider collider)
+            public ObjectInLiquid(Rigidbody rb, Collider collider, Box box)
             {
                 this.rb = rb;
                 this.collider = collider;
+                this.Box = box;
             }
         }
 
@@ -49,31 +51,49 @@ namespace SWPPT3.Main.Prop
             Rigidbody objRb = obj.rb;
             Collider objCollider = obj.collider;
 
+            // 객체의 높이 및 밑면적 계산
             float objectHeight = objCollider.bounds.size.y;
+            float baseArea = objCollider.bounds.size.x * objCollider.bounds.size.z;
+
+            // 객체의 아래쪽 위치 계산
             float objectBottom = objRb.position.y - (objectHeight / 2f);
 
-            float submergedHeight = surfaceLevel - objectBottom;
-            float totalSubmerged = Mathf.Clamp(submergedHeight / objectHeight, 0f, 1f);
+            // 잠긴 높이(h) 계산, 0과 객체 높이 사이로 클램프
+            float submergedHeight = Mathf.Clamp(surfaceLevel - objectBottom, 0f, objectHeight);
 
-            if (totalSubmerged > 0f)
+            if (submergedHeight > 0f)
             {
-                float displacedVolume = totalSubmerged * objCollider.bounds.size.x * objCollider.bounds.size.z * objectHeight;
-                float buoyantForceMagnitude = liquidDensity * displacedVolume * Physics.gravity.magnitude;
+                // 잠긴 부피(V) 계산: 밑면적 × 잠긴 높이
+                float submergedVolume = baseArea * submergedHeight;
 
+                // 부력 크기 계산: e * V * g
+                float buoyantForceMagnitude = liquidDensity * submergedVolume * Physics.gravity.magnitude;
+
+                // 객체의 Downforce 가져오기 (있을 경우)
+                float downforce = obj.Box.ChangeDownForce();
+
+
+                // 부력에서 Downforce 차감
+                buoyantForceMagnitude -= downforce;
+
+                // 부력 적용 (Y축 방향)
                 Vector3 buoyantForce = new Vector3(0f, buoyantForceMagnitude, 0f);
                 objRb.AddForce(buoyantForce);
 
+                // 감쇠력 적용 (선택 사항)
                 Vector3 dampingForce = -objRb.velocity * dampingFactor;
                 objRb.AddForce(dampingForce);
             }
         }
+
 
         void OnTriggerEnter(Collider other)
         {
             Rigidbody otherRb = other.attachedRigidbody;
             if (otherRb != null)
             {
-                objectsInLiquid.Add(new ObjectInLiquid(otherRb, other));
+                Box box = otherRb.GetComponent<Box>();
+                objectsInLiquid.Add(new ObjectInLiquid(otherRb, other, box));
             }
         }
 
