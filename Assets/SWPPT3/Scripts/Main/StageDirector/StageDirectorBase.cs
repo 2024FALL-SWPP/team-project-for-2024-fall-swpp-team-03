@@ -2,6 +2,8 @@ using SWPPT3.Main.Utility.Singleton;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using System;
+using SWPPT3.Main.Manager;
+using UnityEngine.Serialization;
 
 namespace SWPPT3.Main.StageDirector
 {
@@ -17,6 +19,9 @@ namespace SWPPT3.Main.StageDirector
     public abstract class StageDirectorBase : MonoWeakSingleton<StageDirectorBase>
     {
         // private UIInputActions _inputActions;
+
+        [SerializeField]
+        private BgmManager bgmManager;
 
         public StagePlayingState StagePlayingState { get; protected set; } = StagePlayingState.BeforeStart;
 
@@ -68,28 +73,33 @@ namespace SWPPT3.Main.StageDirector
 
         public void StartStage()
         {
+            bgmManager.PlayBGM();
             ChangeStageState(StagePlayingState.Playing);
         }
 
         public void PauseStage()
         {
+            bgmManager.ApplyLowPassFilter(true);
             ChangeStageState(StagePlayingState.Paused);
             Time.timeScale = 0f;
         }
 
         public void ResumeStage()
         {
+            bgmManager.ApplyLowPassFilter(true);
             ChangeStageState(StagePlayingState.Playing);
             Time.timeScale = 1f;
         }
 
         public void FailStage()
         {
+            bgmManager.PlayFailSound();
             ChangeStageState(StagePlayingState.PlayerFailed);
         }
 
         public void ClearStage()
         {
+            bgmManager.PlaySuccessSound();
             ChangeStageState(StagePlayingState.Cleared);
         }
 
