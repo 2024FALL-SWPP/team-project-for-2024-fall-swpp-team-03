@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 2761539650017536227}
   - component: {fileID: 2761539650017536226}
   m_Layer: 0
-  m_Name: Round_Room_Fog
+  m_Name: Round_Room_Ground_Fog
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
