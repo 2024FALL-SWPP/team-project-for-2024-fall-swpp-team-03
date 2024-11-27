@@ -9,9 +9,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8241524119736188774}
-  - component: {fileID: -7298873488949143058}
+  - component: {fileID: 6799137529009036561}
   m_Layer: 0
-  m_Name: Light_Line
+  m_Name: ElectricWire
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -34,7 +34,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!95 &-7298873488949143058
+--- !u!95 &6799137529009036561
 Animator:
   serializedVersion: 5
   m_ObjectHideFlags: 0
