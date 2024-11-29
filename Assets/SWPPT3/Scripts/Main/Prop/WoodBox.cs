@@ -8,9 +8,6 @@ namespace SWPPT3.Main.Prop
 {
     public class WoodBox : StatelessProp
     {
-        void Start()
-        {
-            gameObject.layer = LayerMask.NameToLayer("Box");
-        }
+
     }
 }

@@ -1,7 +1,9 @@
+using System;
 using System.Collections.Generic;
 using SWPPT3.Main.Manager;
 using SWPPT3.Main.PlayerLogic.State;
 using SWPPT3.Main.Prop;
+using Unity.Collections;
 using UnityEngine;
 
 namespace SWPPT3.Main.PlayerLogic
@@ -71,6 +73,36 @@ namespace SWPPT3.Main.PlayerLogic
                 _player.SetBounciness(1.0f);
             }
         }
+
+        public void OnEnable()
+        {
+            Physics.ContactModifyEvent += ModificationEvent;
+        }
+
+        public void OnDisable()
+        {
+            Physics.ContactModifyEvent -= ModificationEvent;
+        }
+
+        public void ModificationEvent(PhysicsScene scene, NativeArray<ModifiableContactPair> pairs)
+        {
+            for (int i = 0; i < pairs.Length; i++)
+            {
+                var pair = pairs[i];
+
+                var properties = pair.massProperties;
+
+                properties.inverseMassScale = 1f;
+                properties.inverseInertiaScale = 1f;
+                properties.otherInverseMassScale = 0;
+                properties.otherInverseInertiaScale = 0;
+
+                pair.massProperties = properties;
+
+                pairs[i] = pair;
+            }
+        }
+
 
         private Vector3 GetMoveDirection()
         {

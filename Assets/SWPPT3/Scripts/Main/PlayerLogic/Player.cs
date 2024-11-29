@@ -51,12 +51,7 @@ namespace SWPPT3.Main.PlayerLogic
 
         private void Awake()
         {
-            _physicMaterial = new PhysicMaterial(_physicMaterial.name)
-            {
-                bounciness = _physicMaterial.bounciness,
-                bounceCombine = _physicMaterial.bounceCombine
-            };
-            _collider.material = _physicMaterial;
+            TryChangeState(PlayerStates.Slime);
             InputManager.Instance.OnChangeState += HandleChangeState;
         }
 
@@ -69,19 +64,7 @@ namespace SWPPT3.Main.PlayerLogic
             }
             else
             {
-                UpdateLayerBasedOnState();
-            }
-        }
 
-        void UpdateLayerBasedOnState()
-        {
-            if (CurrentState == PlayerStates.Slime)
-            {
-                gameObject.layer = LayerMask.NameToLayer("Slime");
-            }
-            else
-            {
-                gameObject.layer = LayerMask.NameToLayer("Default");
             }
         }
 
@@ -110,6 +93,7 @@ namespace SWPPT3.Main.PlayerLogic
                 _currentState = newState;
                 PlayerState.ChangeRigidbody(_rb);
                 PlayerState.ChangePhysics(_collider, _physicMaterial);
+                _collider.hasModifiableContacts = newState == PlayerStates.Slime;
             }
         }
 
