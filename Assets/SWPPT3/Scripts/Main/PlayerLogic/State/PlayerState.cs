@@ -23,7 +23,7 @@ namespace SWPPT3.Main.PlayerLogic.State
             }
             else if (obstacle is PoisonPool poisonPool)
             {
-                player.GameOver();
+                player.IsGameOver = true;
             }
             else if (obstacle is Gas gas)
             {
