@@ -17,7 +17,7 @@ namespace SWPPT3.Main.PlayerLogic
 
         [SerializeField]
         private Rigidbody _rb;
-        [SerializeField]
+        // [SerializeField]
         public PhysicMaterial _physicMaterial;
         [SerializeField]
         public Collider _collider;
@@ -41,7 +41,7 @@ namespace SWPPT3.Main.PlayerLogic
             { PlayerStates.Rubber, new RubberState() },
             { PlayerStates.Slime, new SlimeState() },
         };
-        public void SetBounciness(float bounciness, PhysicMaterialCombine bounceCombine = PhysicMaterialCombine.Average)
+        public void SetBounciness(float bounciness, PhysicMaterialCombine bounceCombine = PhysicMaterialCombine.Maximum)
         {
             _physicMaterial.bounciness = bounciness;
             _physicMaterial.bounceCombine = bounceCombine;
@@ -51,6 +51,12 @@ namespace SWPPT3.Main.PlayerLogic
 
         private void Awake()
         {
+            _physicMaterial = new PhysicMaterial(_physicMaterial.name)
+            {
+                bounciness = _physicMaterial.bounciness,
+                bounceCombine = _physicMaterial.bounceCombine
+            };
+            _collider.material = _physicMaterial;
             InputManager.Instance.OnChangeState += HandleChangeState;
         }
 
@@ -63,7 +69,19 @@ namespace SWPPT3.Main.PlayerLogic
             }
             else
             {
+                UpdateLayerBasedOnState();
+            }
+        }
 
+        void UpdateLayerBasedOnState()
+        {
+            if (CurrentState == PlayerStates.Slime)
+            {
+                gameObject.layer = LayerMask.NameToLayer("Slime");
+            }
+            else
+            {
+                gameObject.layer = LayerMask.NameToLayer("Default");
             }
         }
 
@@ -71,6 +89,7 @@ namespace SWPPT3.Main.PlayerLogic
         {
             if (_isGameOver) return;
             string keyPressed = context.control.displayName;
+            Debug.Log(keyPressed);
 
             PlayerStates newState = keyPressed switch
             {
@@ -88,7 +107,7 @@ namespace SWPPT3.Main.PlayerLogic
             if (newState == PlayerStates.Slime || Item[newState] > 0)
             {
                 if (newState != PlayerStates.Slime) Item[newState]--;
-
+                _currentState = newState;
                 PlayerState.ChangeRigidbody(_rb);
                 PlayerState.ChangePhysics(_collider, _physicMaterial);
             }
@@ -99,7 +118,10 @@ namespace SWPPT3.Main.PlayerLogic
             PlayerState.InteractWithProp(this, prop);
         }
 
-
+        public void StopInteractWithProp(PropBase prop)
+        {
+            PlayerState.StopInteractWithProp(this, prop);
+        }
 
         public void GameOver()
         {

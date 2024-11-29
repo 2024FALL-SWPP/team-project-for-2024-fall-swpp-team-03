@@ -29,6 +29,15 @@ namespace SWPPT3.Main.PlayerLogic.State
             {
                 player.TryChangeState(PlayerStates.Slime);
             }
+            else
+            {
+                obstacle.InteractWithPlayer(player.CurrentState);
+            }
+        }
+
+        public virtual void StopInteractWithProp(Player player, PropBase obstacle)
+        {
+            obstacle.StopInteractWithPlayer(player.CurrentState);
         }
 
         public abstract void ChangeRigidbody(Rigidbody rb);

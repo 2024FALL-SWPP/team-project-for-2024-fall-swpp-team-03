@@ -7,31 +7,32 @@ namespace SWPPT3.Main.Prop
     {
         public override void InteractWithPlayer()
         {
-            // 플레이어와의 상호작용 로직
         }
 
-        [Header("Liquid Properties")]
-        public float liquidDensity = 1000f;
+        [SerializeField] private Collider collider;
+        [SerializeField] private float buoyancyCoefficient; // 또는 config파일로 관리
 
-        [Header("Buoyancy Settings")]
-        public float surfaceLevel = 0f;
-        public float dampingFactor = 0.5f;
+        public float surfaceLevel;
+        [SerializeField] public float dampingFactor = 0.5f;
 
         private class ObjectInLiquid
         {
             public Rigidbody rb;
             public Collider collider;
-            public Box Box;
 
-            public ObjectInLiquid(Rigidbody rb, Collider collider, Box box)
+            public ObjectInLiquid(Rigidbody rb, Collider collider)
             {
                 this.rb = rb;
                 this.collider = collider;
-                this.Box = box;
             }
         }
 
         private readonly List<ObjectInLiquid> objectsInLiquid = new List<ObjectInLiquid>();
+
+        private void Awake()
+        {
+            surfaceLevel = collider.transform.position.y + collider.bounds.extents.y/2;
+        }
 
         void FixedUpdate()
         {
@@ -51,39 +52,50 @@ namespace SWPPT3.Main.Prop
             Rigidbody objRb = obj.rb;
             Collider objCollider = obj.collider;
 
-            // 객체의 높이 및 밑면적 계산
             float objectHeight = objCollider.bounds.size.y;
-            float baseArea = objCollider.bounds.size.x * objCollider.bounds.size.z;
-
-            // 객체의 아래쪽 위치 계산
             float objectBottom = objRb.position.y - (objectHeight / 2f);
 
-            // 잠긴 높이(h) 계산, 0과 객체 높이 사이로 클램프
-            float submergedHeight = Mathf.Clamp(surfaceLevel - objectBottom, 0f, objectHeight);
+            float submergedHeight = surfaceLevel - objectBottom;
+            submergedHeight = Mathf.Clamp(submergedHeight, 0f, objectHeight);
 
-            if (submergedHeight > 0f)
-            {
-                // 잠긴 부피(V) 계산: 밑면적 × 잠긴 높이
-                float submergedVolume = baseArea * submergedHeight;
+            float targetSubmergedHeight = objectHeight / 4f;
 
-                // 부력 크기 계산: e * V * g
-                float buoyantForceMagnitude = liquidDensity * submergedVolume * Physics.gravity.magnitude;
+            float submergedDifference = submergedHeight - targetSubmergedHeight;
 
-                // 객체의 Downforce 가져오기 (있을 경우)
-                float downforce = obj.Box.ChangeDownForce();
+            float buoyantForceMagnitude = submergedDifference * buoyancyCoefficient + Mathf.Abs(Physics.gravity.y) * objRb.mass;
 
+            Vector3 buoyantForce = new Vector3(0f, buoyantForceMagnitude, 0f);
+            objRb.AddForce(buoyantForce);
+            Debug.Log($"Buoyant Force: {buoyantForce}, Submerged Height: {submergedHeight}");
 
-                // 부력에서 Downforce 차감
-                buoyantForceMagnitude -= downforce;
+            Vector3 dampingForce = -objRb.velocity * dampingFactor;
+            objRb.AddForce(dampingForce);
 
-                // 부력 적용 (Y축 방향)
-                Vector3 buoyantForce = new Vector3(0f, buoyantForceMagnitude, 0f);
-                objRb.AddForce(buoyantForce);
+            // 추가: 밑면을 평행하게 유지
+            RestrictRotation(objRb);
+        }
 
-                // 감쇠력 적용 (선택 사항)
-                Vector3 dampingForce = -objRb.velocity * dampingFactor;
-                objRb.AddForce(dampingForce);
-            }
+        void RestrictRotation(Rigidbody rb)
+        {
+            Quaternion currentRotation = rb.rotation;
+            Vector3 currentEulerAngles = currentRotation.eulerAngles;
+
+            float clampedX = ClampAngle(currentEulerAngles.x, -3f, 3f);
+            float clampedZ = ClampAngle(currentEulerAngles.z, -3f, 3f);
+
+            float yRotation = currentEulerAngles.y;
+
+            Quaternion targetRotation = Quaternion.Euler(clampedX, yRotation, clampedZ);
+
+            rb.MoveRotation(targetRotation);
+        }
+
+        float ClampAngle(float angle, float min, float max)
+        {
+            if (angle > 180f)
+                angle -= 360f;
+
+            return Mathf.Clamp(angle, min, max);
         }
 
 
@@ -92,8 +104,8 @@ namespace SWPPT3.Main.Prop
             Rigidbody otherRb = other.attachedRigidbody;
             if (otherRb != null)
             {
-                Box box = otherRb.GetComponent<Box>();
-                objectsInLiquid.Add(new ObjectInLiquid(otherRb, other, box));
+                objectsInLiquid.Add(new ObjectInLiquid(otherRb, other));
+                Debug.Log(otherRb.gameObject);
             }
         }
 

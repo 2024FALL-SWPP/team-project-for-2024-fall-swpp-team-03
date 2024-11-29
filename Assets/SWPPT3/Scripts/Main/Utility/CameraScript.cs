@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace SWPPT3.Main.Utility
 {
-    [CreateAssetMenu(fileName = "CameraScript", menuName = "SWPPT3/Camera Script")]
+    [CreateAssetMenu(fileName = "CameraScript", menuName = "SWPPT3/Scripts/CameraScript")]
     public class CameraScript : ScriptableObject
     {
         [SerializeField] private float _mouseSensitivity;

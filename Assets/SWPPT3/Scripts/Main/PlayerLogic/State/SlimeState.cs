@@ -18,7 +18,7 @@ namespace SWPPT3.Main.PlayerLogic.State
         }
         public override void ChangeRigidbody(Rigidbody rb)
         {
-            rb.mass = 1f;
+
         }
         public override void ChangePhysics(Collider collider, PhysicMaterial physicMaterial)
         {
