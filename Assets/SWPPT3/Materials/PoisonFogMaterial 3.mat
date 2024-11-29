@@ -20,7 +20,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: PoisonFogMaterial 2
+  m_Name: PoisonFogMaterial 3
   m_Shader: {fileID: -6465566751694194690, guid: a4cb3f8c0fc40401cb0e8cb48489eaae,
     type: 3}
   m_ValidKeywords:
@@ -108,8 +108,8 @@ Material:
     - _DetailNormalMapScale: 1
     - _DstBlend: 10
     - _EnvironmentReflections: 1
-    - _Fog_Density: 1
-    - _Fog_Noise: 60
+    - _Fog_Density: 1.5
+    - _Fog_Noise: 100
     - _GlossMapScale: 0
     - _Glossiness: 0
     - _GlossyReflections: 0
@@ -134,8 +134,8 @@ Material:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _Fall_off_setting: {r: 3, g: 3, b: 0, a: 0}
-    - _Fog_Color: {r: 0, g: 0.2662049, b: 0.19965369, a: 0}
-    - _Fog_speed: {r: 0.01, g: 0.01, b: 0, a: 0}
+    - _Fog_Color: {r: 0, g: 0.26666668, b: 0.1785239, a: 0}
+    - _Fog_speed: {r: 0.05, g: 0.05, b: 0, a: 0}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
-    - _Uv_scale: {r: 1, g: 1, b: 0, a: 0}
+    - _Uv_scale: {r: 2, g: 2, b: 0, a: 0}
   m_BuildTextureStacks: []
