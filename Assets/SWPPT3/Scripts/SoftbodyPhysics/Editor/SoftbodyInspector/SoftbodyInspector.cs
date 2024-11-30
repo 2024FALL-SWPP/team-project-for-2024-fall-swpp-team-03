@@ -4,6 +4,7 @@ using Cysharp.Threading.Tasks;
 using Cysharp.Threading.Tasks.Editor;
 using Unity.EditorCoroutines.Editor;
 using UnityEditor;
+using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -19,10 +20,18 @@ namespace SWPPT3.SoftbodyPhysics.Editor.SoftbodyInspector
             VisualElement tree = visualTree.Instantiate();
             tree.styleSheets.Add(styleSheet);
 
+            var pointDensityMultiplierProperty = serializedObject.FindProperty("_pointDensityMultiplier");
+            var totalLayersProperty = serializedObject.FindProperty("_totalLayers");
+
+            var pointDensityField = new PropertyField(pointDensityMultiplierProperty, "Point Density Multiplier");
+            var totalLayersField = new PropertyField(totalLayersProperty, "Total Layers");
+
+            tree.Insert(0, pointDensityField);
+            tree.Insert(1, totalLayersField);
+
             var initializeButton = tree.Q<Button>(name = "InitializeButton");
 
             initializeButton.clicked += () => OnClickInitialize().Forget();
-
 
             return tree;
         }
@@ -36,6 +45,9 @@ namespace SWPPT3.SoftbodyPhysics.Editor.SoftbodyInspector
             var collidersRoot = serializedObject.FindProperty("_collidersRoot").objectReferenceValue as Transform;
             var colliders = serializedObject.FindProperty("_colliders");
             var vertexWeights = serializedObject.FindProperty("_vertexWeights");
+
+            var pointDensityMultiplierProperty = serializedObject.FindProperty("_pointDensityMultiplier");
+            var totalLayersProperty = serializedObject.FindProperty("_totalLayers");
 
             if (targetObject is null)
             {
@@ -55,15 +67,16 @@ namespace SWPPT3.SoftbodyPhysics.Editor.SoftbodyInspector
                 return;
             }
             colliders.ClearArray();
+            Debug.Log("clear start");
 
             // Clear
             var childCount = collidersRoot.childCount;
-            for (var i = 0; i < childCount; i++)
+            for (var i = childCount - 1; i >= 0; i--)
             {
-                var child = collidersRoot.GetChild(0);
+                var child = collidersRoot.GetChild(i);
                 DestroyImmediate(child.gameObject);
             }
-
+            Debug.Log("sj clear start");
             var springJoints = targetObject.GetComponents<SpringJoint>();
 
             foreach (var s in springJoints)
@@ -71,97 +84,109 @@ namespace SWPPT3.SoftbodyPhysics.Editor.SoftbodyInspector
                 DestroyImmediate(s);
             }
 
-            var fibAngles = FibonacciAngles(30);
-            var bones = new Vector3[30];
+            var pointDensityMultiplier = pointDensityMultiplierProperty.intValue;
+            var totalLayers = totalLayersProperty.intValue;
 
-            for (var i = 0; i < 30; i++)
+
+            // var fibAngles = FibonacciAngles(30);
+            // var bones = new Vector3[30];
+
+            var radiusStep = (Softbody.SphereRadius - targetObject.ColliderRadius) / totalLayers;
+            var bones = new List<Vector3>();
+            Debug.Log(radiusStep);
+
+            for (var layer = 0; layer < totalLayers; layer++)
             {
-                var go = new GameObject($"Collider {i}", typeof(SphereCollider), typeof(Rigidbody));
-                go.transform.SetParent(collidersRoot, false);
+                var layerRadius = radiusStep * layer + targetObject.ColliderRadius;
+                var numPoints = pointDensityMultiplier * layer * layer;
 
-                var sc = go.GetComponent<SphereCollider>();
-                sc.radius = targetObject.ColliderRadius;
+                var fibAngles = FibonacciAngles(numPoints);
 
-                bones[i] =
-                    fibAngles[i]
-                    * Softbody.SphereRadius
-                    * ((Softbody.SphereRadius - targetObject.ColliderRadius) / Softbody.SphereRadius);
+                foreach (var angle in fibAngles)
+                {
+                    var bonePosition = angle * layerRadius;
+                    bones.Add(bonePosition);
 
-                go.transform.localPosition = bones[i];
+                    if (layer == totalLayers - 1)
+                    {
+                        var go = new GameObject($"Collider {bones.Count - 1}", typeof(SphereCollider), typeof(Rigidbody));
+                        go.transform.SetParent(collidersRoot, false);
 
-                colliders.InsertArrayElementAtIndex(i);
-                colliders.GetArrayElementAtIndex(i).objectReferenceValue = sc;
+                        var sc = go.GetComponent<SphereCollider>();
+                        sc.radius = targetObject.ColliderRadius;
 
-                var rb = go.GetComponent<Rigidbody>();
+                        go.transform.localPosition = bonePosition;
 
-                rb.freezeRotation = true;
+                        colliders.InsertArrayElementAtIndex(colliders.arraySize);
+                        colliders.GetArrayElementAtIndex(colliders.arraySize - 1).objectReferenceValue = sc;
 
-                var sj = targetObject.gameObject.AddComponent<SpringJoint>();
-                sj.anchor = go.transform.localPosition;
-                sj.connectedBody = rb;
-                sj.autoConfigureConnectedAnchor = false;
-                sj.connectedAnchor = Vector3.zero;
-                sj.damper = 0.5f;
-                sj.spring = 180;
-                sj.minDistance = 0;
-                sj.maxDistance = 0;
-                sj.tolerance = 0;
+                        var rb = go.GetComponent<Rigidbody>();
+                        rb.freezeRotation = true;
+                    }
+                    else
+                    {
+                        var point = new GameObject($"Point {bones.Count - 1}");
+                        point.transform.SetParent(collidersRoot, false);
+                        point.transform.localPosition = bonePosition;
+                    }
+                }
             }
+
 
             Debug.Log("[Softbody] Done setting colliders");
 
-            var mesh = meshFilter.sharedMesh;
-
-            var vertices = mesh.vertices;
-
-            var vertexWeightInfos = new VertexWeightInfo[mesh.vertexCount];
-
-            // await UniTask.Delay(0);
-
-            for (var i = 0; i < vertices.Length; i++)
-            {
-                // await UniTask.Delay(0);
-                var v = vertices[i];
-                var points = Closest4Points(bones, v);
-
-                var bws = new BoneWeightInfo[4];
-
-                for (var j = 0; j < bws.Length; j++)
-                {
-                    bws[j].BoneIndex = points[j];
-                    bws[j].Offset = v - bones[points[j]];
-                }
-
-                var offsetMagSum = bws.Sum(bw => bw.Offset.magnitude);
-
-                for (var j = 0; j < bws.Length; j++)
-                {
-                    bws[j].Weight = bws[j].Offset.magnitude / offsetMagSum;
-                    vertexWeightInfos[i][j] = bws[j];
-                }
-            }
-
-            vertexWeights.ClearArray();
-
-            for (var i = 0; i < vertexWeightInfos.Length; i++)
-            {
-                vertexWeights.InsertArrayElementAtIndex(i);
-                var ae = vertexWeights.GetArrayElementAtIndex(i);
-                var arr = new[]
-                {
-                    ae.FindPropertyRelative("_b0"),
-                    ae.FindPropertyRelative("_b1"),
-                    ae.FindPropertyRelative("_b2"),
-                    ae.FindPropertyRelative("_b3"),
-                };
-
-                for (var j = 0; j < 4; j++)
-                {
-                    arr[j].FindPropertyRelative("_boneIndex").intValue = vertexWeightInfos[i][j].BoneIndex;
-                    arr[j].FindPropertyRelative("_offset").vector3Value = vertexWeightInfos[i][j].Offset;
-                    arr[j].FindPropertyRelative("_weight").floatValue = vertexWeightInfos[i][j].Weight;
-                }
-            }
+            // var mesh = meshFilter.sharedMesh;
+            //
+            // var vertices = mesh.vertices;
+            //
+            // var vertexWeightInfos = new VertexWeightInfo[mesh.vertexCount];
+            //
+            // // await UniTask.Delay(0);
+            //
+            // for (var i = 0; i < vertices.Length; i++)
+            // {
+            //     // await UniTask.Delay(0);
+            //     var v = vertices[i];
+            //     var points = Closest4Points(bones, v);
+            //
+            //     var bws = new BoneWeightInfo[4];
+            //
+            //     for (var j = 0; j < bws.Length; j++)
+            //     {
+            //         bws[j].BoneIndex = points[j];
+            //         bws[j].Offset = v - bones[points[j]];
+            //     }
+            //
+            //     var offsetMagSum = bws.Sum(bw => bw.Offset.magnitude);
+            //
+            //     for (var j = 0; j < bws.Length; j++)
+            //     {
+            //         bws[j].Weight = bws[j].Offset.magnitude / offsetMagSum;
+            //         vertexWeightInfos[i][j] = bws[j];
+            //     }
+            // }
+            //
+            // vertexWeights.ClearArray();
+            //
+            // for (var i = 0; i < vertexWeightInfos.Length; i++)
+            // {
+            //     vertexWeights.InsertArrayElementAtIndex(i);
+            //     var ae = vertexWeights.GetArrayElementAtIndex(i);
+            //     var arr = new[]
+            //     {
+            //         ae.FindPropertyRelative("_b0"),
+            //         ae.FindPropertyRelative("_b1"),
+            //         ae.FindPropertyRelative("_b2"),
+            //         ae.FindPropertyRelative("_b3"),
+            //     };
+            //
+            //     for (var j = 0; j < 4; j++)
+            //     {
+            //         arr[j].FindPropertyRelative("_boneIndex").intValue = vertexWeightInfos[i][j].BoneIndex;
+            //         arr[j].FindPropertyRelative("_offset").vector3Value = vertexWeightInfos[i][j].Offset;
+            //         arr[j].FindPropertyRelative("_weight").floatValue = vertexWeightInfos[i][j].Weight;
+            //     }
+            // }
 
             serializedObject.ApplyModifiedProperties();
             EditorUtility.SetDirty(targetObject.gameObject);
