@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Cysharp.Threading.Tasks;
 using Cysharp.Threading.Tasks.Editor;
+using Unity.Collections;
 using Unity.EditorCoroutines.Editor;
 using UnityEditor;
 using UnityEditor.UIElements;
@@ -49,6 +50,8 @@ namespace SWPPT3.SoftbodyPhysics.Editor.SoftbodyInspector
             var pointDensityMultiplierProperty = serializedObject.FindProperty("_pointDensityMultiplier");
             var totalLayersProperty = serializedObject.FindProperty("_totalLayers");
 
+            var boneCountProperty = serializedObject.FindProperty("_boneCount");
+
             if (targetObject is null)
             {
                 Debug.LogError("[Softbody] Editing target is missing");
@@ -92,11 +95,35 @@ namespace SWPPT3.SoftbodyPhysics.Editor.SoftbodyInspector
             // var bones = new Vector3[30];
 
             var radiusStep = (Softbody.SphereRadius - targetObject.ColliderRadius) / totalLayers;
-            var bones = new List<Vector3>();
-            Debug.Log(radiusStep);
+            var totalBoneCount = 1;
+            for (var layer = 1; layer < totalLayers; layer++)
+            {
+                var numPoints = pointDensityMultiplier * layer * layer;
+                totalBoneCount += numPoints;
+            }
+            var bones = new Vector3[totalBoneCount];
+
+            int boneIndex = 0;
 
             for (var layer = 0; layer < totalLayers; layer++)
             {
+                if (layer == 0)
+                {
+                    var go = new GameObject($"Collider {boneIndex}", typeof(SphereCollider));
+                    go.layer = LayerMask.NameToLayer("InnerSphere");
+                    go.transform.SetParent(collidersRoot, false);
+                    go.transform.localPosition = Vector3.zero;
+
+                    var sc = go.GetComponent<SphereCollider>();
+                    sc.radius = targetObject.ColliderRadius;
+
+                    colliders.InsertArrayElementAtIndex(boneIndex);
+                    colliders.GetArrayElementAtIndex(boneIndex).objectReferenceValue = sc;
+
+                    boneIndex++;
+                    continue;
+                }
+
                 var layerRadius = radiusStep * layer + targetObject.ColliderRadius;
                 var numPoints = pointDensityMultiplier * layer * layer;
 
@@ -105,88 +132,99 @@ namespace SWPPT3.SoftbodyPhysics.Editor.SoftbodyInspector
                 foreach (var angle in fibAngles)
                 {
                     var bonePosition = angle * layerRadius;
-                    bones.Add(bonePosition);
+                    bones[boneIndex] = bonePosition;
+
+                    GameObject go;
 
                     if (layer == totalLayers - 1)
                     {
-                        var go = new GameObject($"Collider {bones.Count - 1}", typeof(SphereCollider), typeof(Rigidbody));
-                        go.transform.SetParent(collidersRoot, false);
-
-                        var sc = go.GetComponent<SphereCollider>();
-                        sc.radius = targetObject.ColliderRadius;
-
-                        go.transform.localPosition = bonePosition;
-
-                        colliders.InsertArrayElementAtIndex(colliders.arraySize);
-                        colliders.GetArrayElementAtIndex(colliders.arraySize - 1).objectReferenceValue = sc;
-
-                        var rb = go.GetComponent<Rigidbody>();
-                        rb.freezeRotation = true;
+                        go = new GameObject($"Collider {boneIndex}", typeof(SphereCollider), typeof(Rigidbody));
+                        go.layer = LayerMask.NameToLayer("OuterSphere");
                     }
                     else
                     {
-                        var point = new GameObject($"Point {bones.Count - 1}");
-                        point.transform.SetParent(collidersRoot, false);
-                        point.transform.localPosition = bonePosition;
+                        go = new GameObject($"Collider {boneIndex}", typeof(SphereCollider));
+                        go.layer = LayerMask.NameToLayer("InnerSphere");
                     }
+
+                    go.transform.SetParent(collidersRoot, false);
+
+                    var sc = go.GetComponent<SphereCollider>();
+                    sc.radius = targetObject.ColliderRadius;
+
+                    go.transform.localPosition = bonePosition;
+
+                    colliders.InsertArrayElementAtIndex(boneIndex);
+                    colliders.GetArrayElementAtIndex(boneIndex).objectReferenceValue = sc;
+
+                    boneIndex++;
                 }
             }
 
 
             Debug.Log("[Softbody] Done setting colliders");
 
-            // var mesh = meshFilter.sharedMesh;
-            //
-            // var vertices = mesh.vertices;
-            //
-            // var vertexWeightInfos = new VertexWeightInfo[mesh.vertexCount];
-            //
-            // // await UniTask.Delay(0);
-            //
-            // for (var i = 0; i < vertices.Length; i++)
-            // {
-            //     // await UniTask.Delay(0);
-            //     var v = vertices[i];
-            //     var points = Closest4Points(bones, v);
-            //
-            //     var bws = new BoneWeightInfo[4];
-            //
-            //     for (var j = 0; j < bws.Length; j++)
-            //     {
-            //         bws[j].BoneIndex = points[j];
-            //         bws[j].Offset = v - bones[points[j]];
-            //     }
-            //
-            //     var offsetMagSum = bws.Sum(bw => bw.Offset.magnitude);
-            //
-            //     for (var j = 0; j < bws.Length; j++)
-            //     {
-            //         bws[j].Weight = bws[j].Offset.magnitude / offsetMagSum;
-            //         vertexWeightInfos[i][j] = bws[j];
-            //     }
-            // }
-            //
-            // vertexWeights.ClearArray();
-            //
-            // for (var i = 0; i < vertexWeightInfos.Length; i++)
-            // {
-            //     vertexWeights.InsertArrayElementAtIndex(i);
-            //     var ae = vertexWeights.GetArrayElementAtIndex(i);
-            //     var arr = new[]
-            //     {
-            //         ae.FindPropertyRelative("_b0"),
-            //         ae.FindPropertyRelative("_b1"),
-            //         ae.FindPropertyRelative("_b2"),
-            //         ae.FindPropertyRelative("_b3"),
-            //     };
-            //
-            //     for (var j = 0; j < 4; j++)
-            //     {
-            //         arr[j].FindPropertyRelative("_boneIndex").intValue = vertexWeightInfos[i][j].BoneIndex;
-            //         arr[j].FindPropertyRelative("_offset").vector3Value = vertexWeightInfos[i][j].Offset;
-            //         arr[j].FindPropertyRelative("_weight").floatValue = vertexWeightInfos[i][j].Weight;
-            //     }
-            // }
+            var mesh = meshFilter.sharedMesh;
+
+            var vertices = mesh.vertices;
+
+            var surfaceBonesCount = pointDensityMultiplier * (totalLayers+1) * (totalLayers+1);
+            var vertexCount = mesh.vertexCount;
+
+            var boneCount = Mathf.Clamp((vertexCount * 4) / surfaceBonesCount, 4, 8);
+            boneCountProperty.intValue = boneCount;
+
+            var vertexWeightInfos = new VertexWeightInfo[mesh.vertexCount];
+
+            // await UniTask.Delay(0);
+
+            for (var i = 0; i < vertices.Length; i++)
+            {
+                var v = vertices[i];
+
+                var points = ClosestPoints(bones, v, boneCount);
+
+                var bws = new BoneWeightInfo[boneCount];
+
+                for (var j = 0; j < bws.Length; j++)
+                {
+                    bws[j].BoneIndex = points[j];
+                    bws[j].Offset = v - bones[points[j]];
+                }
+
+                var offsetMagSum = bws.Sum(bw => bw.Offset.magnitude);
+
+                for (var j = 0; j < bws.Length; j++)
+                {
+                    bws[j].Weight = bws[j].Offset.magnitude / offsetMagSum;
+                }
+
+                var vertexWeightInfo = new VertexWeightInfo(boneCount);
+                for (var j = 0; j < boneCount; j++)
+                {
+                    vertexWeightInfo[j] = bws[j];
+                }
+
+                vertexWeightInfos[i] = vertexWeightInfo;
+            }
+
+            vertexWeights.ClearArray();
+
+            for (var i = 0; i < vertexWeightInfos.Length; i++)
+            {
+                vertexWeights.InsertArrayElementAtIndex(i);
+                var ae = vertexWeights.GetArrayElementAtIndex(i);
+
+                var vertexWeightInfo = vertexWeightInfos[i];
+                for (var j = 0; j < vertexWeightInfo.BoneCount; j++)
+                {
+                    var boneElement = ae.FindPropertyRelative($"_b{j}");
+                    var boneWeight = vertexWeightInfo[j];
+                    boneElement.FindPropertyRelative("_boneIndex").intValue = boneWeight.BoneIndex;
+                    boneElement.FindPropertyRelative("_offset").vector3Value = boneWeight.Offset;
+                    boneElement.FindPropertyRelative("_weight").floatValue = boneWeight.Weight;
+                }
+            }
 
             serializedObject.ApplyModifiedProperties();
             EditorUtility.SetDirty(targetObject.gameObject);
@@ -220,25 +258,14 @@ namespace SWPPT3.SoftbodyPhysics.Editor.SoftbodyInspector
             return points;
         }
 
-        private static int[] Closest4Points(Vector3[] array, Vector3 point)
+        private static int[] ClosestPoints(Vector3[] array, Vector3 point, int count)
         {
-            var sorting = new SortedList<float, SortedSet<int>>();
-
-            for (var i = 0; i < array.Length; i++)
-            {
-                var mag = (point - array[i]).magnitude;
-
-                if (!sorting.ContainsKey(mag))
-                {
-                    sorting.Add(mag, new SortedSet<int>());
-                }
-
-                sorting[mag].Add(i);
-            }
-
-            var flatten = sorting.SelectMany(s => s.Value.AsEnumerable());
-
-            return flatten.Take(4).ToArray();
+            return array
+                .Select((bone, index) => (index, distance: Vector3.Distance(bone, point)))
+                .OrderBy(pair => pair.distance)
+                .Take(count)
+                .Select(pair => pair.index)
+                .ToArray();
         }
     }
 }
