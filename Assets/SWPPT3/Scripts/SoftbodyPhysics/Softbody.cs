@@ -102,6 +102,9 @@ namespace SWPPT3.SoftbodyPhysics
         [HideInInspector, SerializeField]
         private List<VertexWeightInfo> _vertexWeights;
 
+        [SerializeField] private int _pointDensityMultiplier = 5;
+        [SerializeField] private int _totalLayers = 5;
+
         internal float ColliderRadius => _colliderRadius;
 
         private Vector3 _velocity;
@@ -125,26 +128,26 @@ namespace SWPPT3.SoftbodyPhysics
 
         private void Update()
         {
-            for (var i = 0; i < _vertices.Length; i++)
-            {
-                var boneInfo = _vertexWeights[i];
-
-                var v = Vector3.zero;
-
-                for (var j = 0; j < 4; j++)
-                {
-                    var weightInfo = boneInfo[j];
-                    var boneDesiredVertex =
-                        _colliders[weightInfo.BoneIndex].transform.localPosition
-                        + weightInfo.Offset;
-
-                    v += boneDesiredVertex * weightInfo.Weight;
-                }
-
-                _vertices[i] = v;
-            }
-
-            _meshFilter.mesh.SetVertices(_vertices);
+            // for (var i = 0; i < _vertices.Length; i++)
+            // {
+            //     var boneInfo = _vertexWeights[i];
+            //
+            //     var v = Vector3.zero;
+            //
+            //     for (var j = 0; j < 4; j++)
+            //     {
+            //         var weightInfo = boneInfo[j];
+            //         var boneDesiredVertex =
+            //             _colliders[weightInfo.BoneIndex].transform.localPosition
+            //             + weightInfo.Offset;
+            //
+            //         v += boneDesiredVertex * weightInfo.Weight;
+            //     }
+            //
+            //     _vertices[i] = v;
+            // }
+            //
+            // _meshFilter.mesh.SetVertices(_vertices);
         }
     }
 }
