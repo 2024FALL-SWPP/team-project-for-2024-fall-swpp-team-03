@@ -171,10 +171,13 @@ namespace SWPPT3.SoftbodyPhysics.Editor.SoftbodyInspector
             var surfaceBonesCount = pointDensityMultiplier * (totalLayers+1) * (totalLayers+1);
             var vertexCount = mesh.vertexCount;
 
-            var boneCount = Mathf.Clamp((vertexCount * 4) / surfaceBonesCount, 4, 8);
+            var boneCount = Mathf.Clamp((surfaceBonesCount * 4) / vertexCount, 4, 8);
             boneCountProperty.intValue = boneCount;
 
             var vertexWeightInfos = new VertexWeightInfo[mesh.vertexCount];
+
+            var outerLayerStartIndex = bones.Length - (pointDensityMultiplier * (totalLayers - 1) * (totalLayers - 1));
+            var outerBones = bones.Skip(outerLayerStartIndex).ToArray();
 
             // await UniTask.Delay(0);
 
@@ -182,7 +185,8 @@ namespace SWPPT3.SoftbodyPhysics.Editor.SoftbodyInspector
             {
                 var v = vertices[i];
 
-                var points = ClosestPoints(bones, v, boneCount);
+                // var points = ClosestPoints(bones, v, boneCount);
+                var points = ClosestPoints(outerBones, v, boneCount);
 
                 var bws = new BoneWeightInfo[boneCount];
 
