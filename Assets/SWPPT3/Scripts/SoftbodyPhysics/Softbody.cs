@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using Unity.Collections;
 using Unity.Jobs;
+using Unity.Burst;
 using UnityEngine;
+using UnityEngine.Jobs;
 
 namespace SWPPT3.SoftbodyPhysics
 {
@@ -136,7 +138,9 @@ namespace SWPPT3.SoftbodyPhysics
         [HideInInspector, SerializeField]
         private List<VertexWeightInfo> _vertexWeights;
 
-        private NativeArray<VertexWeightInfo> _vertexWeightsNA;
+        private NativeArray<VertexWeightInfo> _vertexWeightsNa;
+        private NativeArray<Vector3> _vertices;
+        private TransformAccessArray _colliderTransforms;
 
         [SerializeField] private int _pointDensityMultiplier = 5;
         [SerializeField] private int _totalLayers = 5;
@@ -150,47 +154,63 @@ namespace SWPPT3.SoftbodyPhysics
 
         private float _elasticCoefficient;
 
-        private NativeArray<Vector3> _vertices;
-
         private void Start()
         {
-            Debug.Log(_boneCount);
+            _colliderTransforms = new TransformAccessArray(_colliders.Length);
+            foreach (var collider in _colliders)
+            {
+                _colliderTransforms.Add(collider.transform);
+            }
             var list = new List<Vector3>();
             _meshFilter.mesh.GetVertices(list);
 
             _vertices = new NativeArray<Vector3>(list.ToArray(), Allocator.Persistent);
-            _vertexWeightsNA = new NativeArray<VertexWeightInfo>(_vertexWeights.ToArray(), Allocator.Persistent);
+            _vertexWeightsNa = new NativeArray<VertexWeightInfo>(_vertexWeights.ToArray(), Allocator.Persistent);
         }
 
         private void Update()
         {
-            for (var i = 0; i < _vertices.Length; i++)
+            var job = new VertexUpdateJob
             {
-                var boneInfo = _vertexWeights[i];
-                // Debug.Log($"Vertex {i}: {boneInfo}");
-                var v = Vector3.zero;
+                Vertices = _vertices,
+                VertexWeights = _vertexWeightsNa,
+                BoneCount = _boneCount
+            };
 
-                for (var j = 0; j < _boneCount; j++)
-                {
-                    var weightInfo = boneInfo[j];
-                    var boneDesiredVertex =
-                        _colliders[weightInfo.BoneIndex].transform.localPosition + weightInfo.Offset;
-                    Debug.Log(boneDesiredVertex);
-                    v += boneDesiredVertex * weightInfo.Weight;
-                }
-                // Debug.Log($"Vertex {i}: {_vertices[i]} ->  {v}");
-                _vertices[i] = v;
-
-            }
+            var handle = job.Schedule(_colliderTransforms);
+            handle.Complete();
 
             _meshFilter.mesh.SetVertices(_vertices);
         }
 
         private void OnDestroy()
         {
-            _vertices.Dispose();
+            if (_vertices.IsCreated) _vertices.Dispose();
+            if (_vertexWeightsNa.IsCreated) _vertexWeightsNa.Dispose();
+            _colliderTransforms.Dispose();
+        }
 
-            _vertexWeightsNA.Dispose();
+        // [BurstCompile]
+        private struct VertexUpdateJob : IJobParallelForTransform
+        {
+            public NativeArray<Vector3> Vertices;
+            [ReadOnly] public NativeArray<VertexWeightInfo> VertexWeights;
+            [ReadOnly] public int BoneCount;
+
+            public void Execute(int index, TransformAccess transform)
+            {
+                var boneInfo = VertexWeights[index];
+                var v = Vector3.zero;
+
+                for (var j = 0; j < BoneCount; j++)
+                {
+                    var weightInfo = boneInfo[j];
+                    var boneDesiredVertex = transform.position + weightInfo.Offset;
+                    v += boneDesiredVertex * weightInfo.Weight;
+                }
+
+                Vertices[index] = v;
+            }
         }
     }
 }
