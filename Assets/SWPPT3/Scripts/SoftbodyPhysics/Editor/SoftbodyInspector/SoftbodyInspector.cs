@@ -192,8 +192,8 @@ namespace SWPPT3.SoftbodyPhysics.Editor.SoftbodyInspector
 
                 for (var j = 0; j < bws.Length; j++)
                 {
-                    bws[j].BoneIndex = points[j];
-                    bws[j].Offset = v - bones[points[j]];
+                    bws[j].BoneIndex = points[j] + outerLayerStartIndex;
+                    bws[j].Offset = v - bones[points[j] + outerLayerStartIndex];
                 }
 
                 var offsetMagSum = bws.Sum(bw => bw.Offset.magnitude);
