@@ -140,6 +140,7 @@ namespace SWPPT3.SoftbodyPhysics
 
         private NativeArray<VertexWeightInfo> _vertexWeightsNa;
         private NativeArray<Vector3> _vertices;
+        private NativeArray<Vector3> _bonePositions;
         private TransformAccessArray _colliderTransforms;
 
         [SerializeField] private int _pointDensityMultiplier = 5;
@@ -166,38 +167,64 @@ namespace SWPPT3.SoftbodyPhysics
 
             _vertices = new NativeArray<Vector3>(list.ToArray(), Allocator.Persistent);
             _vertexWeightsNa = new NativeArray<VertexWeightInfo>(_vertexWeights.ToArray(), Allocator.Persistent);
+            _bonePositions = new NativeArray<Vector3>(_colliders.Length, Allocator.Persistent);
         }
 
         private void Update()
         {
-            var job = new VertexUpdateJob
+            var boneUpdateJob = new BonePositionsUpdateJob
+            {
+                BonePositions = _bonePositions
+            };
+
+            var boneUpdateHandle = boneUpdateJob.Schedule(_colliderTransforms);
+            boneUpdateHandle.Complete();
+
+            var vertexUpdateJob = new VertexUpdateJob
             {
                 Vertices = _vertices,
                 VertexWeights = _vertexWeightsNa,
-                BoneCount = _boneCount
+                BoneCount = _boneCount,
+                BonePositions = _bonePositions
             };
 
-            var handle = job.Schedule(_colliderTransforms);
-            handle.Complete();
+            var vertexUpdateHandle = vertexUpdateJob.Schedule(_vertices.Length, 16, boneUpdateHandle);
+
+            vertexUpdateHandle.Complete();
 
             _meshFilter.mesh.SetVertices(_vertices);
         }
+
 
         private void OnDestroy()
         {
             if (_vertices.IsCreated) _vertices.Dispose();
             if (_vertexWeightsNa.IsCreated) _vertexWeightsNa.Dispose();
+            if (_bonePositions.IsCreated) _bonePositions.Dispose();
             _colliderTransforms.Dispose();
         }
 
         // [BurstCompile]
-        private struct VertexUpdateJob : IJobParallelForTransform
+        private struct BonePositionsUpdateJob : IJobParallelForTransform
+        {
+            public NativeArray<Vector3> BonePositions;
+
+            public void Execute(int index, TransformAccess transform)
+            {
+                BonePositions[index] = transform.position;
+            }
+        }
+
+
+        // [BurstCompile]
+        private struct VertexUpdateJob : IJobParallelFor
         {
             public NativeArray<Vector3> Vertices;
             [ReadOnly] public NativeArray<VertexWeightInfo> VertexWeights;
             [ReadOnly] public int BoneCount;
+            [ReadOnly] public NativeArray<Vector3> BonePositions;
 
-            public void Execute(int index, TransformAccess transform)
+            public void Execute(int index)
             {
                 var boneInfo = VertexWeights[index];
                 var v = Vector3.zero;
@@ -205,12 +232,15 @@ namespace SWPPT3.SoftbodyPhysics
                 for (var j = 0; j < BoneCount; j++)
                 {
                     var weightInfo = boneInfo[j];
-                    var boneDesiredVertex = transform.position + weightInfo.Offset;
+                    Debug.Log(weightInfo.BoneIndex);
+                    var bonePosition = BonePositions[weightInfo.BoneIndex];
+                    var boneDesiredVertex = bonePosition + weightInfo.Offset;
                     v += boneDesiredVertex * weightInfo.Weight;
                 }
 
                 Vertices[index] = v;
             }
         }
+
     }
 }
