@@ -109,6 +109,7 @@ GameObject:
   - component: {fileID: 4470805050651968491}
   - component: {fileID: 4470805050651968490}
   - component: {fileID: 4470805050651968469}
+  - component: {fileID: 2219133654273515139}
   m_Layer: 0
   m_Name: Poison_Pool
   m_TagString: Untagged
@@ -195,3 +196,18 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &2219133654273515139
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4470805050651968468}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8981e25f7d9e469b851d17f403c134ba, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  collider: {fileID: 4470805050651968469}
+  _propscript: {fileID: 11400000, guid: bc461cd013c148944adbefd422daf285, type: 2}
+  surfaceLevel: 0
