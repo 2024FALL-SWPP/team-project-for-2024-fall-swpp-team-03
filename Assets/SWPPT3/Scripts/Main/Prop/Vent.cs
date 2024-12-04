@@ -1,3 +1,4 @@
+using SWPPT3.Main.Utility;
 using UnityEngine;
 
 namespace SWPPT3.Main.Prop
@@ -10,9 +11,9 @@ namespace SWPPT3.Main.Prop
         [SerializeField]
         private Collider collider;
 
-        private float _colliderDisableDelay = 0.2f; // collider 비활성화까지 걸리는 시간
-        private float _stateCooldownDelay = 1f; // vent안에 box가 일정 거리까지 내려가는데 걸리는 시간
-        private float _offCooldownDelay = 0.2f; // 닫힐때 걸리는 시간
+        [SerializeField] private PropScript _propscript;
+
+
 
         private bool _isCooldownActive = false;
 
@@ -25,7 +26,7 @@ namespace SWPPT3.Main.Prop
             animator.SetBool("IsActive", state);
             if (state)
             {
-                Invoke(nameof(DisableCollider), _colliderDisableDelay);
+                Invoke(nameof(DisableCollider), _propscript.ColliderDisableDelay);
             }
             else
             {
@@ -35,7 +36,7 @@ namespace SWPPT3.Main.Prop
 
             _isCooldownActive = true;
 
-            float cooldown = state ? _stateCooldownDelay : _offCooldownDelay;
+            float cooldown = state ? _propscript.StateCooldownDelay : _propscript.OffCooldownDelay;
 
             Invoke(nameof(ResetCooldown), cooldown);
 

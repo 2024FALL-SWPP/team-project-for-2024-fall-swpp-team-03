@@ -2,20 +2,18 @@ using UnityEngine;
 using SWPPT3.Main.Manager;
 using SWPPT3.Main.Utility;
 
-namespace SWPPT3.Main
+namespace SWPPT3.Main.Utility
 {
     public class CameraController : MonoBehaviour
     {
         [SerializeField]
-        private Transform _player;
+        private Transform player;
 
         private float _mouseSensitivity;
 
         [SerializeField]
-        private CameraScript _cameraScript;
+        private CameraScript camerascript;
 
-        private float _distanceFromPlayer = 10f;
-        private float _cameraHeight = 2f;
         private Vector3 _currentRotation;
 
         private Vector2 _lookInput;
@@ -25,10 +23,10 @@ namespace SWPPT3.Main
 
         private void Start()
         {
-            Vector3 initialPosition = _player.position - _player.forward * _distanceFromPlayer + Vector3.up * _cameraHeight;
+            Vector3 initialPosition = player.position - player.forward * camerascript.DistanceFromPlayer + Vector3.up * camerascript.CameraHeight;
             transform.position = initialPosition;
 
-            transform.LookAt(_player);
+            transform.LookAt(player);
 
             _currentRotation = transform.eulerAngles;
 
@@ -55,12 +53,12 @@ namespace SWPPT3.Main
                 _currentRotation.y += mouseX;
 
                 Quaternion globalRotation = Quaternion.Euler(_currentRotation.x, _currentRotation.y, 0);
-                Vector3 offset = globalRotation * new Vector3(0, _cameraHeight, -_distanceFromPlayer);
+                Vector3 offset = globalRotation * new Vector3(0, camerascript.CameraHeight, -camerascript.DistanceFromPlayer);
 
-                transform.position = _player.position + offset;
-                transform.LookAt(_player);
+                transform.position = player.position + offset;
+                transform.LookAt(player);
             }
-            _mouseSensitivity = _cameraScript.MouseSensitivity;
+            _mouseSensitivity = camerascript.MouseSensitivity;
         }
 
         private void HandleLook(Vector2 lookInput)

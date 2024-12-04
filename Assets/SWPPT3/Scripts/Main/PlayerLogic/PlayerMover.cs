@@ -10,12 +10,9 @@ namespace SWPPT3.Main.PlayerLogic
 {
     public class PlayerMover : MonoBehaviour
     {
-        [SerializeField]
-        private PlayerScript _playerScript;
-        [SerializeField]
-        private Player _player;
-        [SerializeField]
-        private Rigidbody _rb;
+        [SerializeField] private PlayerScript _playerScript;
+        [SerializeField] private Player _player;
+        [SerializeField] private Rigidbody _rb;
 
         private float _moveSpeed;
         private float _jumpForce;
@@ -23,8 +20,7 @@ namespace SWPPT3.Main.PlayerLogic
 
         private HashSet<GameObject> _groundedObjects= new HashSet<GameObject>();
 
-        [SerializeField]
-        private Transform _cameraTransform;
+        [SerializeField] private Transform _cameraTransform;
 
         private Vector2 _moveVector;
         private Vector2 _lookInput;
@@ -138,13 +134,13 @@ namespace SWPPT3.Main.PlayerLogic
             if (_isGrounded)
             {
                 _rb.AddForce(Vector3.up * _jumpForce, ForceMode.Impulse);
-                // Debug.Log(_player._physicMaterial.bounciness);
+                // Debug.Log(player._physicMaterial.bounciness);
             }
             _isHoldingJump = true;
             if (_player.CurrentState == PlayerStates.Rubber)
             {
                 _player.SetBounciness(1.0f);
-                // Debug.Log(_player._physicMaterial.bounciness);
+                // Debug.Log(player._physicMaterial.bounciness);
             }
         }
 
@@ -155,7 +151,7 @@ namespace SWPPT3.Main.PlayerLogic
             if (_player.CurrentState == PlayerStates.Rubber)
             {
                 _player.SetBounciness(0.5f);
-                // Debug.Log(_player._physicMaterial.bounciness);
+                // Debug.Log(player._physicMaterial.bounciness);
             }
         }
 
@@ -176,7 +172,7 @@ namespace SWPPT3.Main.PlayerLogic
         {
 
             var contactPoint = collision.contacts[0];
-            if (contactPoint.normal.y > 0.7f)
+            if (contactPoint.normal.y > _playerScript.Normalcriteria)
             {
                 _groundedObjects.Add(collision.gameObject);
                 _isGrounded = true;

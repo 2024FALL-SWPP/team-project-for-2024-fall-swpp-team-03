@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using SWPPT3.Main.Utility;
 
 namespace SWPPT3.Main.Prop
 {
@@ -10,10 +11,13 @@ namespace SWPPT3.Main.Prop
         }
 
         [SerializeField] private Collider collider;
-        [SerializeField] private float buoyancyCoefficient; // 또는 config파일로 관리
+
+
+        [SerializeField] private PropScript _propscript;
+
 
         public float surfaceLevel;
-        [SerializeField] public float dampingFactor = 0.5f;
+
 
         private class ObjectInLiquid
         {
@@ -62,13 +66,13 @@ namespace SWPPT3.Main.Prop
 
             float submergedDifference = submergedHeight - targetSubmergedHeight;
 
-            float buoyantForceMagnitude = submergedDifference * buoyancyCoefficient + Mathf.Abs(Physics.gravity.y) * objRb.mass;
+            float buoyantForceMagnitude = submergedDifference * _propscript.BuoyancyCoefficient + Mathf.Abs(Physics.gravity.y) * objRb.mass;
 
             Vector3 buoyantForce = new Vector3(0f, buoyantForceMagnitude, 0f);
             objRb.AddForce(buoyantForce);
             Debug.Log($"Buoyant Force: {buoyantForce}, Submerged Height: {submergedHeight}");
 
-            Vector3 dampingForce = -objRb.velocity * dampingFactor;
+            Vector3 dampingForce = -objRb.velocity * _propscript.DampingFactor;
             objRb.AddForce(dampingForce);
 
             // 추가: 밑면을 평행하게 유지
@@ -80,8 +84,8 @@ namespace SWPPT3.Main.Prop
             Quaternion currentRotation = rb.rotation;
             Vector3 currentEulerAngles = currentRotation.eulerAngles;
 
-            float clampedX = ClampAngle(currentEulerAngles.x, -3f, 3f);
-            float clampedZ = ClampAngle(currentEulerAngles.z, -3f, 3f);
+            float clampedX = ClampAngle(currentEulerAngles.x, -_propscript.ClampFactor, _propscript.ClampFactor);
+            float clampedZ = ClampAngle(currentEulerAngles.z, -_propscript.ClampFactor, _propscript.ClampFactor);
 
             float yRotation = currentEulerAngles.y;
 

@@ -5,12 +5,15 @@ namespace SWPPT3.Main.PlayerLogic
     [CreateAssetMenu(fileName = "PlayerScript", menuName = "SWPPT3/Scripts/PlayerScript")]
     public class PlayerScript : ScriptableObject
     {
-        [SerializeField] private float moveSpeed;
-        [SerializeField] private float jumpForce;
-        [SerializeField] private float rotationSpeed;
+        [SerializeField] private float _moveSpeed;
+        [SerializeField] private float _jumpForce;
+        [SerializeField] private float _rotationSpeed;
 
-        public float MoveSpeed { get => moveSpeed; set => moveSpeed = value; }
-        public float JumpForce { get => jumpForce; set => jumpForce = value; }
-        public float RotationSpeed { get => rotationSpeed; set => rotationSpeed = value; }
+        [SerializeField] private float _normalcriteria;
+
+        public float MoveSpeed { get => _moveSpeed; set => _moveSpeed = value; }
+        public float JumpForce { get => _jumpForce; set => _jumpForce = value; }
+        public float RotationSpeed { get => _rotationSpeed; set => _rotationSpeed = value; }
+        public float Normalcriteria { get => _normalcriteria; set => _normalcriteria = value; }
     }
 }
