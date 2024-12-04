@@ -9,7 +9,6 @@ namespace SWPPT3.Main
         [SerializeField]
         private Transform _player;
 
-        [SerializeField]
         private float _mouseSensitivity;
 
         [SerializeField]
@@ -61,7 +60,7 @@ namespace SWPPT3.Main
                 transform.position = _player.position + offset;
                 transform.LookAt(_player);
             }
-            _mouseSensitivity = _cameraScript ?  _cameraScript.MouseSensitivity : 1f;
+            _mouseSensitivity = _cameraScript.MouseSensitivity;
         }
 
         private void HandleLook(Vector2 lookInput)

@@ -1,7 +1,9 @@
+using System;
 using System.Collections.Generic;
 using SWPPT3.Main.Manager;
 using SWPPT3.Main.PlayerLogic.State;
 using SWPPT3.Main.Prop;
+using Unity.Collections;
 using UnityEngine;
 
 namespace SWPPT3.Main.PlayerLogic
@@ -15,13 +17,8 @@ namespace SWPPT3.Main.PlayerLogic
         [SerializeField]
         private Rigidbody _rb;
 
-        [SerializeField]
         private float _moveSpeed;
-        [SerializeField]
-        private float _jumpMultiplier;
-
         private float _jumpForce;
-        [SerializeField]
         private float _rotationSpeed;
 
         private HashSet<GameObject> _groundedObjects= new HashSet<GameObject>();
@@ -60,10 +57,9 @@ namespace SWPPT3.Main.PlayerLogic
         private void Update()
         {
             _moveSpeed = _playerScript.MoveSpeed;
-            _jumpMultiplier = _playerScript.JumpMultiplier;
             _rotationSpeed = _playerScript.RotationSpeed;
+            _jumpForce = _playerScript.JumpForce * _rb.mass;
 
-            UpdateJumpForce();
             Vector3 moveDirection = GetMoveDirection();
             Vector3 force = moveDirection * _moveSpeed;
             _rb.AddForce(force, ForceMode.VelocityChange);
@@ -77,6 +73,36 @@ namespace SWPPT3.Main.PlayerLogic
                 _player.SetBounciness(1.0f);
             }
         }
+
+        public void OnEnable()
+        {
+            Physics.ContactModifyEvent += ModificationEvent;
+        }
+
+        public void OnDisable()
+        {
+            Physics.ContactModifyEvent -= ModificationEvent;
+        }
+
+        public void ModificationEvent(PhysicsScene scene, NativeArray<ModifiableContactPair> pairs)
+        {
+            for (int i = 0; i < pairs.Length; i++)
+            {
+                var pair = pairs[i];
+
+                var properties = pair.massProperties;
+
+                properties.inverseMassScale = 1f;
+                properties.inverseInertiaScale = 1f;
+                properties.otherInverseMassScale = 0;
+                properties.otherInverseInertiaScale = 0;
+
+                pair.massProperties = properties;
+
+                pairs[i] = pair;
+            }
+        }
+
 
         private Vector3 GetMoveDirection()
         {
@@ -94,6 +120,7 @@ namespace SWPPT3.Main.PlayerLogic
 
         private void RotatePlayer()
         {
+            // Debug.Log("Rotate Player");
             float rotationInput = _lookInput.x * _rotationSpeed * Time.deltaTime;
             _playerTransform.Rotate(Vector3.up, rotationInput, Space.World);
         }
@@ -101,44 +128,49 @@ namespace SWPPT3.Main.PlayerLogic
         private void HandleMove(Vector2 moveVector)
         {
             _moveVector = moveVector;
-            Debug.Log($"PlayerMover - Move: {_moveVector}");
+            // Debug.Log($"PlayerMover - Move: {_moveVector}");
         }
 
         private void HandleJump()
         {
+            Debug.Log(_player.CurrentState);
+
             if (_isGrounded)
             {
                 _rb.AddForce(Vector3.up * _jumpForce, ForceMode.Impulse);
-                Debug.Log("PlayerMover - Jump performed");
+                // Debug.Log(_player._physicMaterial.bounciness);
             }
             _isHoldingJump = true;
+            if (_player.CurrentState == PlayerStates.Rubber)
+            {
+                _player.SetBounciness(1.0f);
+                // Debug.Log(_player._physicMaterial.bounciness);
+            }
         }
 
         private void HandleJumpCancel()
         {
+            Debug.Log("PlayerMover - JumpCancel");
             _isHoldingJump = false;
             if (_player.CurrentState == PlayerStates.Rubber)
             {
                 _player.SetBounciness(0.5f);
+                // Debug.Log(_player._physicMaterial.bounciness);
             }
         }
 
         private void HandleStartRotation(bool isRightButtonPressed)
         {
             isRightButton = isRightButtonPressed;
-            Debug.Log($"PlayerMover - StartRotation: {isRightButton}");
+            // Debug.Log($"PlayerMover - StartRotation: {isRightButton}");
         }
 
         private void HandleLook(Vector2 lookInput)
         {
             _lookInput = lookInput;
-            Debug.Log($"PlayerMover - Look Input: {_lookInput}");
+            // Debug.Log($"PlayerMover - Look Input: {_lookInput}");
         }
 
-        public void UpdateJumpForce()
-        {
-            _jumpForce = _jumpMultiplier * _player.Rigidbody.mass;
-        }
 
         private void OnCollisionEnter(Collision collision)
         {
@@ -159,6 +191,11 @@ namespace SWPPT3.Main.PlayerLogic
         {
             _groundedObjects.Remove(collision.gameObject);
             _isGrounded = _groundedObjects.Count > 0;
+            var obstacle = collision.gameObject.GetComponent<PropBase>();
+            if (obstacle != null)
+            {
+                _player.StopInteractWithProp(obstacle);
+            }
         }
 
         private void OnDestroy()
