@@ -2,7 +2,6 @@
   "dependencies": {
     "com.cysharp.unitask": "2.5.10",
     "com.unity.animation.rigging": "1.1.1",
-    "com.unity.burst": "1.8.18",
     "com.unity.cinemachine": "2.10.2",
     "com.unity.collab-proxy": "2.4.4",
     "com.unity.collections": "1.2.4",
