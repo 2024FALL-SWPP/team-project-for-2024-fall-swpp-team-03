@@ -1,3 +1,4 @@
+using SWPPT3.Main.Manager;
 using SWPPT3.Main.Prop;
 using SWPPT3.Main.PlayerLogic;
 using UnityEngine;
@@ -23,11 +24,15 @@ namespace SWPPT3.Main.PlayerLogic.State
             }
             else if (obstacle is PoisonPool poisonPool)
             {
-                player.IsGameOver = true;
+                GameManager.Instance.OnPlayerStateChanged("GameOver");
             }
             else if (obstacle is Gas gas)
             {
                 player.TryChangeState(PlayerStates.Slime);
+            }
+            else if (obstacle is MagicCircle magicCircle)
+            {
+                GameManager.Instance.OnPlayerStateChanged("StageCleared");
             }
             else
             {

@@ -15,7 +15,7 @@ namespace SWPPT3.Main.Prop
         {
             State = state;
             collider.enabled = state;
-            animator.SetBool("DoorActive",state);
+            animator.SetBool("IsClosed",state);
         }
     }
 }
