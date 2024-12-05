@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3469707817617977517}
   - component: {fileID: 5212203213713012650}
+  - component: {fileID: 4292224605778392407}
   m_Layer: 0
   m_Name: Magic_Circle
   m_TagString: Untagged
@@ -58,6 +59,20 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!136 &4292224605778392407
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1210940401247049791}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  m_Radius: 0.9
+  m_Height: 5
+  m_Direction: 1
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &1716672640784942158
 GameObject:
   m_ObjectHideFlags: 0
