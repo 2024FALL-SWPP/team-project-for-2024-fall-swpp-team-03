@@ -23,7 +23,7 @@ namespace SWPPT3.Main.Prop
             if (_isCooldownActive)
                 return;
 
-            animator.SetBool("IsActive", state);
+            animator.SetBool("IsClosed", state);
             if (state)
             {
                 Invoke(nameof(DisableCollider), _propscript.ColliderDisableDelay);
@@ -48,7 +48,7 @@ namespace SWPPT3.Main.Prop
 
         private void DisableCollider()
         {
-            if (animator.GetBool("IsActive"))
+            if (animator.GetBool("IsClosed"))
             {
                 collider.enabled = false;
                 Debug.Log("Collider has been disabled.");

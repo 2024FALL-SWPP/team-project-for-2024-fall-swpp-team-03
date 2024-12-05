@@ -13,23 +13,6 @@ namespace SWPPT3.Main.PlayerLogic
         private PlayerStates _currentState = PlayerStates.Slime;
         private Vector2 _inputMovement;
 
-        private bool _isGameOver;
-        public bool IsGameOver
-        {
-            get => _isGameOver;
-            set
-            {
-                if (_isGameOver != value)
-                {
-                    _isGameOver = value;
-                    if (_isGameOver)
-                    {
-                        GameManager.Instance.OnPlayerStateChanged("GameOver");
-                    }
-                }
-            }
-        }
-
 
         [SerializeField]
         private Rigidbody _rb;
@@ -112,11 +95,6 @@ namespace SWPPT3.Main.PlayerLogic
             PlayerState.StopInteractWithProp(this, prop);
         }
 
-        public void GameOver()
-        {
-            _isGameOver = true;
-            Debug.Log("Game Over");
-        }
         private void OnDestroy()
         {
             if (InputManager.Instance != null)
