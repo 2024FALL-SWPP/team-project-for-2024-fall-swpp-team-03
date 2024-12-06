@@ -17,6 +17,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Poison_Pool Variant
       objectReference: {fileID: 0}
+    - target: {fileID: 4470805050651968469, guid: f519b326d5e2b46938bd11b77b1b996d,
+        type: 3}
+      propertyPath: m_IsTrigger
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4470805050651968488, guid: f519b326d5e2b46938bd11b77b1b996d,
         type: 3}
       propertyPath: m_RootOrder
@@ -71,6 +76,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7035430374176117436, guid: f519b326d5e2b46938bd11b77b1b996d,
+        type: 3}
+      propertyPath: m_IsTrigger
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f519b326d5e2b46938bd11b77b1b996d, type: 3}
