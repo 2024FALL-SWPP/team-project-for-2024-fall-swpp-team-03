@@ -44,13 +44,20 @@ namespace SWPPT3.SoftbodyPhysics.Editor.SoftbodyInspector
             var targetObject = target as Softbody;
             var meshFilter = serializedObject.FindProperty("_meshFilter").objectReferenceValue as MeshFilter;
             var collidersRoot = serializedObject.FindProperty("_collidersRoot").objectReferenceValue as Transform;
-            var colliders = serializedObject.FindProperty("_colliders");
+            var outerColliders = serializedObject.FindProperty("_outerColliders");
             var vertexWeights = serializedObject.FindProperty("_vertexWeights");
             var springs = serializedObject.FindProperty("_springs");
             var springListProperty = serializedObject.FindProperty("_springList");
 
+            var bones = serializedObject.FindProperty("_bones");
+
+            var outerIndexStart = serializedObject.FindProperty("_outerIndexStart");
+
             var pointDensityMultiplierProperty = serializedObject.FindProperty("_pointDensityMultiplier");
             var totalLayersProperty = serializedObject.FindProperty("_totalLayers");
+
+            // Rigidbody rb = serializedObject.FindProperty("_rigidbody").objectReferenceValue as Rigidbody;
+            var mass = 5f;
 
             if (targetObject is null)
             {
@@ -69,7 +76,7 @@ namespace SWPPT3.SoftbodyPhysics.Editor.SoftbodyInspector
                 Debug.LogError("[Softbody] Colliders Root is missing");
                 return;
             }
-            colliders.ClearArray();
+            outerColliders.ClearArray();
             Debug.Log("clear start");
 
             // Clear
@@ -90,10 +97,6 @@ namespace SWPPT3.SoftbodyPhysics.Editor.SoftbodyInspector
             var pointDensityMultiplier = pointDensityMultiplierProperty.intValue;
             var totalLayers = totalLayersProperty.intValue;
 
-
-            // var fibAngles = FibonacciAngles(30);
-            // var bones = new Vector3[30];
-
             var radiusStep = (Softbody.SphereRadius - targetObject.ColliderRadius) / (totalLayers - 1);
             var totalBoneCount = 1;
             for (var layer = 1; layer < totalLayers; layer++)
@@ -101,10 +104,12 @@ namespace SWPPT3.SoftbodyPhysics.Editor.SoftbodyInspector
                 var numPoints = pointDensityMultiplier * layer * layer;
                 totalBoneCount += numPoints;
             }
-            var bones = new Vector3[totalBoneCount];
 
-            var collidersPerLayer = new List<List<Collider>>();
-            var bonePositionsPerLayer = new List<List<Vector3>>();
+            var massPerBone = mass / totalBoneCount;
+
+            bones.ClearArray();
+
+            var bonesPerLayer = new List<List<Bone>>();
 
             springs.ClearArray();
 
@@ -112,33 +117,34 @@ namespace SWPPT3.SoftbodyPhysics.Editor.SoftbodyInspector
 
             int boneIndex = 0;
 
+            int outerIndex = 0;
+
+            Vector3[] outerPositions = new Vector3[pointDensityMultiplier * (totalLayers-1) * (totalLayers-1)];
+
             for (var layer = 0; layer < totalLayers; layer++)
             {
-                var currentLayerColliders = new List<Collider>();
-                var currentLayerPositions = new List<Vector3>();
+                var currentLayerBones = new List<Bone>();
+
                 if (layer == 0)
                 {
-                    // var go = new GameObject($"Collider {boneIndex}", typeof(SphereCollider));
-                    var go = new GameObject($"Collider {boneIndex}", typeof(SphereCollider), typeof(Rigidbody));
-                    go.layer = LayerMask.NameToLayer("InnerSphere");
-                    go.transform.SetParent(collidersRoot, false);
-                    go.transform.localPosition = Vector3.zero;
+                    bones.InsertArrayElementAtIndex(boneIndex);
+                    var boneProperty = bones.GetArrayElementAtIndex(boneIndex);
 
-                    var sc = go.GetComponent<SphereCollider>();
-                    sc.radius = targetObject.ColliderRadius;
+                    boneProperty.FindPropertyRelative("_mass").floatValue = massPerBone;
+                    boneProperty.FindPropertyRelative("_position").vector3Value = Vector3.zero;
+                    boneProperty.FindPropertyRelative("_velocity").vector3Value = Vector3.zero;
 
-                    colliders.InsertArrayElementAtIndex(boneIndex);
-                    colliders.GetArrayElementAtIndex(boneIndex).objectReferenceValue = sc;
-
-                    bones[boneIndex] = Vector3.zero;
-                    currentLayerColliders.Add(sc);
-                    currentLayerPositions.Add(Vector3.zero);
+                    currentLayerBones.Add(new Bone
+                    {
+                        Mass = massPerBone,
+                        Position = Vector3.zero,
+                        Velocity = Vector3.zero
+                    });
 
                     boneIndex++;
                 }
                 else
                 {
-                    // var layerRadius = radiusStep * layer + targetObject.ColliderRadius;
                     var numPoints = pointDensityMultiplier * layer * layer;
                     var layerRadius = radiusStep * layer;
 
@@ -147,49 +153,51 @@ namespace SWPPT3.SoftbodyPhysics.Editor.SoftbodyInspector
                     foreach (var angle in fibAngles)
                     {
                         var bonePosition = angle * layerRadius;
-                        bones[boneIndex] = bonePosition;
-                        currentLayerPositions.Add(bonePosition);
+                        bones.InsertArrayElementAtIndex(boneIndex);
+                        var boneProperty = bones.GetArrayElementAtIndex(boneIndex);
 
-                        GameObject go;
+                        boneProperty.FindPropertyRelative("_mass").floatValue = massPerBone;
+                        boneProperty.FindPropertyRelative("_position").vector3Value = bonePosition;
+                        boneProperty.FindPropertyRelative("_velocity").vector3Value = Vector3.zero;
+
+                        currentLayerBones.Add(new Bone
+                        {
+                            Mass = massPerBone,
+                            Position = bonePosition,
+                            Velocity = Vector3.zero
+                        });
+
+                        boneIndex++;
 
                         if (layer == totalLayers - 1)
                         {
-                            go = new GameObject($"Collider {boneIndex}", typeof(SphereCollider), typeof(Rigidbody));
-                            go.layer = LayerMask.NameToLayer("OuterSphere");
+                            var go = new GameObject($"Collider {outerIndex}", typeof(SphereCollider));
+                            // go.layer = LayerMask.NameToLayer("OuterSphere");
+                            // var rb = go.AddComponent<Rigidbody>();
+                            // rb.mass = massPerBone;
+                            go.transform.SetParent(collidersRoot, false);
+
+                            var sc = go.GetComponent<SphereCollider>();
+                            sc.radius = targetObject.ColliderRadius;
+                            go.transform.localPosition = bonePosition;
+
+                            outerColliders.InsertArrayElementAtIndex(outerIndex);
+                            outerColliders.GetArrayElementAtIndex(outerIndex).objectReferenceValue = sc;
+                            outerPositions[outerIndex] = bonePosition;
+                            outerIndex++;
                         }
-                        else
-                        {
-                            // go = new GameObject($"Collider {boneIndex}", typeof(SphereCollider));
-                            go = new GameObject($"Collider {boneIndex}", typeof(SphereCollider), typeof(Rigidbody));
-                            go.layer = LayerMask.NameToLayer("InnerSphere");
-
-                        }
-
-                        go.transform.SetParent(collidersRoot, false);
-
-                        var sc = go.GetComponent<SphereCollider>();
-                        sc.radius = targetObject.ColliderRadius;
-
-                        go.transform.localPosition = bonePosition;
-
-                        colliders.InsertArrayElementAtIndex(boneIndex);
-                        colliders.GetArrayElementAtIndex(boneIndex).objectReferenceValue = sc;
-
-                        currentLayerColliders.Add(sc);
-
-
-                        boneIndex++;
                     }
                 }
 
-                collidersPerLayer.Add(currentLayerColliders);
-                bonePositionsPerLayer.Add(currentLayerPositions);
+                bonesPerLayer.Add(currentLayerBones);
             }
 
-            var colliderLength = colliders.arraySize;
-            var springList = new List<int>(colliderLength * colliderLength);
+            outerIndexStart.intValue = boneIndex - outerIndex;
+            Debug.Log($"outerIndexStart {outerIndexStart}");
 
-            for (var i = 0; i < colliderLength*colliderLength; i++)
+            var springList = new List<int>(boneIndex * boneIndex);
+
+            for (var i = 0; i < boneIndex*boneIndex; i++)
             {
                 springList.Add(-1);
             }
@@ -199,11 +207,10 @@ namespace SWPPT3.SoftbodyPhysics.Editor.SoftbodyInspector
                 InitializeSpringInfosForLayer(
                     pointDensityMultiplier-1,
                     i,
-                    collidersPerLayer,
-                    bonePositionsPerLayer,
+                    bonesPerLayer,
                     springsInfo,
                     springList,
-                    colliderLength
+                    boneIndex
                 );
             }
 
@@ -226,7 +233,6 @@ namespace SWPPT3.SoftbodyPhysics.Editor.SoftbodyInspector
             }
 
 
-            Debug.Log(colliders.arraySize);
             Debug.Log("[Softbody] Done setting colliders");
 
             var mesh = meshFilter.sharedMesh;
@@ -241,24 +247,22 @@ namespace SWPPT3.SoftbodyPhysics.Editor.SoftbodyInspector
 
             var vertexWeightInfos = new VertexWeightInfo[mesh.vertexCount];
 
-            var outerLayerStartIndex = bones.Length - (pointDensityMultiplier * (totalLayers - 1) * (totalLayers - 1));
-            var outerBones = bones.Skip(outerLayerStartIndex).ToArray();
-
             // await UniTask.Delay(0);
 
             for (var i = 0; i < vertices.Length; i++)
             {
                 var v = vertices[i];
 
-                // var points = ClosestPoints(bones, v, boneCount);
-                var points = ClosestPoints(outerBones, v, boneCount);
+                var points = ClosestPoints(outerPositions, v, boneCount);
 
                 var bws = new BoneWeightInfo[boneCount];
 
                 for (var j = 0; j < bws.Length; j++)
                 {
-                    bws[j].BoneIndex = points[j] + outerLayerStartIndex;
-                    bws[j].Offset = v - bones[points[j] + outerLayerStartIndex];
+                    bws[j].BoneIndex = points[j];
+                    var tmp = bones.GetArrayElementAtIndex(points[j]);
+                    var v3 = tmp.FindPropertyRelative("_position").vector3Value;
+                    bws[j].Offset = v - v3;
                 }
 
                 var offsetMagSum = bws.Sum(bw => bw.Offset.magnitude);
@@ -285,6 +289,9 @@ namespace SWPPT3.SoftbodyPhysics.Editor.SoftbodyInspector
                 var ae = vertexWeights.GetArrayElementAtIndex(i);
 
                 var vertexWeightInfo = vertexWeightInfos[i];
+
+                var boneCountProperty = ae.FindPropertyRelative("_boneCount");
+                boneCountProperty.intValue = vertexWeightInfo.BoneCount;
                 for (var j = 0; j < vertexWeightInfo.BoneCount; j++)
                 {
                     var boneElement = ae.FindPropertyRelative($"_b{j}");
@@ -340,46 +347,41 @@ namespace SWPPT3.SoftbodyPhysics.Editor.SoftbodyInspector
         private void InitializeSpringInfosForLayer(
             int connectCount,
             int layer,
-            List<List<Collider>> collidersPerLayer,
-            List<List<Vector3>> bonePositionsPerLayer,
+            List<List<Bone>> bonesPerLayer,
             List<Spring> springInfos,
             List<int> springList,
             int colliderLength)
         {
-            var currentLayerColliders = collidersPerLayer[layer];
-            var currentLayerPositions = bonePositionsPerLayer[layer];
+            var currentLayerBones = bonesPerLayer[layer];
 
-            var previousLayerColliders = collidersPerLayer[layer - 1];
-            var previousLayerPositions = bonePositionsPerLayer[layer - 1];
+            var previousLayerBones = bonesPerLayer[layer - 1];
 
-            for (int i = 0; i < currentLayerColliders.Count; i++)
+            for (int i = 0; i < currentLayerBones.Count; i++)
             {
-                var colliderIndex = GetColliderIndex(layer, i, collidersPerLayer);
+                var colliderIndex = GetColliderIndex(layer, i, bonesPerLayer);
 
-                var currentPosition = currentLayerPositions[i];
+                var currentPosition = currentLayerBones[i].Position;
 
-                var sameLayerPositions = currentLayerPositions;
-                var sameLayerIndices = Enumerable.Range(0, sameLayerPositions.Count).ToList();
+                var sameLayerIndices = Enumerable.Range(0, currentLayerBones.Count).ToList();
                 sameLayerIndices.Remove(i);
 
                 var closestSameLayerIndices = sameLayerIndices
-                    .OrderBy(index => Vector3.Distance(currentPosition, sameLayerPositions[index]))
+                    .OrderBy(index => Vector3.Distance(currentPosition, currentLayerBones[index].Position))
                     .Take(connectCount)
                     .ToList();
 
-                var belowLayerPositions = previousLayerPositions;
-                var belowLayerIndices = Enumerable.Range(0, belowLayerPositions.Count).ToList();
+                var belowLayerIndices = Enumerable.Range(0, previousLayerBones.Count).ToList();
 
                 var closestBelowLayerIndex = belowLayerIndices
-                    .OrderBy(index => Vector3.Distance(currentPosition, belowLayerPositions[index]))
+                    .OrderBy(index => Vector3.Distance(currentPosition, previousLayerBones[index].Position))
                     .First();
 
                 var boneCount = connectCount + 1;
 
                 for (int j = 0; j < connectCount; j++)
                 {
-                    var connectedColliderIndex = GetColliderIndex(layer, closestSameLayerIndices[j], collidersPerLayer);
-                    var connectedPosition = bonePositionsPerLayer[layer][closestSameLayerIndices[j]];
+                    var connectedColliderIndex = GetColliderIndex(layer, closestSameLayerIndices[j], bonesPerLayer);
+                    var connectedPosition = currentLayerBones[closestSameLayerIndices[j]].Position;
                     if (springList[connectedColliderIndex * colliderLength + colliderIndex] == -1)
                     {
                         var restLength = Vector3.Distance(connectedPosition, currentPosition);
@@ -392,8 +394,8 @@ namespace SWPPT3.SoftbodyPhysics.Editor.SoftbodyInspector
                     }
                 }
 
-                var connectedBelowColliderIndex = GetColliderIndex(layer - 1, closestBelowLayerIndex, collidersPerLayer);
-                var connectedBelowPosition = bonePositionsPerLayer[layer - 1][closestBelowLayerIndex];
+                var connectedBelowColliderIndex = GetColliderIndex(layer - 1, closestBelowLayerIndex, bonesPerLayer);
+                var connectedBelowPosition = previousLayerBones[closestBelowLayerIndex].Position;
 
                 if (springList[connectedBelowColliderIndex * colliderLength + colliderIndex] == -1)
                 {
@@ -408,7 +410,7 @@ namespace SWPPT3.SoftbodyPhysics.Editor.SoftbodyInspector
             }
         }
 
-        private int GetColliderIndex(int layer, int indexInLayer, List<List<Collider>> collidersPerLayer)
+        private int GetColliderIndex(int layer, int indexInLayer, List<List<Bone>> collidersPerLayer)
         {
             int colliderIndex = 0;
             for (int i = 0; i < layer; i++)
