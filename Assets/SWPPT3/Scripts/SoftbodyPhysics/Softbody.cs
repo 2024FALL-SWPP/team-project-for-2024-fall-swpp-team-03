@@ -175,6 +175,9 @@ namespace SWPPT3.SoftbodyPhysics
              [HideInInspector, SerializeField]
              private int _outerIndexStart;
 
+             [HideInInspector, SerializeField]
+             private int _connectedCount;
+
              private NativeArray<VertexWeightInfo> _vertexWeightsNa;
              private NativeArray<Vector3> _vertices;
 
@@ -236,7 +239,7 @@ namespace SWPPT3.SoftbodyPhysics
                      DeltaTime = Time.deltaTime,
                      SpringStiffness = _springStiffness,
                      Damping = _damping,
-                     BoneCount = _bones.Length,
+                     BoneCount = _connectedCount
                  };
                  var boneSpringHandle = boneSpringJob.Schedule(_boneRead.Length, 16);
                  boneSpringHandle.Complete();
@@ -348,7 +351,7 @@ namespace SWPPT3.SoftbodyPhysics
 
                      position += velocity * DeltaTime;
 
-                     Debug.Log($"{index} {velocity} {force},");
+                     // Debug.Log($"{index} {velocity} {force},");
 
                      BoneWrite[index] = new Bone
                      {

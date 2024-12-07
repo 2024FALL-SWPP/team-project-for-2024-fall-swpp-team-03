@@ -51,6 +51,8 @@ namespace SWPPT3.SoftbodyPhysics.Editor.SoftbodyInspector
 
             var bones = serializedObject.FindProperty("_bones");
 
+            var connectedCount = serializedObject.FindProperty("_connectedCount");
+
             var outerIndexStart = serializedObject.FindProperty("_outerIndexStart");
 
             var pointDensityMultiplierProperty = serializedObject.FindProperty("_pointDensityMultiplier");
@@ -214,11 +216,53 @@ namespace SWPPT3.SoftbodyPhysics.Editor.SoftbodyInspector
                 );
             }
 
+            var maxCount = 0;
+
+            for (var i = 0; i < boneIndex; i++)
+            {
+                var count = 0;
+                for (var j = 0; j < boneIndex; j++)
+                {
+                    if (springList[i * boneIndex + j] != -1)
+                    {
+                        count++;
+                    }
+                }
+                if (count > maxCount)
+                {
+                    maxCount = count;
+                }
+            }
+
+            connectedCount.intValue = maxCount;
+            Debug.Log($"connectedCount {connectedCount.intValue}");
+
+            var newSpringList = new List<int>(boneIndex * maxCount);
+
+            for (var i = 0; i < boneIndex * maxCount; i++)
+            {
+                newSpringList.Add(-1);
+            }
+
+            for (var i = 0; i < boneIndex; i++)
+            {
+                var currentCount = 0;
+                for (var j = 0; j < boneIndex; j++)
+                {
+                    var value = springList[i * boneIndex + j];
+                    if (value != -1)
+                    {
+                        newSpringList[i * maxCount + currentCount] = value;
+                        currentCount++;
+                    }
+                }
+            }
+
             springListProperty.ClearArray();
-            for (var i = 0; i < springList.Count; i++)
+            for (var i = 0; i < newSpringList.Count; i++)
             {
                 springListProperty.InsertArrayElementAtIndex(i);
-                springListProperty.GetArrayElementAtIndex(i).intValue = springList[i];
+                springListProperty.GetArrayElementAtIndex(i).intValue = newSpringList[i];
             }
 
             Debug.Log(springsInfo.Count);
