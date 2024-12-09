@@ -33,16 +33,12 @@ namespace SWPPT3.Main.Manager
             }
         }
 
-        private int stageNumber = 1;
-        public int StageNumber
+        public void Awake()
         {
-            get => stageNumber;
-            private set
-            {
-                stageNumber = value;
-                InitializeStage(stageNumber);
-            }
+            InitializeStage(stageNumber);
         }
+
+        [SerializeField] private int stageNumber;
 
         private void HandleGameStateChanged(GameState newState)
         {
@@ -98,12 +94,12 @@ namespace SWPPT3.Main.Manager
 
         public void ProceedToNextStage()
         {
-            StageNumber++;
+            stageNumber++;
         }
 
         public void ResetStage()
         {
-            InitializeStage(StageNumber);
+            InitializeStage(stageNumber);
         }
 
         public void OnUIButtonClicked(string buttonName)

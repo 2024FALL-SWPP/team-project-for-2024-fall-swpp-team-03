@@ -1,3 +1,4 @@
+using SWPPT3.Main.PlayerLogic;
 using SWPPT3.Main.Utility.Singleton;
 using UnityEngine;
 
@@ -5,6 +6,7 @@ namespace SWPPT3.Main.StageDirector
 {
     public class StageManager : MonoSingleton<StageManager>
     {
+        [SerializeField] protected Player player;
 
         public virtual void InitializeStage() { }
 

@@ -511,6 +511,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c834ef87520fa146a131b8e2e184ab9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  slimeCount: 0
+  metalCount: 0
+  rubberCount: 0
   _rb: {fileID: 49633282}
   _physicMaterial: {fileID: 13400000, guid: 006a6404c0e8f45bc8b514672d2031d2, type: 2}
   _collider: {fileID: 49633278}
@@ -529,7 +532,7 @@ MonoBehaviour:
   _playerScript: {fileID: 11400000, guid: f12859c2ce46745c0a5a97778dd768ae, type: 2}
   _player: {fileID: 49633280}
   _rb: {fileID: 49633282}
-  _cameraTransform: {fileID: 0}
+  _cameraTransform: {fileID: 496913511}
 --- !u!54 &49633282
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -2130,6 +2133,12 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 6803360475717678090, guid: b1b37d756df64437083463844b9cec04,
     type: 3}
   m_PrefabInstance: {fileID: 469614860}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &496913511 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 7541285462395492086, guid: b3ea1b38601fb2241ab4113dc2c38e41,
+    type: 3}
+  m_PrefabInstance: {fileID: 11685279}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &496920950
 PrefabInstance:
@@ -7848,6 +7857,16 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 6610104453504445420, guid: 2dd4d32d6907e4aaa96ee1703aafd883,
+        type: 3}
+      propertyPath: stateSources.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6610104453504445420, guid: 2dd4d32d6907e4aaa96ee1703aafd883,
+        type: 3}
+      propertyPath: stateSources.Array.data[0]
+      value: 
+      objectReference: {fileID: 75268038}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2dd4d32d6907e4aaa96ee1703aafd883, type: 3}
 --- !u!4 &1929573850 stripped

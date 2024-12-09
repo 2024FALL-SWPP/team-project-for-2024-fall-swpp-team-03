@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 6910271054388101844}
   - component: {fileID: 8647687129597965854}
   - component: {fileID: 8143509069661972072}
-  - component: {fileID: 4492168851086093330}
   m_Layer: 0
   m_Name: Electric_Wire
   m_TagString: Untagged
@@ -100,15 +99,3 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 4536773283001372330, guid: c0369acd046324b52bc74f11ed775ef5, type: 3}
---- !u!114 &4492168851086093330
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7134332726337394635}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0c09447a90b2486dbaf0f9f60b29ab64, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 

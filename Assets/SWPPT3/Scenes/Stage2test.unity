@@ -5272,7 +5272,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _rb: {fileID: 1150683537}
   _physicMaterial: {fileID: 13400000, guid: 006a6404c0e8f45bc8b514672d2031d2, type: 2}
-  _collider: {fileID: 0}
+  _collider: {fileID: 1150683543}
 --- !u!114 &1150683536
 MonoBehaviour:
   m_ObjectHideFlags: 0
