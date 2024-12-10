@@ -68,6 +68,7 @@ namespace SWPPT3.Main.Manager
         private void InitializeStage(int stageNumber)
         {
             StageManager stageManager = null;
+
             switch (stageNumber)
             {
                 case 1:
@@ -76,9 +77,25 @@ namespace SWPPT3.Main.Manager
                 case 2:
                     stageManager = Stage2Director.Instance;
                     break;
+                case 3:
+                    stageManager = Stage3Director.Instance;
+                    break;
+                case 4:
+                    stageManager = Stage4Director.Instance;
+                    break;
+                case 5:
+                    stageManager = Stage5Director.Instance;
+                    break;
+                case 6:
+                    stageManager = Tutorial1Director.Instance;
+                    break;
+                case 7:
+                    stageManager = Tutorial2Director.Instance;
+                    break;
                 default:
                     break;
             }
+
             if (stageManager != null)
             {
                 stageManager.InitializeStage();
@@ -86,6 +103,7 @@ namespace SWPPT3.Main.Manager
 
             SetGameState(GameState.BeforeStart);
         }
+
 
         public void SetGameState(GameState newState)
         {

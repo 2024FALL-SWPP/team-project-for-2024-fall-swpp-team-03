@@ -46,12 +46,6 @@ namespace SWPPT3.Main.PlayerLogic
         {
             TryChangeState(PlayerStates.Slime);
             InputManager.Instance.OnChangeState += HandleChangeState;
-            Item = new Dictionary<PlayerStates, int>
-            {
-                { PlayerStates.Slime, slimeCount },
-                { PlayerStates.Metal, metalCount },
-                { PlayerStates.Rubber, rubberCount },
-            };
         }
 
 
@@ -60,7 +54,7 @@ namespace SWPPT3.Main.PlayerLogic
         public void HandleChangeState(InputAction.CallbackContext context)
         {
             string keyPressed = context.control.displayName;
-            Debug.Log(keyPressed);
+            //Debug.Log(keyPressed);
 
             PlayerStates newState = keyPressed switch
             {
@@ -82,6 +76,7 @@ namespace SWPPT3.Main.PlayerLogic
                 PlayerState.ChangeRigidbody(_rb);
                 PlayerState.ChangePhysics(_collider, _physicMaterial);
                 _collider.hasModifiableContacts = newState == PlayerStates.Slime;
+                Debug.Log("newState: "+newState);
             }
         }
 
@@ -97,13 +92,19 @@ namespace SWPPT3.Main.PlayerLogic
 
         private void OnDestroy()
         {
-            if (InputManager.Instance != null)
-            {
-                InputManager.Instance.OnChangeState -= HandleChangeState;
-            }
+            InputManager.Instance.OnChangeState -= HandleChangeState;
         }
         public void SetItemCounts(int newSlimeCount, int newMetalCount, int newRubberCount)
         {
+            if (Item == null)
+            {
+                Item = new Dictionary<PlayerStates, int>
+                {
+                    { PlayerStates.Slime, 0 },
+                    { PlayerStates.Metal, 0 },
+                    { PlayerStates.Rubber, 0 },
+                };
+            }
             slimeCount = newSlimeCount;
             metalCount = newMetalCount;
             rubberCount = newRubberCount;

@@ -5,32 +5,24 @@ namespace SWPPT3.Main.Prop
     public class MagicCircle : StateDst
     {
         [SerializeField] private Animator animator;
-
         [SerializeField] private Collider collider;
-
         [SerializeField] private int circleState;
 
         public void Awake()
         {
-            if (circleState == 0)
-            {
-                collider.enabled = true;
-            }
-            else
-            {
-                collider.enabled = false;
-            }
             UpdateCircleState();
         }
 
         protected override void OnSourceStateChanged(StateSource src, bool state)
         {
+            if (maintainState && State) return;
             UpdateCircleState();
         }
 
         private void UpdateCircleState()
         {
             circleState = 0;
+
             foreach (var source in stateSources)
             {
                 if (source.State)
@@ -43,10 +35,12 @@ namespace SWPPT3.Main.Prop
 
             if (circleState == stateSources.Count)
             {
+                State = true;
                 ActivateMagicCircle();
             }
             else
             {
+                State = false;
                 DeactivateMagicCircle();
             }
         }

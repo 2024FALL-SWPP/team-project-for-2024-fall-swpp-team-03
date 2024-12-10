@@ -32,6 +32,9 @@ namespace SWPPT3.Main.PlayerLogic
 
         private void Start()
         {
+            _moveSpeed = _playerScript.MoveSpeed;
+            _rotationSpeed = _playerScript.RotationSpeed;
+            _jumpForce = _playerScript.JumpForce * _rb.mass;
             _isHoldingJump = false;
             _isGrounded = false;
             _playerTransform = transform;
@@ -52,10 +55,6 @@ namespace SWPPT3.Main.PlayerLogic
 
         private void Update()
         {
-            _moveSpeed = _playerScript.MoveSpeed;
-            _rotationSpeed = _playerScript.RotationSpeed;
-            _jumpForce = _playerScript.JumpForce * _rb.mass;
-
             Vector3 moveDirection = GetMoveDirection();
             Vector3 force = moveDirection * _moveSpeed;
             _rb.AddForce(force, ForceMode.VelocityChange);
@@ -129,7 +128,7 @@ namespace SWPPT3.Main.PlayerLogic
 
         private void HandleJump()
         {
-            Debug.Log(_player.CurrentState);
+            //Debug.Log(_player.CurrentState);
 
             if (_isGrounded)
             {
@@ -146,7 +145,7 @@ namespace SWPPT3.Main.PlayerLogic
 
         private void HandleJumpCancel()
         {
-            Debug.Log("PlayerMover - JumpCancel");
+            //Debug.Log("PlayerMover - JumpCancel");
             _isHoldingJump = false;
             if (_player.CurrentState == PlayerStates.Rubber)
             {
@@ -188,6 +187,24 @@ namespace SWPPT3.Main.PlayerLogic
             _groundedObjects.Remove(collision.gameObject);
             _isGrounded = _groundedObjects.Count > 0;
             var obstacle = collision.gameObject.GetComponent<PropBase>();
+            if (obstacle != null)
+            {
+                _player.StopInteractWithProp(obstacle);
+            }
+        }
+
+        private void OnTriggerEnter(Collider other)
+        {
+            var obstacle = other.gameObject.GetComponent<PropBase>();
+            if (obstacle != null)
+            {
+                _player.InteractWithProp(obstacle);
+            }
+        }
+
+        private void OnTriggerExit(Collider other)
+        {
+            var obstacle = other.gameObject.GetComponent<PropBase>();
             if (obstacle != null)
             {
                 _player.StopInteractWithProp(obstacle);

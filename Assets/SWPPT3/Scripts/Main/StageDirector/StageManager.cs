@@ -27,7 +27,7 @@ namespace SWPPT3.Main.StageDirector
 
         public void FailStage()
         {
-
+            Time.timeScale = 0f;
         }
 
         public void ClearStage()

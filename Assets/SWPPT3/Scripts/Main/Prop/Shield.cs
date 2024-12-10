@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace SWPPT3.Main.Prop
 {
-    public class Door : StateDst
+    public class Shield : StateDst
     {
         [SerializeField]
         private Collider collider;
@@ -22,12 +22,12 @@ namespace SWPPT3.Main.Prop
 
         protected override void OnSourceStateChanged(StateSource src, bool state)
         {
+            if (maintainState && !State) return;
             state = !state;
             State = state;
             collider.enabled = state;
             animator.SetBool("IsClosed",state);
-            Debug.Log("Door:");
-            Debug.Log(state);
+            Debug.Log("Shield:"+state);
         }
     }
 }

@@ -19,6 +19,8 @@ namespace SWPPT3.Main.Prop
                     animator.SetBool("IsOn", false);
                 }
             }
+
+            Debug.Log("LightLine" + State);
         }
     }
 }

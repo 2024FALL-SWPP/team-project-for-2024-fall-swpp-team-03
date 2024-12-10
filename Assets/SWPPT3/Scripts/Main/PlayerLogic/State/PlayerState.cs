@@ -19,11 +19,12 @@ namespace SWPPT3.Main.PlayerLogic.State
             if (obstacle is ItemBox itemBox)
             {
                 player.Item[itemBox.ItemState] += 1;
-                Debug.Log(player.Item[itemBox.ItemState]);
+                Debug.Log(itemBox.ItemState);
                 itemBox.InteractWithPlayer();
             }
             else if (obstacle is PoisonPool poisonPool)
             {
+                Debug.Log("collide with Poison pool");
                 GameManager.Instance.OnPlayerStateChanged("GameOver");
             }
             else if (obstacle is Gas gas)

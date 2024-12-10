@@ -511,9 +511,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c834ef87520fa146a131b8e2e184ab9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  slimeCount: 0
-  metalCount: 0
-  rubberCount: 0
   _rb: {fileID: 49633282}
   _physicMaterial: {fileID: 13400000, guid: 006a6404c0e8f45bc8b514672d2031d2, type: 2}
   _collider: {fileID: 49633278}
@@ -2125,6 +2122,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7809681589101310398, guid: b1b37d756df64437083463844b9cec04,
+        type: 3}
+      propertyPath: m_Mass
+      value: 0.3
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b1b37d756df64437083463844b9cec04, type: 3}
@@ -3859,6 +3861,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 98767ffb1155413dbb0d3f67fd4f2848, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  stageNumber: 1
 --- !u!4 &891149203
 Transform:
   m_ObjectHideFlags: 0
@@ -5701,6 +5704,51 @@ Transform:
   - {fileID: 1283155938}
   m_Father: {fileID: 0}
   m_RootOrder: 6
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1521972963
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1521972965}
+  - component: {fileID: 1521972964}
+  m_Layer: 0
+  m_Name: StageObject
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1521972964
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1521972963}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4305762014314af0a47e7f3a547ba05e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  player: {fileID: 49633280}
+--- !u!4 &1521972965
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1521972963}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -1.2804719, y: 7.7488627, z: -2.441541}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 11
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1534461542
 PrefabInstance:
