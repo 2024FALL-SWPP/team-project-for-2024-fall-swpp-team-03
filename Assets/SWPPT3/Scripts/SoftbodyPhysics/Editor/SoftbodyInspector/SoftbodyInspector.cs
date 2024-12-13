@@ -177,6 +177,7 @@ namespace SWPPT3.SoftbodyPhysics.Editor.SoftbodyInspector
                             // go.layer = LayerMask.NameToLayer("OuterSphere");
                             // var rb = go.AddComponent<Rigidbody>();
                             // rb.mass = massPerBone;
+                            // rb.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
                             go.transform.SetParent(collidersRoot, false);
 
                             var sc = go.GetComponent<SphereCollider>();

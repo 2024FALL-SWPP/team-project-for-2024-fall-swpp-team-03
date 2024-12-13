@@ -221,7 +221,7 @@ namespace SWPPT3.SoftbodyPhysics
 
                  _springsNa = new NativeArray<Spring>(_springs.ToArray(), Allocator.Persistent);
                  _springListNa = new NativeArray<int>(_springList.ToArray(), Allocator.Persistent);
-                 Debug.Log(_springList.Count);
+                 Debug.Log($"bone count : {_bonesBuffer1.Length}");
              }
 
 
@@ -351,7 +351,7 @@ namespace SWPPT3.SoftbodyPhysics
 
                      position += velocity * DeltaTime;
 
-                     // Debug.Log($"{index} {velocity} {force},");
+                     Debug.Log($"{index} {velocity} {force} {position}");
 
                      BoneWrite[index] = new Bone
                      {
@@ -372,8 +372,8 @@ namespace SWPPT3.SoftbodyPhysics
                  public void Execute(int index, TransformAccess transform)
                  {
                      BoneWrite[index] = BoneRead[index];
-                     if(index >= outerIndexStart)
-                         transform.localPosition = BoneRead[index - outerIndexStart].Position;
+                     if(index < outerIndexStart)
+                         transform.localPosition = BoneRead[index + outerIndexStart].Position;
                  }
              }
 
