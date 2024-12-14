@@ -70,6 +70,37 @@ namespace SWPPT3.Main.PlayerLogic
             }
         }
 
+        private void FixedUpdate()
+        {
+            Vector3 moveDirection = GetMoveDirection();
+            Vector3 newPosition = transform.position + moveDirection * (_moveSpeed * Time.fixedDeltaTime);
+            _rb.MovePosition(newPosition);
+
+            // foreach(var info in _colliderInfos){
+            //     if(info.IsColliding){
+            //         info.UpdateGlobalPosition();
+            //     }
+            // }
+            //
+            // foreach(var info in _colliderInfos){
+            //     if (info.IsColliding)
+            //     {
+            //         Vector3 localPositionChange = transform.InverseTransformPoint(info.CurrentGlobalPosition) - transform.InverseTransformPoint(info.PreviousGlobalPosition);
+            //         Vector3 springForce = -springStiffness * localPositionChange;
+            //         _rb.velocity += springForce * Time.fixedDeltaTime; // velocity에 누적하여 스프링 힘 적용
+            //     }
+            // }
+            // foreach(var info in _colliderInfos){
+            //     info.IsColliding = false;
+            //     info.UpdatePreviousGlobalPosition();
+            // }
+
+            // if(_player.CurrentState == PlayerStates.Rubber && !_isGrounded && _isHoldingJump){
+            //     _player.SetBounciness(1.0f);
+            //     _rb.velocity += Vector3.up * _jumpForce * Time.fixedDeltaTime; // 점프 힘 적용
+            // }
+        }
+
         public void OnEnable()
         {
             Physics.ContactModifyEvent += ModificationEvent;

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Unity.Collections;
 using Unity.Jobs;
@@ -134,8 +135,12 @@ namespace SWPPT3.SoftbodyPhysics
         [SerializeField]  private Vector3 _position;
         [SerializeField] private Vector3 _velocity;
         [SerializeField] private float _mass;
+        private Vector3 _newPosition;
+        private Vector3 _fisrtPosition;
 
+        public Vector3 FirstPosition{get => _fisrtPosition; set => _fisrtPosition = value;}
         public Vector3 Position{get => _position; set => _position = value;}
+        public Vector3 NewPosition{get => _newPosition; set => _newPosition = value;}
         public Vector3 Velocity { get => _velocity; set => _velocity = value; }
         public float Mass { get => _mass; set => _mass = value; }
 
@@ -187,10 +192,13 @@ namespace SWPPT3.SoftbodyPhysics
              private NativeArray<Spring> _springsNa;
              private NativeArray<int> _springListNa;
 
+             private NativeArray<RaycastCommand> _raycastCommands;
+             private NativeArray<RaycastHit> _raycastHits;
+
              private TransformAccessArray _colliderTransforms;
 
-             [SerializeField] private float _springStiffness = 10f;
-             [SerializeField] private float _damping = 2f;
+             [SerializeField] private float _springStiffness = 0.4f;
+             [SerializeField] private float _damping = 0.1f;
 
              [SerializeField] private int _pointDensityMultiplier = 5;
              [SerializeField] private int _totalLayers = 5;
@@ -204,6 +212,10 @@ namespace SWPPT3.SoftbodyPhysics
              private bool _useBuffer1 = true;
              private void Start()
              {
+                 if (_rigidbody == null)
+                 {
+                     _rigidbody = GetComponent<Rigidbody>();
+                 }
                  Debug.Log(_springs[0].Bone1);
                  _colliderTransforms = new TransformAccessArray(_outerColliders.Length);
                  foreach (var collider in _outerColliders)
@@ -218,10 +230,20 @@ namespace SWPPT3.SoftbodyPhysics
 
                  _bonesBuffer1 = new NativeArray<Bone>(_bones.ToArray(), Allocator.Persistent);
                  _bonesBuffer2 = new NativeArray<Bone>(_bones.ToArray(), Allocator.Persistent);
+                 for (int i = 0; i < _bones.Length; i++)
+                 {
+                     var bone = _bonesBuffer1[i];
+                     bone.FirstPosition = bone.Position;
+                     _bonesBuffer1[i] = _bonesBuffer2[i] = bone;
+                 }
 
                  _springsNa = new NativeArray<Spring>(_springs.ToArray(), Allocator.Persistent);
                  _springListNa = new NativeArray<int>(_springList.ToArray(), Allocator.Persistent);
-                 Debug.Log($"bone count : {_bonesBuffer1.Length}");
+
+                 _raycastCommands = new NativeArray<RaycastCommand>(_bones.Length,Allocator.Persistent);
+                 _raycastHits = new NativeArray<RaycastHit>(_bones.Length,Allocator.Persistent);
+
+                 SetHasModifiableContacts(true);
              }
 
 
@@ -229,6 +251,8 @@ namespace SWPPT3.SoftbodyPhysics
              {
                  var _boneRead = _useBuffer1 ? _bonesBuffer1 : _bonesBuffer2;
                  var _boneWrite = _useBuffer1 ? _bonesBuffer2 : _bonesBuffer1;
+
+                 var localToWorldMatrix = _rigidbody.transform.localToWorldMatrix;
 
                  var boneSpringJob = new BoneSpringJob
                  {
@@ -239,10 +263,35 @@ namespace SWPPT3.SoftbodyPhysics
                      DeltaTime = Time.deltaTime,
                      SpringStiffness = _springStiffness,
                      Damping = _damping,
-                     BoneCount = _connectedCount
+                     BoneCount = _connectedCount,
                  };
+
                  var boneSpringHandle = boneSpringJob.Schedule(_boneRead.Length, 16);
                  boneSpringHandle.Complete();
+
+                 var createRaycastJob = new CreateRaycastCommandsJob
+                 {
+                     BoneRead = _boneWrite,
+                     RaycastCommands = _raycastCommands,
+                     localToWorldMatrix = localToWorldMatrix,
+                     Radius = _colliderRadius,
+                 };
+                 var createRaycastHandle = createRaycastJob.Schedule(_boneWrite.Length, 16,boneSpringHandle);
+
+                 JobHandle raycastHandle = RaycastCommand.ScheduleBatch(_raycastCommands, _raycastHits, 1, createRaycastHandle);
+                 raycastHandle.Complete();
+
+                 var applyRaycastJob = new ApplyRaycastResultsJob
+                 {
+                     RaycastHits = _raycastHits,
+                     BoneWrite = _boneWrite,
+                     Radius = _colliderRadius,
+                     LocalToWorldMatrix = localToWorldMatrix,
+                     BoundaryRadius = 0.3f,
+                 };
+
+                 var applyRaycastHandle = applyRaycastJob.Schedule(_boneWrite.Length,16,  raycastHandle);
+                 applyRaycastHandle.Complete();
 
                  var applyBonePositionsJob = new ApplyBonePositionsJob
                  {
@@ -279,20 +328,51 @@ namespace SWPPT3.SoftbodyPhysics
                  if (_bonesBuffer2.IsCreated) _bonesBuffer2.Dispose();
                  if (_springsNa.IsCreated) _springsNa.Dispose();
                  if (_springListNa.IsCreated) _springListNa.Dispose();
+                 if (_raycastCommands.IsCreated) _raycastCommands.Dispose();
+                 if (_raycastHits.IsCreated) _raycastHits.Dispose();
                  _colliderTransforms.Dispose();
              }
 
-             // [BurstCompile]
-             // private struct BonePositionsUpdateJob : IJobParallelFor
-             // {
-             //     [ReadOnly] public NativeArray<Bone> BoneRead;
-             //     public NativeArray<Bone> BoneWrite;
-             //
-             //     public void Execute(int index)
-             //     {
-             //         BoneWrite[index] = BoneRead[index];
-             //     }
-             // }
+             private void OnEnable()
+             {
+                 Physics.ContactModifyEvent += ModificationEvent;
+             }
+
+             private void OnDisable()
+             {
+                 Physics.ContactModifyEvent -= ModificationEvent;
+             }
+
+             public void SetHasModifiableContacts(bool enabled)
+             {
+                 if (_outerColliders == null) return;
+
+                 for (int i = 0; i < _outerColliders.Length; i++)
+                 {
+                     if (_outerColliders[i] != null)
+                     {
+                         _outerColliders[i].hasModifiableContacts = enabled;
+                     }
+                 }
+             }
+
+             public void ModificationEvent(PhysicsScene scene, NativeArray<ModifiableContactPair> pairs)
+             {
+                 for (int i = 0; i < pairs.Length; i++)
+                 {
+                     var pair = pairs[i];
+
+                     var properties = pair.massProperties;
+                     properties.inverseMassScale = 1f;
+                     properties.inverseInertiaScale = 1f;
+                     properties.otherInverseMassScale = 0f;
+                     properties.otherInverseInertiaScale = 0f;
+
+                     pair.massProperties = properties;
+
+                     pairs[i] = pair;
+                 }
+             }
 
              [BurstCompile]
              private struct BoneSpringJob : IJobParallelFor
@@ -313,7 +393,8 @@ namespace SWPPT3.SoftbodyPhysics
                  {
                      Vector3 position = BoneRead[index].Position;
                      Vector3 velocity = BoneRead[index].Velocity;
-                     Vector3 force = Vector3.zero;
+                     // Vector3 force = Vector3.zero;
+                     Vector3 force = new Vector3(0f, -BoneRead[index].Mass * 1f, 0f);
 
                      var start = index * BoneCount;
                      var end = start + BoneCount;
@@ -343,22 +424,112 @@ namespace SWPPT3.SoftbodyPhysics
                              {
                                  force -= springForce;
                              }
+                             // Debug.Log($"i: {index} - bone1: {bone1} - bone2: {bone2} - force: {springForce} restLength {restLength} currentLength {currentLength} ");
                          }
                      }
 
                      velocity += force * DeltaTime;
                      velocity *= Damping;
 
-                     position += velocity * DeltaTime;
+                     var newPosition = position + velocity * DeltaTime;
 
-                     Debug.Log($"{index} {velocity} {force} {position}");
 
-                     BoneWrite[index] = new Bone
+                     if(index == 15) Debug.Log($"{index} v: {velocity} f: {force} np: {newPosition} p: {position.ToString("F3")}");
+
+                     Bone bone = BoneWrite[index];
+                     bone.Position = position;
+                     bone.NewPosition = newPosition;
+                     bone.Velocity = velocity;
+                     BoneWrite[index] = bone;
+                 }
+             }
+
+             [BurstCompile]
+             private struct CreateRaycastCommandsJob : IJobParallelFor
+             {
+                 [ReadOnly] public NativeArray<Bone> BoneRead;
+                 public NativeArray<RaycastCommand> RaycastCommands;
+                 public Matrix4x4 localToWorldMatrix;
+                 public float Radius;
+
+                 public void Execute(int index)
+                 {
+                     Vector3 globalPosition = localToWorldMatrix.MultiplyPoint(BoneRead[index].Position);
+                     Vector3 globalNewPosition = localToWorldMatrix.MultiplyPoint(BoneRead[index].NewPosition);
+                     Vector3 direction = globalNewPosition - globalPosition;
+                     float distance = direction.magnitude;
+                     RaycastCommands[index] = new RaycastCommand(globalPosition, direction.normalized, distance + 4 * Radius);
+                 }
+             }
+
+             [BurstCompile]
+             private struct ApplyRaycastResultsJob : IJobParallelFor
+             {
+                 [ReadOnly] public NativeArray<RaycastHit> RaycastHits;
+                 public NativeArray<Bone> BoneWrite;
+                 public float Radius;
+                 public float BoundaryRadius;
+                 public Matrix4x4 LocalToWorldMatrix;
+
+                 private static float _threshold = 0.1f;
+
+                 public void Execute(int index)
+                 {
+                     var bone = BoneWrite[index];
+                     Vector3 newPosition = bone.NewPosition;
+                     bool zeroVel = false;
+                     bool hasHit = RaycastHits[index].normal != Vector3.zero;
+
+                     if (hasHit)
                      {
-                         Position = position,
-                         Velocity = velocity,
-                         Mass = BoneRead[index].Mass,
-                     };
+
+                         Vector3 hitPoint = RaycastHits[index].point;
+                         Vector3 hitNormal = RaycastHits[index].normal;
+                         Vector3 globalPosition = LocalToWorldMatrix.MultiplyPoint(newPosition);
+                         Vector3 direction = (globalPosition - hitPoint).normalized;
+                         float distance = Vector3.Distance(globalPosition, hitPoint);
+
+                         float cosTheta = Vector3.Dot(direction, hitNormal);
+
+                         float secTheta = 1 / cosTheta;
+
+                         float height = distance * cosTheta;
+
+                         // Debug.Log($"{index} Ray cast hit point: {hitPoint} normal : {hitNormal} distance: {distance} height: {height} cosTheta: {cosTheta}");
+
+                         if (height <= Radius)
+                         {
+                             zeroVel = true;
+                             Vector3 adjustedPosition = hitPoint + direction * Radius * secTheta;
+                             newPosition = LocalToWorldMatrix.inverse.MultiplyPoint(adjustedPosition);
+                             // Debug.Log($"{index} Ray cast close global point: {adjustedPosition}");
+                         }
+                     }
+
+                     Vector3 firstPosition = bone.FirstPosition;
+                     Vector3 offsetFromFirst = newPosition - firstPosition;
+                     float distFromFirst = offsetFromFirst.magnitude;
+                     if (distFromFirst > BoundaryRadius)
+                     {
+                         zeroVel = true;
+                         offsetFromFirst = offsetFromFirst.normalized * BoundaryRadius;
+                         newPosition = firstPosition + offsetFromFirst;
+                     }
+
+                     float positionDelta = (newPosition - bone.Position).magnitude;
+                     if (positionDelta > _threshold)
+                     {
+                         // Debug.Log("change");
+                         bone.Position = newPosition;
+                     }
+                     else
+                     {
+                         // zeroVel = true;
+                     }
+                     if(index == 15)  Debug.Log($"{index} first position: {firstPosition} -> new Position: {newPosition} velocity: {bone.Velocity}");
+                     bone.Velocity = zeroVel ? Vector3.zero : bone.Velocity;
+                     BoneWrite[index] = bone;
+                     // Debug.Log($"global raycast  {index} {newPosition} ");
                  }
              }
 
