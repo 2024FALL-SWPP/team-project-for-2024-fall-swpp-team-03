@@ -157,7 +157,7 @@ namespace SWPPT3.SoftbodyPhysics
         private Transform _collidersRoot;
 
         [SerializeField]
-        private Rigidbody _rigidbody;
+        private Rigidbody _centerRb;
 
         private Rigidbody[] _rigidbodies;
 
@@ -178,8 +178,8 @@ namespace SWPPT3.SoftbodyPhysics
         [HideInInspector, SerializeField]
         private int _connectedCount;
 
-        [HideInInspector, SerializeField]
-        private GameObject _centerObj;
+        // [HideInInspector, SerializeField]
+        // private GameObject _centerObj;
 
         private NativeArray<VertexWeightInfo> _vertexWeightsNa;
         private NativeArray<Vector3> _vertices;
@@ -188,22 +188,21 @@ namespace SWPPT3.SoftbodyPhysics
         private NativeArray<int> _springListNa;
 
         private NativeArray<Vector3> _boneForcesNa;
+        private NativeArray<Vector3>  _centerForcesNa;
         private NativeArray<Vector3> _bonePositionsNa;
+
+        private NativeArray<Matrix4x4> _worldToLocalMatrix;
 
         private TransformAccessArray _boneTransforms;
 
-        [SerializeField] private float _springStiffness = 0.4f;
-        [SerializeField] private float _damping = 0.1f;
+        [SerializeField] private float _springStiffness = 100f;
+        [SerializeField] private float _damping = 0.9f;
 
+        private int _boneCount;
         internal float ColliderRadius => _colliderRadius;
 
         private void Start()
         {
-            if (_rigidbody == null)
-            {
-                _rigidbody = GetComponent<Rigidbody>();
-            }
-
             _rigidbodies = new Rigidbody[_bones.Length];
             for (int i = 0; i < _rigidbodies.Length; i++)
             {
@@ -215,7 +214,7 @@ namespace SWPPT3.SoftbodyPhysics
             {
              _boneTransforms.Add(bone.transform);
             }
-            _boneTransforms.Add(_centerObj.transform);
+            _boneTransforms.Add(_centerRb.transform);
             var list = new List<Vector3>();
             _meshFilter.mesh.GetVertices(list);
 
@@ -226,7 +225,11 @@ namespace SWPPT3.SoftbodyPhysics
             _springListNa = new NativeArray<int>(_springList.ToArray(), Allocator.Persistent);
 
             _boneForcesNa = new NativeArray<Vector3>(_bones.Length, Allocator.Persistent);
+            _centerForcesNa = new NativeArray<Vector3>(_bones.Length, Allocator.Persistent);
+
             _bonePositionsNa = new NativeArray<Vector3>(_bones.Length + 1, Allocator.Persistent);
+            _worldToLocalMatrix = new NativeArray<Matrix4x4>(1, Allocator.Persistent);
+            _boneCount = _bones.Length;
 
             SetHasModifiableContacts(true);
         }
@@ -238,6 +241,8 @@ namespace SWPPT3.SoftbodyPhysics
             };
             var getBonePositionHandle = getBonePositionJob.Schedule(_boneTransforms);
 
+            getBonePositionHandle.Complete();
+
             var boneSpringJob = new BoneSpringJob
             {
              Positions = _bonePositionsNa,
@@ -247,29 +252,37 @@ namespace SWPPT3.SoftbodyPhysics
              DeltaTime = Time.deltaTime,
              SpringStiffness = _springStiffness,
              ConnectedCount = _connectedCount,
+             Bonecount = _boneCount,
+             CenterForce = _centerForcesNa
             };
 
-            var boneSpringHandle = boneSpringJob.Schedule(_bones.Length, 16, getBonePositionHandle);
+            var boneSpringHandle = boneSpringJob.Schedule(_bones.Length, 16);
             boneSpringHandle.Complete();
-
+            Vector3 centerForce = Vector3.zero;
             for (int i = 0; i < _bones.Length; i++)
             {
-             Vector3 currentVelocity = _rigidbodies[i].velocity;
-
-             Vector3 dampingForce = -currentVelocity * _damping;
-             Vector3 totalForce = _boneForcesNa[i] * Time.deltaTime + dampingForce;
-
-             _rigidbodies[i].AddForce(totalForce);
+                Vector3 currentVelocity = _rigidbodies[i].velocity;
+                Vector3 dampingForce = -currentVelocity * _damping;
+                Vector3 totalForce = _boneForcesNa[i] * Time.deltaTime + dampingForce;
+                _rigidbodies[i].AddForce(totalForce);
+                centerForce += _centerForcesNa[i];
             }
+            Vector3 centerVelocity = _centerRb.velocity;
+            Vector3 centerDampingForce = -centerVelocity * _damping;
+            Vector3 totalCenterForce = centerForce * Time.deltaTime + centerDampingForce;
+            _centerRb.AddForce(totalCenterForce);
         }
 
         private void Update()
         {
+
+            _worldToLocalMatrix[0] = transform.worldToLocalMatrix;
             var vertexUpdateJob = new VertexUpdateJob
             {
                 Vertices = _vertices,
                 VertexWeights = _vertexWeightsNa,
                 Positions = _bonePositionsNa,
+                WorldToLocalMatrix = _worldToLocalMatrix
             };
 
             var vertexUpdateHandle = vertexUpdateJob.Schedule(_vertices.Length, 16);
@@ -285,7 +298,9 @@ namespace SWPPT3.SoftbodyPhysics
             if (_springsNa.IsCreated) _springsNa.Dispose();
             if (_springListNa.IsCreated) _springListNa.Dispose();
             if (_boneForcesNa.IsCreated) _boneForcesNa.Dispose();
+            if (_centerForcesNa.IsCreated) _centerForcesNa.Dispose();
             if (_bonePositionsNa.IsCreated) _bonePositionsNa.Dispose();
+            if (_worldToLocalMatrix.IsCreated) _worldToLocalMatrix.Dispose();
             _boneTransforms.Dispose();
         }
 
@@ -346,6 +361,7 @@ namespace SWPPT3.SoftbodyPhysics
         {
 
             public NativeArray<Vector3> Forces;
+            public NativeArray<Vector3> CenterForce;
             [ReadOnly] public NativeArray<Spring> SpringInfos;
             [ReadOnly] public NativeArray<int> SpringList;
             [ReadOnly] public NativeArray<Vector3> Positions;
@@ -354,6 +370,7 @@ namespace SWPPT3.SoftbodyPhysics
             public float SpringStiffness;
 
             public int ConnectedCount;
+            public int Bonecount;
 
             public void Execute(int index)
             {
@@ -362,7 +379,7 @@ namespace SWPPT3.SoftbodyPhysics
                 var start = index * ConnectedCount;
                 var end = start + ConnectedCount;
 
-                Debug.Log($"start: {start}, end: {end}");
+                // Debug.Log($"start: {start}, end: {end}");
                 for (int i = start; i < end; i++)
                 {
                     var springIndex = SpringList[i];
@@ -388,6 +405,15 @@ namespace SWPPT3.SoftbodyPhysics
                         {
                             force -= springForce;
                         }
+
+                        if (bone1 == Bonecount)
+                        {
+                            CenterForce[index] = springForce;
+                        }
+                        else if (bone2 == Bonecount)
+                        {
+                            CenterForce[index] = -springForce;
+                        }
                         // Debug.Log($"i: {index} - bone1: {bone1} - bone2: {bone2} - force: {springForce} restLength {restLength} currentLength {currentLength} ");
                     }
                 }
@@ -402,6 +428,7 @@ namespace SWPPT3.SoftbodyPhysics
             public NativeArray<Vector3> Vertices;
             [ReadOnly] public NativeArray<VertexWeightInfo> VertexWeights;
             [ReadOnly] public NativeArray<Vector3> Positions;
+            [ReadOnly] public NativeArray<Matrix4x4> WorldToLocalMatrix;
 
             public void Execute(int index)
             {
@@ -411,13 +438,57 @@ namespace SWPPT3.SoftbodyPhysics
                 for (var j = 0; j < boneInfo.BoneCount; j++)
                 {
                     var weightInfo = boneInfo[j];
-                    var bonePosition = Positions[weightInfo.BoneIndex];
-                    var boneDesiredVertex = bonePosition + weightInfo.Offset;
+
+                    var bonePositionGlobal = Positions[weightInfo.BoneIndex];
+                    var bonePositionLocal = WorldToLocalMatrix[0].MultiplyPoint3x4(bonePositionGlobal);
+
+                    var boneDesiredVertex = bonePositionLocal + weightInfo.Offset;
                     v += boneDesiredVertex * weightInfo.Weight;
                 }
 
                 Vertices[index] = v;
             }
+        }
+
+        [BurstCompile]
+        struct SumJob : IJobParallelFor
+        {
+            [ReadOnly] public NativeArray<Vector3> Input;
+            [WriteOnly] public NativeArray<Vector3> PartialSums;
+
+            public void Execute(int index)
+            {
+                PartialSums[index] = Input[index];
+            }
+        }
+
+        public static Vector3 CalculateAverage(NativeArray<Vector3> input)
+        {
+            int length = input.Length;
+
+            if (length == 0)
+                return Vector3.zero;
+
+            NativeArray<Vector3> partialSums = new NativeArray<Vector3>(length, Allocator.TempJob);
+
+            var sumJob = new SumJob
+            {
+                Input = input,
+                PartialSums = partialSums
+            };
+
+            JobHandle handle = sumJob.Schedule(length, 16);
+            handle.Complete();
+
+            Vector3 totalSum = Vector3.zero;
+            for (int i = 0; i < length; i++)
+            {
+                totalSum += partialSums[i];
+            }
+
+            partialSums.Dispose();
+
+            return totalSum / length;
         }
     }
 }

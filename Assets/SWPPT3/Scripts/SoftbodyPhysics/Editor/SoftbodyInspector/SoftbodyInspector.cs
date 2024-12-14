@@ -49,7 +49,7 @@ namespace SWPPT3.SoftbodyPhysics.Editor.SoftbodyInspector
             var springListProperty = serializedObject.FindProperty("_springList");
             var bonesProperty = serializedObject.FindProperty("_bones");
             var connectedCount = serializedObject.FindProperty("_connectedCount");
-            var centerObjProperty = serializedObject.FindProperty("_centerObj");
+            var centerRbProperty = serializedObject.FindProperty("_centerRb");
             var mass = 5f;
 
             if (targetObject is null)
@@ -85,6 +85,18 @@ namespace SWPPT3.SoftbodyPhysics.Editor.SoftbodyInspector
             {
                 DestroyImmediate(s);
             }
+
+            var existingRigidbody = targetObject.GetComponent<Rigidbody>();
+            if (existingRigidbody != null)
+            {
+                DestroyImmediate(existingRigidbody);
+            }
+
+            var centerRigidbody = targetObject.gameObject.AddComponent<Rigidbody>();
+            centerRigidbody.mass = mass;
+            centerRigidbody.isKinematic = false;
+            centerRigidbody.useGravity = false;
+
             var list = new List<Vector3>();
             meshFilter.mesh.GetVertices(list);
             bonesProperty.ClearArray();
@@ -176,15 +188,19 @@ namespace SWPPT3.SoftbodyPhysics.Editor.SoftbodyInspector
             }
             centerOfMass = centerOfMass / list.Count;
 
-            var centerObj = new GameObject("centerOfMass");
-            centerObj.transform.SetParent(collidersRoot, false);
-            var centerRb = centerObj.AddComponent<Rigidbody>();
-            var centerSc = centerObj.AddComponent<SphereCollider>();
-            centerObj.layer = LayerMask.NameToLayer("InnerSphere");
-            centerSc.radius = targetObject.ColliderRadius;
-            centerObj.transform.localPosition = centerOfMass;
+            centerRigidbody.centerOfMass = centerOfMass;
 
-            centerObjProperty.objectReferenceValue = centerObj;
+            centerRbProperty.objectReferenceValue = centerRigidbody;
+
+            // var centerObj = new GameObject("centerOfMass");
+            // centerObj.transform.SetParent(collidersRoot, false);
+            // var centerRb = centerObj.AddComponent<Rigidbody>();
+            // var centerSc = centerObj.AddComponent<SphereCollider>();
+            // centerObj.layer = LayerMask.NameToLayer("OuterSphere");
+            // centerSc.radius = targetObject.ColliderRadius;
+            // centerObj.transform.localPosition = centerOfMass;
+
+            // centerObjProperty.objectReferenceValue = centerObj;
 
             for (int i = 0; i < list.Count; i++)
             {
