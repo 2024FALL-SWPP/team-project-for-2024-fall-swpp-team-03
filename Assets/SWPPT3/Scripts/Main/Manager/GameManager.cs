@@ -32,13 +32,13 @@ namespace SWPPT3.Main.Manager
                 }
             }
         }
+        private int stageNumber;
 
         public void Awake()
         {
-            InitializeStage(stageNumber);
+            UIManager.Instance.ShowCanvas("BeforeStart");
         }
 
-        [SerializeField] private int stageNumber;
 
         private void HandleGameStateChanged(GameState newState)
         {
@@ -136,9 +136,17 @@ namespace SWPPT3.Main.Manager
                 case "NextStage":
                     ProceedToNextStage();
                     break;
+                case "Finish":
+                    SetGameState(GameState.GameOver);
+                    break;
                 default:
                     break;
             }
+        }
+        public void OnUIButtonClicked(int stageNum)
+        {
+            stageNumber = stageNum;
+            SetGameState(GameState.Playing);
         }
 
         public void OnPlayerStateChanged(string state)
