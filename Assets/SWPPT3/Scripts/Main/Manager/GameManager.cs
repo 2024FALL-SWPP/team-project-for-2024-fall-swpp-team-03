@@ -33,7 +33,7 @@ namespace SWPPT3.Main.Manager
                 }
             }
         }
-        [SerializeField] private int stageNumber;
+        private int stageNumber;
 
         public void Awake()
         {
@@ -63,6 +63,8 @@ namespace SWPPT3.Main.Manager
                     break;
                 case GameState.StageCleared:
                     stageManager.ClearStage();
+                    stageNumber++;
+                    InitializeStage(stageNumber);
                     break;
             }
         }
