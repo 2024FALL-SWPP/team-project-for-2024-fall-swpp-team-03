@@ -182,7 +182,7 @@ namespace SWPPT3.SoftbodyPhysics
         // private GameObject _centerObj;
 
         private NativeArray<VertexWeightInfo> _vertexWeightsNa;
-        private NativeArray<Vector3> _vertices;
+        private NativeArray<Vector3> _verticesNa;
 
         private NativeArray<Spring> _springsNa;
         private NativeArray<int> _springListNa;
@@ -191,7 +191,15 @@ namespace SWPPT3.SoftbodyPhysics
         private NativeArray<Vector3>  _centerForcesNa;
         private NativeArray<Vector3> _bonePositionsNa;
 
-        private NativeArray<Matrix4x4> _worldToLocalMatrix;
+        private int _connectedTriCount;
+        private int _triCount;
+        private NativeArray<int> _trianglesNa;
+        private NativeArray<int> _triangleInfoNa;
+        private NativeArray<Vector3> _faceNormalsNa;
+        private NativeArray<Vector3> _vertexNormalsNa;
+
+
+        private Matrix4x4 _worldToLocalMatrix;
 
         private TransformAccessArray _boneTransforms;
 
@@ -218,7 +226,7 @@ namespace SWPPT3.SoftbodyPhysics
             var list = new List<Vector3>();
             _meshFilter.mesh.GetVertices(list);
 
-            _vertices = new NativeArray<Vector3>(list.ToArray(), Allocator.Persistent);
+            _verticesNa = new NativeArray<Vector3>(list.ToArray(), Allocator.Persistent);
             _vertexWeightsNa = new NativeArray<VertexWeightInfo>(_vertexWeights.ToArray(), Allocator.Persistent);
 
             _springsNa = new NativeArray<Spring>(_springs.ToArray(), Allocator.Persistent);
@@ -228,9 +236,15 @@ namespace SWPPT3.SoftbodyPhysics
             _centerForcesNa = new NativeArray<Vector3>(_bones.Length, Allocator.Persistent);
 
             _bonePositionsNa = new NativeArray<Vector3>(_bones.Length + 1, Allocator.Persistent);
-            _worldToLocalMatrix = new NativeArray<Matrix4x4>(1, Allocator.Persistent);
             _boneCount = _bones.Length;
 
+            var tri = _meshFilter.mesh.triangles;
+            _trianglesNa = new NativeArray<int>(tri.ToArray(), Allocator.Persistent);
+            _triangleInfoNa = BuildTriangleInfo(_trianglesNa, _verticesNa.Length, out _triCount, out _connectedTriCount);
+
+            _faceNormalsNa = new NativeArray<Vector3>(_triCount, Allocator.Persistent);
+            _vertexNormalsNa = new NativeArray<Vector3>(_verticesNa.Length, Allocator.Persistent);
+            Debug.Log($"{_triCount}");
             SetHasModifiableContacts(true);
         }
         private void FixedUpdate()
@@ -276,31 +290,111 @@ namespace SWPPT3.SoftbodyPhysics
         private void Update()
         {
 
-            _worldToLocalMatrix[0] = transform.worldToLocalMatrix;
+            _worldToLocalMatrix = transform.worldToLocalMatrix;
             var vertexUpdateJob = new VertexUpdateJob
             {
-                Vertices = _vertices,
+                Vertices = _verticesNa,
                 VertexWeights = _vertexWeightsNa,
                 Positions = _bonePositionsNa,
                 WorldToLocalMatrix = _worldToLocalMatrix
             };
 
-            var vertexUpdateHandle = vertexUpdateJob.Schedule(_vertices.Length, 16);
-            vertexUpdateHandle.Complete();
+            var vertexUpdateHandle = vertexUpdateJob.Schedule(_verticesNa.Length, 16);
 
-            _meshFilter.mesh.SetVertices(_vertices);
+            var faceNormalUpdateJob = new FaceNormalUpdateJob
+            {
+                Vertices = _verticesNa,
+                Triangles = _trianglesNa,
+                FaceNormal = _faceNormalsNa,
+            };
+
+            var faceNormalUpdateHandle = faceNormalUpdateJob.Schedule(_triCount, 16, vertexUpdateHandle);
+
+            var vertexNormalUpdateJob = new VertexNormalUpdateJob
+            {
+                FaceNormal = _faceNormalsNa,
+                TriangleInfos = _triangleInfoNa,
+                ConnectedTriCount = _connectedTriCount,
+                VertexNormal = _vertexNormalsNa,
+            };
+
+            var vertexNormalUpdateHandle = vertexNormalUpdateJob.Schedule(_vertexNormalsNa.Length, 16, faceNormalUpdateHandle);
+            vertexNormalUpdateHandle.Complete();
+
+            _meshFilter.mesh.SetVertices(_verticesNa);
+            _meshFilter.mesh.SetNormals(_vertexNormalsNa);
+        }
+
+        private NativeArray<int> BuildTriangleInfo(NativeArray<int> trianglesNa, int vertexCount, out int triCount, out int connectedTriCount)
+        {
+            int[] counts = new int[vertexCount];
+            int triangleCount = trianglesNa.Length / 3;
+
+            for (int tri = 0; tri < triangleCount; tri++)
+            {
+                for (int i = 0; i < 3; i++)
+                {
+                    int vertexIndex = trianglesNa[tri * 3 + i];
+                    counts[vertexIndex]++;
+                }
+            }
+
+            var maxTrianglesPerVertex = 0;
+            for (int v = 0; v < vertexCount; v++)
+            {
+                if (counts[v] > maxTrianglesPerVertex)
+                {
+                    maxTrianglesPerVertex = counts[v];
+                }
+            }
+
+            triCount = triangleCount;
+
+            connectedTriCount = maxTrianglesPerVertex;
+
+            var triangleInfoNa = new NativeArray<int>(vertexCount * maxTrianglesPerVertex, Allocator.Persistent);
+
+            int[] currentTriangleCounts = new int[vertexCount];
+
+            for (int tri = 0; tri < triangleCount; tri++)
+            {
+                for (int i = 0; i < 3; i++)
+                {
+                    int vertexIndex = trianglesNa[tri * 3 + i];
+                    int count = currentTriangleCounts[vertexIndex];
+
+                    triangleInfoNa[vertexIndex * maxTrianglesPerVertex + count] = tri;
+
+                    currentTriangleCounts[vertexIndex]++;
+                }
+            }
+
+            for (int i = 0; i < vertexCount; i++)
+            {
+                int start = i * maxTrianglesPerVertex + currentTriangleCounts[i];
+                int end = (i + 1) * maxTrianglesPerVertex;
+                for (int j = start; j < end; j++)
+                {
+                    triangleInfoNa[j] = -1;
+                }
+            }
+
+            return triangleInfoNa;
         }
 
         private void OnDestroy()
         {
-            if (_vertices.IsCreated) _vertices.Dispose();
+            if (_verticesNa.IsCreated) _verticesNa.Dispose();
             if (_vertexWeightsNa.IsCreated) _vertexWeightsNa.Dispose();
             if (_springsNa.IsCreated) _springsNa.Dispose();
             if (_springListNa.IsCreated) _springListNa.Dispose();
             if (_boneForcesNa.IsCreated) _boneForcesNa.Dispose();
             if (_centerForcesNa.IsCreated) _centerForcesNa.Dispose();
             if (_bonePositionsNa.IsCreated) _bonePositionsNa.Dispose();
-            if (_worldToLocalMatrix.IsCreated) _worldToLocalMatrix.Dispose();
+            if (_trianglesNa.IsCreated) _trianglesNa.Dispose();
+            if (_triangleInfoNa.IsCreated) _triangleInfoNa.Dispose();
+            if (_faceNormalsNa.IsCreated) _faceNormalsNa.Dispose();
+            if (_vertexNormalsNa.IsCreated) _vertexNormalsNa.Dispose();
             _boneTransforms.Dispose();
         }
 
@@ -428,7 +522,7 @@ namespace SWPPT3.SoftbodyPhysics
             public NativeArray<Vector3> Vertices;
             [ReadOnly] public NativeArray<VertexWeightInfo> VertexWeights;
             [ReadOnly] public NativeArray<Vector3> Positions;
-            [ReadOnly] public NativeArray<Matrix4x4> WorldToLocalMatrix;
+            [ReadOnly] public Matrix4x4 WorldToLocalMatrix;
 
             public void Execute(int index)
             {
@@ -440,7 +534,7 @@ namespace SWPPT3.SoftbodyPhysics
                     var weightInfo = boneInfo[j];
 
                     var bonePositionGlobal = Positions[weightInfo.BoneIndex];
-                    var bonePositionLocal = WorldToLocalMatrix[0].MultiplyPoint3x4(bonePositionGlobal);
+                    var bonePositionLocal = WorldToLocalMatrix.MultiplyPoint3x4(bonePositionGlobal);
 
                     var boneDesiredVertex = bonePositionLocal + weightInfo.Offset;
                     v += boneDesiredVertex * weightInfo.Weight;
@@ -451,44 +545,103 @@ namespace SWPPT3.SoftbodyPhysics
         }
 
         [BurstCompile]
-        struct SumJob : IJobParallelFor
+        private struct FaceNormalUpdateJob : IJobParallelFor
         {
-            [ReadOnly] public NativeArray<Vector3> Input;
-            [WriteOnly] public NativeArray<Vector3> PartialSums;
+
+            [ReadOnly] public NativeArray<Vector3> Vertices;
+            [ReadOnly] public NativeArray<int> Triangles;
+
+            public NativeArray<Vector3> FaceNormal;
 
             public void Execute(int index)
             {
-                PartialSums[index] = Input[index];
+                int tri = index * 3;
+                var v1 = Vertices[Triangles[tri]];
+                var v2 = Vertices[Triangles[tri + 1]];
+                var v3 = Vertices[Triangles[tri + 2]];
+
+                var e1 = v2 - v1;
+                var e2 = v3 - v2;
+
+                var normal = Vector3.Cross(e1, e2).normalized;
+
+                FaceNormal[index] = normal;
             }
         }
 
-        public static Vector3 CalculateAverage(NativeArray<Vector3> input)
+        [BurstCompile]
+        private struct VertexNormalUpdateJob : IJobParallelFor
         {
-            int length = input.Length;
 
-            if (length == 0)
-                return Vector3.zero;
+            [ReadOnly] public NativeArray<Vector3> FaceNormal;
+            [ReadOnly] public NativeArray<int> TriangleInfos;
+            [ReadOnly] public int ConnectedTriCount;
 
-            NativeArray<Vector3> partialSums = new NativeArray<Vector3>(length, Allocator.TempJob);
 
-            var sumJob = new SumJob
+            public NativeArray<Vector3> VertexNormal;
+
+            public void Execute(int index)
             {
-                Input = input,
-                PartialSums = partialSums
-            };
+                var start = index * ConnectedTriCount;
+                var end = start + ConnectedTriCount;
 
-            JobHandle handle = sumJob.Schedule(length, 16);
-            handle.Complete();
+                Vector3 normal = Vector3.zero;
+                int count = 0;
+                for (int i = start; i < end; i++)
+                {
+                    if (TriangleInfos[i] != -1)
+                    {
+                        count++;
+                        normal += FaceNormal[TriangleInfos[i]];
+                    }
+                }
 
-            Vector3 totalSum = Vector3.zero;
-            for (int i = 0; i < length; i++)
-            {
-                totalSum += partialSums[i];
+                VertexNormal[index] = normal/count;
+                // Debug.Log($"Vertex normal{index} {count} {normal.ToString()} {ConnectedTriCount}: {normal/count}");
             }
-
-            partialSums.Dispose();
-
-            return totalSum / length;
         }
+
+
+
+        // [BurstCompile]
+        // struct SumJob : IJobParallelFor
+        // {
+        //     [ReadOnly] public NativeArray<Vector3> Input;
+        //     [WriteOnly] public NativeArray<Vector3> PartialSums;
+        //
+        //     public void Execute(int index)
+        //     {
+        //         PartialSums[index] = Input[index];
+        //     }
+        // }
+        //
+        // public static Vector3 CalculateAverage(NativeArray<Vector3> input)
+        // {
+        //     int length = input.Length;
+        //
+        //     if (length == 0)
+        //         return Vector3.zero;
+        //
+        //     NativeArray<Vector3> partialSums = new NativeArray<Vector3>(length, Allocator.TempJob);
+        //
+        //     var sumJob = new SumJob
+        //     {
+        //         Input = input,
+        //         PartialSums = partialSums
+        //     };
+        //
+        //     JobHandle handle = sumJob.Schedule(length, 16);
+        //     handle.Complete();
+        //
+        //     Vector3 totalSum = Vector3.zero;
+        //     for (int i = 0; i < length; i++)
+        //     {
+        //         totalSum += partialSums[i];
+        //     }
+        //
+        //     partialSums.Dispose();
+        //
+        //     return totalSum / length;
+        // }
     }
 }
