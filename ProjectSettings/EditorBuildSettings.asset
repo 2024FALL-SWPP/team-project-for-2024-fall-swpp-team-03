@@ -5,9 +5,15 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/SWPPT3/Scenes/Test Scene.unity
     guid: 99c9720ab356a0642a771bea13969a05
+  - enabled: 1
+    path: Assets/SWPPT3/Scenes/Start.unity
+    guid: 96f63ad9c1d2a49b6a8416950a10308d
+  - enabled: 1
+    path: Assets/SWPPT3/Scenes/Stage1test.unity
+    guid: 09dbdee0837013540a6e83001be9d5fb
   m_configObjects:
     com.unity.addressableassets: {fileID: 11400000, guid: b01f91319d8c9ba4db8bea7be7272105,
       type: 2}

@@ -146,7 +146,7 @@ namespace SWPPT3.Main.Manager
         }
         public void OnUIButtonClicked(int stageNum)
         {
-            Debug.Log("GameManager button clicked");
+            //Debug.Log("GameManager button clicked");
             stageNumber = stageNum;
             string sceneName = $"Stage{stageNum}test";
             SceneManager.LoadScene(sceneName);
