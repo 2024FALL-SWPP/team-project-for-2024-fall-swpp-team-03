@@ -102,13 +102,9 @@ namespace SWPPT3.Main.PlayerLogic
         }
         public void SetItemCounts(int newSlimeCount, int newMetalCount, int newRubberCount)
         {
-            slimeCount = newSlimeCount;
-            metalCount = newMetalCount;
-            rubberCount = newRubberCount;
-
-            Item[PlayerStates.Slime] = slimeCount;
-            Item[PlayerStates.Metal] = metalCount;
-            Item[PlayerStates.Rubber] = rubberCount;
+            Item[PlayerStates.Slime] = newSlimeCount;
+            Item[PlayerStates.Metal] = newMetalCount;
+            Item[PlayerStates.Rubber] = newRubberCount;
         }
     }
 }

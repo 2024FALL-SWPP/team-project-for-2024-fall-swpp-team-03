@@ -37,8 +37,9 @@ namespace SWPPT3.Main.Manager
 
         public void Awake()
         {
-            UIManager.Instance.Initialize(this);
-            UIManager.Instance.ShowCanvas("BeforeStart");
+            //UIManager.Instance.Initialize(this);
+            //UIManager.Instance.ShowCanvas("BeforeStart");
+            InitializeStage(1);
         }
 
 
