@@ -11,9 +11,8 @@ GameObject:
   - component: {fileID: 8056305843128070135}
   - component: {fileID: 8056305843128070128}
   - component: {fileID: 8056305843128070129}
-  - component: {fileID: 8056305843128070130}
   - component: {fileID: -5186212655999948723}
-  - component: {fileID: 5516704682588829139}
+  - component: {fileID: 6967512372165788986}
   m_Layer: 0
   m_Name: Shield
   m_TagString: Untagged
@@ -86,20 +85,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &8056305843128070130
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8056305843128070131}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 4
-  m_Convex: 0
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!95 &-5186212655999948723
 Animator:
   serializedVersion: 5
@@ -121,18 +106,16 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &5516704682588829139
-MonoBehaviour:
+--- !u!65 &6967512372165788986
+BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8056305843128070131}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
   m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a57b55a3ab994eb09ef4f58bcf483fe5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  stateSources: []
-  collider: {fileID: 8056305843128070130}
-  animator: {fileID: -5186212655999948723}
+  serializedVersion: 2
+  m_Size: {x: 10.000004, y: 0.1, z: 10.000002}
+  m_Center: {x: 0, y: 0, z: 0}
