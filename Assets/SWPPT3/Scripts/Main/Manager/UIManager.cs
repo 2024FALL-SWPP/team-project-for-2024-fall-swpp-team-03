@@ -5,8 +5,9 @@ using SWPPT3.Main.Utility.Singleton;
 using System.Collections;
 using UnityEngine.SceneManagement;
 
-public class UIManager : MonoWeakSingleton<UIManager>
+public class UIManager : MonoSingleton<UIManager>
 {
+    private GameManager _gameManager;
     [Header("Canvases")]
     [SerializeField] private Canvas beforeCanvas;
     [SerializeField] private Canvas playingCanvas;
@@ -34,6 +35,13 @@ public class UIManager : MonoWeakSingleton<UIManager>
     [SerializeField] private Button tutorial2Button;
 
     private float introDuration = 1.0f;
+
+    public void Initialize(GameManager gameManager)
+    {
+        _gameManager = gameManager;
+
+        _gameManager.OnGameStateChanged += OnGameStateChanged;
+    }
 
     private void Start()
     {
@@ -93,14 +101,22 @@ public class UIManager : MonoWeakSingleton<UIManager>
         beforeOptionCanvas.gameObject.SetActive(false);
     }
 
-    private void OnEnable()
-    {
-        GameManager.Instance.OnGameStateChanged += OnGameStateChanged;
-    }
+    // private void OnEnable()
+    // {
+    //     GameManager.Instance.OnGameStateChanged += OnGameStateChanged;
+    // }
+    //
+    // private void OnDisable()
+    // {
+    //     GameManager.Instance.OnGameStateChanged -= OnGameStateChanged;
+    // }
 
-    private void OnDisable()
+    private void OnDestroy()
     {
-        GameManager.Instance.OnGameStateChanged -= OnGameStateChanged;
+        if (_gameManager != null)
+        {
+            _gameManager.OnGameStateChanged -= OnGameStateChanged;
+        }
     }
 
     private void OnButtonClicked(string buttonName)

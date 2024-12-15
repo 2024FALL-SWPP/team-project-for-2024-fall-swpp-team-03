@@ -44,12 +44,18 @@ namespace SWPPT3.Main.PlayerLogic
 
         private void Awake()
         {
+            if (Item == null)
+            {
+                Item = new Dictionary<PlayerStates, int>
+                {
+                    { PlayerStates.Slime, 0 },
+                    { PlayerStates.Metal, 0 },
+                    { PlayerStates.Rubber, 0 },
+                };
+            }
             TryChangeState(PlayerStates.Slime);
             InputManager.Instance.OnChangeState += HandleChangeState;
         }
-
-
-
 
         public void HandleChangeState(InputAction.CallbackContext context)
         {
@@ -96,15 +102,6 @@ namespace SWPPT3.Main.PlayerLogic
         }
         public void SetItemCounts(int newSlimeCount, int newMetalCount, int newRubberCount)
         {
-            if (Item == null)
-            {
-                Item = new Dictionary<PlayerStates, int>
-                {
-                    { PlayerStates.Slime, 0 },
-                    { PlayerStates.Metal, 0 },
-                    { PlayerStates.Rubber, 0 },
-                };
-            }
             slimeCount = newSlimeCount;
             metalCount = newMetalCount;
             rubberCount = newRubberCount;

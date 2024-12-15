@@ -37,8 +37,8 @@ namespace SWPPT3.Main.Manager
 
         public void Awake()
         {
-            //UIManager.Instance.ShowCanvas("BeforeStart");
-            InitializeStage(stageNumber);
+            UIManager.Instance.Initialize(this);
+            UIManager.Instance.ShowCanvas("BeforeStart");
         }
 
 
@@ -174,6 +174,21 @@ namespace SWPPT3.Main.Manager
                     break;
                 default:
                     break;
+            }
+        }
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+        private static void EnsureInitialized()
+        {
+            if (Instance == null)
+            {
+                var obj = new GameObject(nameof(GameManager));
+                var manager = obj.AddComponent<GameManager>();
+
+                var uiObj = new GameObject(nameof(UIManager));
+                uiObj.AddComponent<UIManager>();
+
+                var inputObj = new GameObject(nameof(InputManager));
+                inputObj.AddComponent<InputManager>();
             }
         }
     }
