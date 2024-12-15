@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 152991764160933129}
   - component: {fileID: 484997363078292188}
   - component: {fileID: 8370447403925837158}
+  - component: {fileID: -2274083261530601280}
   m_Layer: 0
   m_Name: Button_Stone
   m_TagString: Untagged
@@ -70,6 +71,19 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!65 &-2274083261530601280
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1633906060559550858}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.43809724, y: 0.36163688, z: 0.10624436}
+  m_Center: {x: -0.007835428, y: -0.009615377, z: 0.10635738}
 --- !u!1001 &2786888749207841216
 PrefabInstance:
   m_ObjectHideFlags: 0
