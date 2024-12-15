@@ -13,6 +13,11 @@ namespace SWPPT3.Main.Prop
         {
 
         }
+
+        public virtual void StopInteractWithPlayer()
+        {
+
+        }
         public virtual void StopInteractWithPlayer(PlayerStates state)
         {
 

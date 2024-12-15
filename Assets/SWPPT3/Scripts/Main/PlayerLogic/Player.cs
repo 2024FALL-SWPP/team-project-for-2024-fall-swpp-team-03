@@ -12,8 +12,8 @@ namespace SWPPT3.Main.PlayerLogic
     {
         private PlayerStates _currentState = PlayerStates.Slime;
         private Vector2 _inputMovement;
-
-        private bool _isGameOver = false;
+        private int slimeCount , metalCount, rubberCount;
+        public Dictionary<PlayerStates, int> Item;
 
         [SerializeField]
         private Rigidbody _rb;
@@ -21,13 +21,6 @@ namespace SWPPT3.Main.PlayerLogic
         public PhysicMaterial _physicMaterial;
         [SerializeField]
         public Collider _collider;
-
-        public Dictionary<PlayerStates, int> Item = new()
-        {
-            { PlayerStates.Slime, 0 },
-            { PlayerStates.Metal, 0 },
-            { PlayerStates.Rubber, 0 },
-        };
 
         private PlayerState PlayerState => _playerStates[_currentState];
 
@@ -51,26 +44,21 @@ namespace SWPPT3.Main.PlayerLogic
 
         private void Awake()
         {
+            if (Item == null)
+            {
+                Item = new Dictionary<PlayerStates, int>
+                {
+                    { PlayerStates.Slime, 0 },
+                    { PlayerStates.Metal, 0 },
+                    { PlayerStates.Rubber, 0 },
+                };
+            }
             TryChangeState(PlayerStates.Slime);
             InputManager.Instance.OnChangeState += HandleChangeState;
         }
 
-
-        private void Update()
-        {
-            if (_isGameOver)
-            {
-
-            }
-            else
-            {
-
-            }
-        }
-
         public void HandleChangeState(InputAction.CallbackContext context)
         {
-            if (_isGameOver) return;
             string keyPressed = context.control.displayName;
             Debug.Log(keyPressed);
 
@@ -94,6 +82,7 @@ namespace SWPPT3.Main.PlayerLogic
                 PlayerState.ChangeRigidbody(_rb);
                 PlayerState.ChangePhysics(_collider, _physicMaterial);
                 _collider.hasModifiableContacts = newState == PlayerStates.Slime;
+                Debug.Log("newState: "+newState);
             }
         }
 
@@ -107,19 +96,19 @@ namespace SWPPT3.Main.PlayerLogic
             PlayerState.StopInteractWithProp(this, prop);
         }
 
-        public void GameOver()
-        {
-            _isGameOver = true;
-            Debug.Log("Game Over");
-        }
         private void OnDestroy()
         {
-            if (InputManager.Instance != null)
-            {
-                InputManager.Instance.OnChangeState -= HandleChangeState;
-            }
+            InputManager.Instance.OnChangeState -= HandleChangeState;
         }
+        public void SetItemCounts(int newSlimeCount, int newMetalCount, int newRubberCount)
+        {
+            slimeCount = newSlimeCount;
+            metalCount = newMetalCount;
+            rubberCount = newRubberCount;
 
-
+            Item[PlayerStates.Slime] = slimeCount;
+            Item[PlayerStates.Metal] = metalCount;
+            Item[PlayerStates.Rubber] = rubberCount;
+        }
     }
 }

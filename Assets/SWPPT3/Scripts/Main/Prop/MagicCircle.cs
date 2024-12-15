@@ -1,60 +1,59 @@
-using System;
+using SWPPT3.Main.Manager;
 using UnityEngine;
-using System.Collections.Generic;
 
 namespace SWPPT3.Main.Prop
 {
     public class MagicCircle : StateDst
     {
-        [SerializeField]
-        private Animator animator;
-
+        [SerializeField] private Animator animator;
         [SerializeField] private Collider collider;
-
-        private Dictionary<StateSource, string> sourceToParamMap;
+        [SerializeField] private int circleState;
 
         public void Awake()
         {
-            collider.enabled = false;
-
-            sourceToParamMap = new Dictionary<StateSource, string>();
-
-            for (int i = 0; i < stateSources.Count; i++)
-            {
-                string parameterName = $"IsActive{i + 1}";
-                sourceToParamMap[stateSources[i]] = parameterName;
-            }
+            UpdateCircleState();
         }
 
         protected override void OnSourceStateChanged(StateSource src, bool state)
         {
-
-            animator.SetBool(sourceToParamMap[src], state);
-
-            if (CheckActive())
-            {
-                ActivateMagicCircle();
-            }
+            if (maintainState && State) return;
+            UpdateCircleState();
         }
 
-        private bool CheckActive()
+        private void UpdateCircleState()
         {
-            foreach (StateSource source in stateSources)
+            circleState = 0;
+
+            foreach (var source in stateSources)
             {
-                if (!source.State)
+                if (source.State)
                 {
-                    State = false;
-                    return false;
+                    circleState++;
                 }
             }
-            State = true;
-            return true;
+
+            animator.SetInteger("CircleState", circleState);
+
+            if (circleState == stateSources.Count)
+            {
+                State = true;
+                ActivateMagicCircle();
+            }
+            else
+            {
+                State = false;
+                DeactivateMagicCircle();
+            }
         }
 
         private void ActivateMagicCircle()
         {
             collider.enabled = true;
-            Debug.Log("Magic Circle Activated");
+        }
+
+        private void DeactivateMagicCircle()
+        {
+            collider.enabled = false;
         }
     }
 }

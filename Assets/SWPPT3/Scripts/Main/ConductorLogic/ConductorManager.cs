@@ -43,6 +43,7 @@ namespace SWPPT3.Main.ConductorLogic
 
                 foreach (var connectionObj in current.Connections)
                 {
+                    //Debug.Log(current.ToString()+ connectionObj.ToString());
                     var conductor = connectionObj.GetComponent<Conductor>();
 
                     if (conductor != null && !visited.Contains(conductor) && conductor.IsConductive())

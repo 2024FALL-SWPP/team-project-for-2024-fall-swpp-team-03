@@ -23,6 +23,7 @@ namespace SWPPT3.Main.Utility
 
         private void Start()
         {
+            if (player == null) return;
             Vector3 initialPosition = player.position - player.forward * camerascript.DistanceFromPlayer + Vector3.up * camerascript.CameraHeight;
             transform.position = initialPosition;
 
@@ -44,6 +45,7 @@ namespace SWPPT3.Main.Utility
 
         private void Update()
         {
+            if (player == null) return;
             if (!_isLeftButton && !_isRightButton)
             {
                 float mouseX = _lookInput.x * _mouseSensitivity;

@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 4419043552630926154}
   - component: {fileID: 57740949620735577}
   - component: {fileID: 5873482722219114842}
+  - component: {fileID: 3228992616577915194}
   m_Layer: 0
   m_Name: Rubber_Item
   m_TagString: Untagged
@@ -86,6 +87,19 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 112
   m_CollisionDetection: 0
+--- !u!114 &3228992616577915194
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1310564158333579539}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5bba6f14c6f242cea6b0b0e510071188, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ItemState: 2
 --- !u!1 &2670668367712694115
 GameObject:
   m_ObjectHideFlags: 0

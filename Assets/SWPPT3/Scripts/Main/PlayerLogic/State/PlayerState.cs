@@ -1,3 +1,4 @@
+using SWPPT3.Main.Manager;
 using SWPPT3.Main.Prop;
 using SWPPT3.Main.PlayerLogic;
 using UnityEngine;
@@ -18,16 +19,21 @@ namespace SWPPT3.Main.PlayerLogic.State
             if (obstacle is ItemBox itemBox)
             {
                 player.Item[itemBox.ItemState] += 1;
-                Debug.Log(player.Item[itemBox.ItemState]);
+                Debug.Log(itemBox.ItemState);
                 itemBox.InteractWithPlayer();
             }
-            else if (obstacle is PoisonPool poisonPool)
+            else if (obstacle is PoisonPool)
             {
-                player.GameOver();
+                Debug.Log("collide with Poison pool");
+                GameManager.Instance.OnPlayerStateChanged("GameOver");
             }
-            else if (obstacle is Gas gas)
+            else if (obstacle is Gas)
             {
                 player.TryChangeState(PlayerStates.Slime);
+            }
+            else if (obstacle is MagicCircle)
+            {
+                GameManager.Instance.OnPlayerStateChanged("StageCleared");
             }
             else
             {
@@ -38,6 +44,7 @@ namespace SWPPT3.Main.PlayerLogic.State
         public virtual void StopInteractWithProp(Player player, PropBase obstacle)
         {
             obstacle.StopInteractWithPlayer(player.CurrentState);
+
         }
 
         public abstract void ChangeRigidbody(Rigidbody rb);

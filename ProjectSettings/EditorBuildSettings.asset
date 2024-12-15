@@ -5,9 +5,33 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/SWPPT3/Scenes/Test Scene.unity
     guid: 99c9720ab356a0642a771bea13969a05
+  - enabled: 1
+    path: Assets/SWPPT3/Scenes/Start.unity
+    guid: 96f63ad9c1d2a49b6a8416950a10308d
+  - enabled: 1
+    path: Assets/SWPPT3/Scenes/Stage1test.unity
+    guid: 09dbdee0837013540a6e83001be9d5fb
+  - enabled: 1
+    path: Assets/SWPPT3/Scenes/Tutorial2Test.unity
+    guid: 3c92b496b3658e642a920ca20ea11fb5
+  - enabled: 1
+    path: Assets/SWPPT3/Scenes/Stage2test.unity
+    guid: 482dd5d9a5366554bab7c1a38e85e239
+  - enabled: 1
+    path: Assets/SWPPT3/Scenes/Stage3test.unity
+    guid: de97e6b5dbf48b24a9cb5be3edf4f33a
+  - enabled: 1
+    path: Assets/SWPPT3/Scenes/Stage4test.unity
+    guid: 2b905a197df3ded4298661f2b2cd4a52
+  - enabled: 1
+    path: Assets/SWPPT3/Scenes/Stage5test.unity
+    guid: dbd5326bbcda648448378db9e9830e28
+  - enabled: 1
+    path: Assets/SWPPT3/Scenes/Tutorial1Test.unity
+    guid: 9e371724b3866b14185add9df7ce1a0f
   m_configObjects:
     com.unity.addressableassets: {fileID: 11400000, guid: b01f91319d8c9ba4db8bea7be7272105,
       type: 2}
