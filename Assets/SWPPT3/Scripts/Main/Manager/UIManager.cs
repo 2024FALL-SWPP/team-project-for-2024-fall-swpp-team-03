@@ -110,6 +110,7 @@ public class UIManager : MonoWeakSingleton<UIManager>
 
     private void OnButtonClicked(int stageNum)
     {
+        Debug.Log("UIManager button clicked");
         GameManager.Instance.OnUIButtonClicked(stageNum);
     }
 

@@ -3,6 +3,7 @@ using System;
 using SWPPT3.Main.StageDirector;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace SWPPT3.Main.Manager
 {
@@ -145,7 +146,10 @@ namespace SWPPT3.Main.Manager
         }
         public void OnUIButtonClicked(int stageNum)
         {
+            Debug.Log("GameManager button clicked");
             stageNumber = stageNum;
+            string sceneName = $"Stage{stageNum}test";
+            SceneManager.LoadScene(sceneName);
             SetGameState(GameState.Playing);
         }
 
