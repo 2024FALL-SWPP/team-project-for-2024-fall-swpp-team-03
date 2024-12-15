@@ -9,7 +9,7 @@ namespace SWPPT3.Main.PlayerLogic.State
         {
             if (false)
             {
-
+                obstacle.InteractWithPlayer();
             }
             else
             {
@@ -19,7 +19,7 @@ namespace SWPPT3.Main.PlayerLogic.State
 
         public override void ChangeRigidbody(Rigidbody rb)
         {
-            rb.mass = 10f;
+
         }
 
         public override void ChangePhysics(Collider collider, PhysicMaterial physicMaterial)
@@ -32,6 +32,5 @@ namespace SWPPT3.Main.PlayerLogic.State
 
             collider.material = physicMaterial;
         }
-
     }
 }
