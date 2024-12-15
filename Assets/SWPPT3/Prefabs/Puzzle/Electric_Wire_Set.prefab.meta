@@ -1,13 +1,7 @@
 fileFormatVersion: 2
-<<<<<<<< HEAD:Assets/SWPPT3/Prefabs/TestPlayer2.prefab.meta
-guid: 681b331eeb43e584c9fe1105426a19dd
-|||||||| 6b73f6f:Assets/SWPPT3/Prefabs/Puzzle/ElectricWire.prefab.meta
-guid: dbc858894383b9d429bcf0186fe02c8b
-========
 guid: eda2e419eac0c964d8545aa2aa2b475f
->>>>>>>> main:Assets/SWPPT3/Prefabs/Puzzle/Electric_Wire_Set.prefab.meta
 PrefabImporter:
   externalObjects: {}
-  userData: 
-  assetBundleName: 
-  assetBundleVariant: 
+  userData:
+  assetBundleName:
+  assetBundleVariant:
