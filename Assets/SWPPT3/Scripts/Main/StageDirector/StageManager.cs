@@ -32,7 +32,7 @@ namespace SWPPT3.Main.StageDirector
 
         public void ClearStage()
         {
-
+            Time.timeScale = 0f;
         }
     }
 }

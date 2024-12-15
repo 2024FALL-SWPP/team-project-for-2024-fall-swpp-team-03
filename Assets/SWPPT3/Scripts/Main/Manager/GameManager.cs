@@ -33,11 +33,11 @@ namespace SWPPT3.Main.Manager
                 }
             }
         }
-        private int stageNumber;
+        [SerializeField] private int stageNumber;
 
         public void Awake()
         {
-            UIManager.Instance.ShowCanvas("BeforeStart");
+            //UIManager.Instance.ShowCanvas("BeforeStart");
         }
 
 

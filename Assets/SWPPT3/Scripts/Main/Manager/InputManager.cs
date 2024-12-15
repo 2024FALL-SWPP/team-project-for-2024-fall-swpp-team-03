@@ -5,7 +5,7 @@ using UnityEngine.InputSystem;
 
 namespace SWPPT3.Main.Manager
 {
-    public class InputManager : MonoWeakSingleton<InputManager>
+    public class InputManager : MonoSingleton<InputManager>
     {
         private AlcheslimeInput _inputActions;
 

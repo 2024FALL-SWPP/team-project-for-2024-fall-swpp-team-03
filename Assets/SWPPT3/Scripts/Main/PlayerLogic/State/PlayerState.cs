@@ -22,16 +22,16 @@ namespace SWPPT3.Main.PlayerLogic.State
                 Debug.Log(itemBox.ItemState);
                 itemBox.InteractWithPlayer();
             }
-            else if (obstacle is PoisonPool poisonPool)
+            else if (obstacle is PoisonPool)
             {
                 Debug.Log("collide with Poison pool");
                 GameManager.Instance.OnPlayerStateChanged("GameOver");
             }
-            else if (obstacle is Gas gas)
+            else if (obstacle is Gas)
             {
                 player.TryChangeState(PlayerStates.Slime);
             }
-            else if (obstacle is MagicCircle magicCircle)
+            else if (obstacle is MagicCircle)
             {
                 GameManager.Instance.OnPlayerStateChanged("StageCleared");
             }
