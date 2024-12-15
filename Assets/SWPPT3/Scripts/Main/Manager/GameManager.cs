@@ -38,6 +38,7 @@ namespace SWPPT3.Main.Manager
         public void Awake()
         {
             //UIManager.Instance.ShowCanvas("BeforeStart");
+            InitializeStage(stageNumber);
         }
 
 
