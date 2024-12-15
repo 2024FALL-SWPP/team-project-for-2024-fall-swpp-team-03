@@ -1,10 +1,10 @@
 namespace SWPPT3.Main.AudioLogic
 {
-    public class SfxObject : AudioObject
+    public class SfxPlayer : AudioPlayer
     {
         public void PlaySound()
         {
-            audioSource.PlayOneShot(audioSource.clip);
+            AudioSource.PlayOneShot(AudioSource.clip);
         }
     }
 }

@@ -9,8 +9,47 @@ AudioMixerSnapshotController:
   m_Name: Pause
   m_AudioMixer: {fileID: 24100000}
   m_SnapshotID: 3b9b50b27b7c8004e8b5b1c72f2dd437
-  m_FloatValues: {}
+  m_FloatValues:
+    6fd4b7dd90a6d8242b01b6357d638fd2: 1662
   m_TransitionOverrides: {}
+--- !u!244 &-7046891184290018333
+AudioMixerEffectController:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: 
+  m_EffectID: 6ea18d5ffed88474a88243c769e9d813
+  m_EffectName: Receive
+  m_MixLevel: 3a58e306ecf794e45a8a7383ef633972
+  m_Parameters: []
+  m_SendTarget: {fileID: 0}
+  m_EnableWetMix: 0
+  m_Bypass: 0
+--- !u!244 &-5234471723836616451
+AudioMixerEffectController:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: 
+  m_EffectID: 69719d8567b3b9d47a4a8f80ac395907
+  m_EffectName: Echo
+  m_MixLevel: 9c60f9ff50b593146b79ef8507bd70ea
+  m_Parameters:
+  - m_ParameterName: Delay
+    m_GUID: a73eaa91c6e03994cb3f4912899cb7d3
+  - m_ParameterName: Decay
+    m_GUID: 43a932c357d33494cafeaf2f70d2abd5
+  - m_ParameterName: Max channels
+    m_GUID: 925dd2ec4bb255f45af1ddf716804dcb
+  - m_ParameterName: Drymix
+    m_GUID: dc5d85fa54607004492bb9b63e4a605d
+  - m_ParameterName: Wetmix
+    m_GUID: 84a46e13d800219468b6db3c0a4e11b2
+  m_SendTarget: {fileID: 0}
+  m_EnableWetMix: 0
+  m_Bypass: 0
 --- !u!245 &-2790486170780066718
 AudioMixerSnapshotController:
   m_ObjectHideFlags: 0
@@ -20,7 +59,8 @@ AudioMixerSnapshotController:
   m_Name: InGame
   m_AudioMixer: {fileID: 24100000}
   m_SnapshotID: 926dfb56251efab4f92e7b51dc6a2897
-  m_FloatValues: {}
+  m_FloatValues:
+    6fd4b7dd90a6d8242b01b6357d638fd2: 22000
   m_TransitionOverrides: {}
 --- !u!241 &24100000
 AudioMixerController:
@@ -49,7 +89,7 @@ AudioMixerController:
     - 0f7575c671626fc4c927bf98bb034464
     name: View
   m_CurrentViewIndex: 0
-  m_TargetSnapshot: {fileID: 8965369088542882735}
+  m_TargetSnapshot: {fileID: 24500006}
 --- !u!243 &24300002
 AudioMixerGroupController:
   m_ObjectHideFlags: 0
@@ -95,7 +135,8 @@ AudioMixerSnapshotController:
   m_Name: Snapshot
   m_AudioMixer: {fileID: 24100000}
   m_SnapshotID: f7339f585cc39a74391dc399074639c4
-  m_FloatValues: {}
+  m_FloatValues:
+    6fd4b7dd90a6d8242b01b6357d638fd2: 22000
   m_TransitionOverrides: {}
 --- !u!244 &689200265556805595
 AudioMixerEffectController:
@@ -107,6 +148,20 @@ AudioMixerEffectController:
   m_EffectID: f9bb7a2dfaff99641985e399cf98ea43
   m_EffectName: Attenuation
   m_MixLevel: 2697858039f95af499f1a98586224a35
+  m_Parameters: []
+  m_SendTarget: {fileID: 0}
+  m_EnableWetMix: 0
+  m_Bypass: 0
+--- !u!244 &2297278035422026974
+AudioMixerEffectController:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: 
+  m_EffectID: f8bd66b1ad3023446a69a939cb4fc117
+  m_EffectName: Send
+  m_MixLevel: 1dff3318bded9db468fac1583390180a
   m_Parameters: []
   m_SendTarget: {fileID: 0}
   m_EnableWetMix: 0
@@ -159,6 +214,7 @@ AudioMixerGroupController:
   m_Send: 00000000000000000000000000000000
   m_Effects:
   - {fileID: 5263435330316612309}
+  - {fileID: 7224702664202602091}
   m_UserColorIndex: 0
   m_Mute: 0
   m_Solo: 0
@@ -174,6 +230,22 @@ AudioMixerEffectController:
   m_EffectName: Attenuation
   m_MixLevel: f1c5efbc9c0004e46801c5ff5ae51303
   m_Parameters: []
+  m_SendTarget: {fileID: 0}
+  m_EnableWetMix: 0
+  m_Bypass: 0
+--- !u!244 &7224702664202602091
+AudioMixerEffectController:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: 
+  m_EffectID: 37e3893bc87730543bcc12b092658b84
+  m_EffectName: Lowpass Simple
+  m_MixLevel: 010ce7e22b73be448b03ac3dd8897e3e
+  m_Parameters:
+  - m_ParameterName: Cutoff freq
+    m_GUID: 6fd4b7dd90a6d8242b01b6357d638fd2
   m_SendTarget: {fileID: 0}
   m_EnableWetMix: 0
   m_Bypass: 0
@@ -205,5 +277,6 @@ AudioMixerSnapshotController:
   m_Name: Lobby
   m_AudioMixer: {fileID: 24100000}
   m_SnapshotID: ef0e32e26e292514c836f93bca93bf80
-  m_FloatValues: {}
+  m_FloatValues:
+    6fd4b7dd90a6d8242b01b6357d638fd2: 22000
   m_TransitionOverrides: {}

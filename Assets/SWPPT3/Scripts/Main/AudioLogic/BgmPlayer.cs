@@ -1,15 +1,9 @@
-using System;
-using SWPPT3.Main.Prop;
 using UnityEngine;
 
 namespace SWPPT3.Main.AudioLogic
 {
-    public class BgmObject : AudioObject
+    public class BgmPlayer : AudioPlayer
     {
-        public bool BgmState { get; set; }
-
-        [SerializeField]
-        private StatefulProp _statefulProp;
         [SerializeField]
         private AudioLowPassFilter audioLowPassFilter;
 
@@ -20,17 +14,17 @@ namespace SWPPT3.Main.AudioLogic
 
         public void PlaySound()
         {
-            audioSource.Play();
+            AudioSource.Play();
         }
 
         public void StopSound()
         {
-            audioSource.Stop();
+            AudioSource.Stop();
         }
 
         public void SetPitch(float pitch)
         {
-            audioSource.pitch = pitch;
+            AudioSource.pitch = pitch;
         }
 
         public void ApplyLowPassFilter(bool apply, float cutoffFrequency = 500f)

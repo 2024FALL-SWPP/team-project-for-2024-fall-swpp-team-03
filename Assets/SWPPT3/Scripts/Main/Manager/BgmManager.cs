@@ -14,8 +14,6 @@ namespace SWPPT3.Main.Manager
         [SerializeField] private AudioSource failSound;
         [SerializeField] private AudioSource successSound;
 
-
-
         [SerializeField]
         private AudioLowPassFilter bgmLowPassFilter; // 추가된 필드
 
@@ -26,10 +24,10 @@ namespace SWPPT3.Main.Manager
         private string bgmMixerGroupName = "BGM";
 
         [SerializeField]
-        private List<BgmObject> bgmObjects;
+        private List<BgmPlayer> bgmObjects;
 
         [SerializeField]
-        private List<SfxObject> sfxObjects;
+        private List<SfxPlayer> sfxObjects;
 
         private void Awake()
         {
@@ -74,11 +72,11 @@ namespace SWPPT3.Main.Manager
         public void SetVolume(float volume)
         {
             bgmSource.volume = volume;
-            foreach (AudioObject audioObject in bgmObjects)
+            foreach (AudioPlayer audioObject in bgmObjects)
             {
                 audioObject.SetVolume(volume);
             }
-            foreach (AudioObject audioObject in sfxObjects)
+            foreach (AudioPlayer audioObject in sfxObjects)
             {
                 audioObject.SetVolume(volume);
             }
@@ -97,7 +95,7 @@ namespace SWPPT3.Main.Manager
                 bgmLowPassFilter.enabled = true;
                 bgmLowPassFilter.cutoffFrequency = cutoffFrequency;
 
-                foreach (BgmObject bgmObject in bgmObjects)
+                foreach (BgmPlayer bgmObject in bgmObjects)
                 {
                     bgmObject.ApplySlow(true);
                 }
@@ -108,7 +106,7 @@ namespace SWPPT3.Main.Manager
 
                 bgmLowPassFilter.enabled = false;
 
-                foreach (BgmObject bgmObject in bgmObjects)
+                foreach (BgmPlayer bgmObject in bgmObjects)
                 {
                     bgmObject.ApplySlow(false);
                 }
