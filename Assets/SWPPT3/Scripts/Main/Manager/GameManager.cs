@@ -149,7 +149,15 @@ namespace SWPPT3.Main.Manager
         {
             //Debug.Log("GameManager button clicked");
             stageNumber = stageNum;
-            string sceneName = $"Stage{stageNum}test";
+            string sceneName;
+            if (stageNum < 6)
+            {
+                 sceneName = $"Stage{stageNum}test";
+            }
+            else
+            {
+                sceneName = $"Tutorial{stageNum - 5}test";
+            }
             SceneManager.LoadScene(sceneName);
             SetGameState(GameState.Playing);
         }
