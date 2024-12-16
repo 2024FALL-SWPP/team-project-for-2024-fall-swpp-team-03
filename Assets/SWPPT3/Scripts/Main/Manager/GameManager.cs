@@ -35,11 +35,7 @@ namespace SWPPT3.Main.Manager
         }
         private int stageNumber;
 
-        public int StageNumber
-        {
-            get => stageNumber;
-            set { stageNumber = value; }
-        }
+        public int StageNumber { get => stageNumber; set => stageNumber = value; }
 
 
         public void Awake()
@@ -53,7 +49,7 @@ namespace SWPPT3.Main.Manager
         private void HandleGameStateChanged(GameState newState)
         {
             OnGameStateChanged?.Invoke(newState);
-            StageManager stageManager = getStageManager();
+            StageManager stageManager = StageManager.Instance;
 
             switch (newState)
             {
@@ -71,7 +67,7 @@ namespace SWPPT3.Main.Manager
                 case GameState.StageCleared:
                     stageManager?.ClearStage();
                     ProceedToNextStage();
-                    SetGameState(GameState.Playing);
+                    GameState = GameState.Playing;
                     break;
             }
         }
@@ -79,55 +75,11 @@ namespace SWPPT3.Main.Manager
         private void InitializeStage()
         {
             LoadScene(stageNumber);
-            StageManager stageManager = getStageManager();
+            StageManager stageManager = StageManager.Instance;
             if (stageManager != null)
             {
                 stageManager.InitializeStage();
             }
-            else
-            {
-                Debug.Log("Stage Manager is null");
-            }
-        }
-
-        private StageManager getStageManager()
-        {
-            StageManager stageManager = null;
-
-            switch (stageNumber)
-            {
-                case 1:
-                    stageManager = Tutorial1Director.Instance;
-                    break;
-                case 2:
-                    stageManager = Tutorial2Director.Instance;
-                    break;
-                case 3:
-                    stageManager = Stage1Director.Instance;
-                    break;
-                case 4:
-                    stageManager = Stage2Director.Instance;
-                    break;
-                case 5:
-                    stageManager = Stage4Director.Instance;
-                    break;
-                case 6:
-                    stageManager = Stage5Director.Instance;
-                    break;
-                case 7:
-                    stageManager = Stage3Director.Instance;
-                    break;
-                default:
-                    break;
-            }
-
-            return stageManager;
-        }
-
-
-        public void SetGameState(GameState newState)
-        {
-            GameState = newState;
         }
 
         public void ProceedToNextStage()
@@ -145,10 +97,10 @@ namespace SWPPT3.Main.Manager
             switch (buttonName)
             {
                 case "Pause":
-                    SetGameState(GameState.Paused);
+                    GameState = GameState.Paused;
                     break;
                 case "Resume":
-                    SetGameState(GameState.Playing);
+                    GameState = GameState.Playing;
                     break;
                 case "Reset":
                     ResetStage();
@@ -157,7 +109,7 @@ namespace SWPPT3.Main.Manager
                     ProceedToNextStage();
                     break;
                 case "Finish":
-                    SetGameState(GameState.GameOver);
+                    GameState = GameState.GameOver;
                     break;
                 default:
                     break;
@@ -166,7 +118,7 @@ namespace SWPPT3.Main.Manager
         public void OnUIButtonClicked(int stageNum)
         {
             stageNumber = stageNum;
-            SetGameState(GameState.Playing);
+            GameState = GameState.Playing;
         }
 
         public void LoadScene(int stageNum)
@@ -215,12 +167,10 @@ namespace SWPPT3.Main.Manager
             switch (state)
             {
                 case "GameOver":
-                    SetGameState(GameState.GameOver);
+                    GameState = GameState.GameOver;
                     break;
                 case "StageCleared":
-                    SetGameState(GameState.StageCleared);
-                    break;
-                default:
+                    GameState = GameState.StageCleared;
                     break;
             }
         }
@@ -237,7 +187,7 @@ namespace SWPPT3.Main.Manager
         {
             if (GameState == GameState.Playing)
             {
-                StageManager stageManager = getStageManager();
+                StageManager stageManager = StageManager.Instance;
                 if (stageManager != null)
                 {
                     stageManager.InitializeStage();
@@ -249,20 +199,5 @@ namespace SWPPT3.Main.Manager
                 }
             }
         }
-        // [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
-        // private static void EnsureInitialized()
-        // {
-        //     if (Instance == null)
-        //     {
-        //         var obj = new GameObject(nameof(GameManager));
-        //         var manager = obj.AddComponent<GameManager>();
-        //
-        //         var uiObj = new GameObject(nameof(UIManager));
-        //         uiObj.AddComponent<UIManager>();
-        //
-        //         var inputObj = new GameObject(nameof(InputManager));
-        //         inputObj.AddComponent<InputManager>();
-        //     }
-        // }
     }
 }
