@@ -8,7 +8,7 @@ namespace SWPPT3.Main.StageDirector
     {
         [SerializeField] protected Player player;
 
-        public virtual void InitializeStage() { Debug.Log("not stageNdirector");}
+        public virtual void InitializeStage() { }
 
         public void StartStage()
         {
