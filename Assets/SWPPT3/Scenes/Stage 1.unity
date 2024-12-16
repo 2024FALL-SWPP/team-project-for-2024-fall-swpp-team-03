@@ -937,6 +937,18 @@ PrefabInstance:
       objectReference: {fileID: 2031427445}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b63037d539f98bc42a98baf0281987bd, type: 3}
+--- !u!114 &165868608 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5865617930821872779, guid: b63037d539f98bc42a98baf0281987bd,
+    type: 3}
+  m_PrefabInstance: {fileID: 165868607}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c834ef87520fa146a131b8e2e184ab9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &183061634
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3830,7 +3842,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4305762014314af0a47e7f3a547ba05e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  player: {fileID: 0}
+  player: {fileID: 165868608}
 --- !u!4 &923419518
 Transform:
   m_ObjectHideFlags: 0
@@ -8163,6 +8175,53 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 11685279}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &2067695170
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2067695172}
+  - component: {fileID: 2067695171}
+  m_Layer: 0
+  m_Name: ConductorManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &2067695171
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2067695170}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fc143c5fe3d84184b53daa7794caa264, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _conductors: []
+  _emitters: []
+  _receptors: []
+--- !u!4 &2067695172
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2067695170}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 10
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &2076504117
 PrefabInstance:
   m_ObjectHideFlags: 0
