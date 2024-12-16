@@ -347,7 +347,7 @@ PrefabInstance:
     - target: {fileID: 6610104453504445420, guid: 2dd4d32d6907e4aaa96ee1703aafd883,
         type: 3}
       propertyPath: stateSources.Array.size
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6610104453504445420, guid: 2dd4d32d6907e4aaa96ee1703aafd883,
         type: 3}
