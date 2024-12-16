@@ -153,6 +153,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 9f6ae5a83821cdc4c8c2c0a1a5d7081e,
         type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 9f6ae5a83821cdc4c8c2c0a1a5d7081e,
+        type: 3}
       propertyPath: m_StaticEditorFlags
       value: 2147483647
       objectReference: {fileID: 0}
@@ -236,6 +241,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: SwitchSecret_Base_Collider
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: a4569048d8cb1624bb294ad8c8e3ef3f,
+        type: 3}
+      propertyPath: m_Layer
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a4569048d8cb1624bb294ad8c8e3ef3f, type: 3}
@@ -331,6 +341,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: SwitchSecret_Button
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: b3ac41660e62c834b85393751870f565,
+        type: 3}
+      propertyPath: m_Layer
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: b3ac41660e62c834b85393751870f565,
         type: 3}

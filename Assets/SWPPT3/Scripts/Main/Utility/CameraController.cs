@@ -21,6 +21,8 @@ namespace SWPPT3.Main.Utility
         private bool _isLeftButton = false;
         private bool _isRightButton = false;
 
+        [SerializeField] private LayerMask cameraCollision;
+
         private void Start()
         {
             if (player != null)
@@ -61,6 +63,13 @@ namespace SWPPT3.Main.Utility
 
                 transform.position = player.position + offset;
                 transform.LookAt(player);
+
+                Vector3 rayDir = transform.position - player.position;
+
+                if (Physics.Raycast(player.position, rayDir, out RaycastHit hit, offset.magnitude , cameraCollision))
+                {
+                    transform.position = hit.point - rayDir.normalized;
+                }
             }
             _mouseSensitivity = camerascript.MouseSensitivity;
         }

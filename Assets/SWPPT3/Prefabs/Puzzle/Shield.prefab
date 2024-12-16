@@ -133,6 +133,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   stateSources: []
-  maintainState: 0
   collider: {fileID: 6967512372165788986}
   animator: {fileID: -5186212655999948723}
