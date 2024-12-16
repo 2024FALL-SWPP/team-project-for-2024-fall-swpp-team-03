@@ -19,8 +19,7 @@ namespace SWPPT3.Main.Prop
 
         protected override void OnSourceStateChanged(StateSource src, bool state)
         {
-            if (maintainState && State) return;
-            State = state;
+            State = !state;
             if (_isCooldownActive)
                 return;
 
@@ -32,7 +31,7 @@ namespace SWPPT3.Main.Prop
             else
             {
                 collider.enabled = true;
-                Debug.Log("Collider has been enabled.");
+                //Debug.Log("Collider has been enabled.");
             }
 
             _isCooldownActive = true;
@@ -52,14 +51,14 @@ namespace SWPPT3.Main.Prop
             if (animator.GetBool("IsClosed"))
             {
                 collider.enabled = false;
-                Debug.Log("Collider has been disabled.");
+                //Debug.Log("Collider has been disabled.");
             }
         }
 
         private void ResetCooldown()
         {
             _isCooldownActive = false;
-            Debug.Log("Cooldown has ended. Function can be called again.");
+            //Debug.Log("Cooldown has ended. Function can be called again.");
         }
 
         private void RepeatStateCheck()

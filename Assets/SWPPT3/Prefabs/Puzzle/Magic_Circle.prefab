@@ -90,7 +90,6 @@ MonoBehaviour:
   stateSources: []
   animator: {fileID: 5212203213713012650}
   collider: {fileID: 4292224605778392407}
-  circleState: 0
 --- !u!1 &1716672640784942158
 GameObject:
   m_ObjectHideFlags: 0
@@ -538,10 +537,20 @@ PrefabInstance:
       propertyPath: InitialModule.startColor.maxColor.r
       value: 0.66003513
       objectReference: {fileID: 0}
+    - target: {fileID: 3280519133223516631, guid: ffd567757df5948459bc9833b7ceb491,
+        type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3280519133390621005, guid: ffd567757df5948459bc9833b7ceb491,
         type: 3}
       propertyPath: m_Name
       value: Magic_Circle_Effect
+      objectReference: {fileID: 0}
+    - target: {fileID: 3280519133390621005, guid: ffd567757df5948459bc9833b7ceb491,
+        type: 3}
+      propertyPath: m_Layer
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3280519133390621042, guid: ffd567757df5948459bc9833b7ceb491,
         type: 3}
@@ -601,6 +610,11 @@ PrefabInstance:
     - target: {fileID: 3280519133430969737, guid: ffd567757df5948459bc9833b7ceb491,
         type: 3}
       propertyPath: m_Intensity
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3280519133430969738, guid: ffd567757df5948459bc9833b7ceb491,
+        type: 3}
+      propertyPath: m_Layer
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []

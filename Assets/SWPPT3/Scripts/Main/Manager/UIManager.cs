@@ -1,13 +1,19 @@
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 using SWPPT3.Main.Manager;
 using SWPPT3.Main.Utility.Singleton;
 using System.Collections;
+using Unity.VisualScripting.YamlDotNet.Serialization.ObjectGraphVisitors;
 using UnityEngine.SceneManagement;
 
-public class UIManager : MonoSingleton<UIManager>
+namespace SWPPT3.Main.Manager
 {
+    public class UIManager : MonoSingleton<UIManager>
+{
+
     private GameManager _gameManager;
+    /*
     [Header("Canvases")]
     [SerializeField] private Canvas beforeCanvas;
     [SerializeField] private Canvas playingCanvas;
@@ -23,7 +29,7 @@ public class UIManager : MonoSingleton<UIManager>
     [SerializeField] private Button resumeButton;
     [SerializeField] private Button resetButton;
     [SerializeField] private Button nextStageButton;
-    [SerializeField] private Button finishStageButton;
+    [SerializeField] private Button finishStageButton;*/
 
     [Header("Stage Buttons")]
     [SerializeField] private Button stage1Button;
@@ -40,66 +46,69 @@ public class UIManager : MonoSingleton<UIManager>
     {
         _gameManager = gameManager;
 
-        _gameManager.OnGameStateChanged += OnGameStateChanged;
+        //_gameManager.OnGameStateChanged += OnGameStateChanged;
     }
 
     private void Start()
     {
         InitializeButtons();
-        HideAllCanvases();
+        //HideAllCanvases();
     }
 
     private void InitializeButtons()
     {
-        pauseButton.onClick.AddListener(() => OnButtonClicked("Pause"));
-        resumeButton.onClick.AddListener(() => OnButtonClicked("Resume"));
-        resetButton.onClick.AddListener(() => OnButtonClicked("Reset"));
-        nextStageButton.onClick.AddListener(() => OnButtonClicked("NextStage"));
-        finishStageButton.onClick.AddListener(() => OnButtonClicked("Finish"));
-        stage1Button.onClick.AddListener(() => OnButtonClicked(1));
-        stage2Button.onClick.AddListener(() => OnButtonClicked(2));
-        stage3Button.onClick.AddListener(() => OnButtonClicked(3));
-        stage4Button.onClick.AddListener(() => OnButtonClicked(4));
-        stage5Button.onClick.AddListener(() => OnButtonClicked(5));
-        tutorial1Button.onClick.AddListener(() => OnButtonClicked(6));
-        tutorial2Button.onClick.AddListener(() => OnButtonClicked(7));
+
+        // pauseButton.onClick.AddListener(() => OnButtonClicked("Pause"));
+        // resumeButton.onClick.AddListener(() => OnButtonClicked("Resume"));
+        // resetButton.onClick.AddListener(() => OnButtonClicked("Reset"));
+        // nextStageButton.onClick.AddListener(() => OnButtonClicked("NextStage"));
+        // finishStageButton.onClick.AddListener(() => OnButtonClicked("Finish"));
+
+        stage1Button.onClick.AddListener(() => OnButtonClicked(3));
+        stage2Button.onClick.AddListener(() => OnButtonClicked(4));
+        stage3Button.onClick.AddListener(() => OnButtonClicked(7));
+        stage4Button.onClick.AddListener(() => OnButtonClicked(5));
+        stage5Button.onClick.AddListener(() => OnButtonClicked(6));
+        tutorial1Button.onClick.AddListener(() => OnButtonClicked(1));
+        tutorial2Button.onClick.AddListener(() => OnButtonClicked(2));
     }
 
-    public void ShowCanvas(string canvasName)
-    {
-        HideAllCanvases();
+    // public void ShowCanvas(string canvasName)
+    // {
+    //     HideAllCanvases();
+    //
+    //     switch (canvasName)
+    //     {
+    //         case "BeforeStart":
+    //             beforeCanvas.gameObject.SetActive(true);
+    //             break;
+    //         case "Playing":
+    //             playingCanvas.gameObject.SetActive(true);
+    //             break;
+    //         case "Paused":
+    //             pausedCanvas.gameObject.SetActive(true);
+    //             break;
+    //         case "GameOver":
+    //             gameOverCanvas.gameObject.SetActive(true);
+    //             break;
+    //         case "StageCleared":
+    //             stageClearedCanvas.gameObject.SetActive(true);
+    //             break;
+    //         default:
+    //             Debug.LogWarning("Unknown canvas name: " + canvasName);
+    //             break;
+    //     }
+    // }
+    // private void HideAllCanvases()
+    // {
+    //     beforeCanvas.gameObject.SetActive(false);
+    //     playingCanvas.gameObject.SetActive(false);
+    //     pausedCanvas.gameObject.SetActive(false);
+    //     gameOverCanvas.gameObject.SetActive(false);
+    //     stageClearedCanvas.gameObject.SetActive(false);
+    //     beforeOptionCanvas.gameObject.SetActive(false);
+    // }
 
-        switch (canvasName)
-        {
-            case "BeforeStart":
-                beforeCanvas.gameObject.SetActive(true);
-                break;
-            case "Playing":
-                playingCanvas.gameObject.SetActive(true);
-                break;
-            case "Paused":
-                pausedCanvas.gameObject.SetActive(true);
-                break;
-            case "GameOver":
-                gameOverCanvas.gameObject.SetActive(true);
-                break;
-            case "StageCleared":
-                stageClearedCanvas.gameObject.SetActive(true);
-                break;
-            default:
-                Debug.LogWarning("Unknown canvas name: " + canvasName);
-                break;
-        }
-    }
-    private void HideAllCanvases()
-    {
-        beforeCanvas.gameObject.SetActive(false);
-        playingCanvas.gameObject.SetActive(false);
-        pausedCanvas.gameObject.SetActive(false);
-        gameOverCanvas.gameObject.SetActive(false);
-        stageClearedCanvas.gameObject.SetActive(false);
-        beforeOptionCanvas.gameObject.SetActive(false);
-    }
 
     // private void OnEnable()
     // {
@@ -115,9 +124,10 @@ public class UIManager : MonoSingleton<UIManager>
     {
         if (_gameManager != null)
         {
-            _gameManager.OnGameStateChanged -= OnGameStateChanged;
+            //_gameManager.OnGameStateChanged -= OnGameStateChanged;
         }
     }
+
 
     private void OnButtonClicked(string buttonName)
     {
@@ -129,7 +139,7 @@ public class UIManager : MonoSingleton<UIManager>
         //Debug.Log("UIManager button clicked");
         GameManager.Instance.OnUIButtonClicked(stageNum);
     }
-
+    /*
     private void OnGameStateChanged(GameState newState)
     {
         StopAllCoroutines();
@@ -162,4 +172,7 @@ public class UIManager : MonoSingleton<UIManager>
         introCanvas.gameObject.SetActive(false);
         ShowCanvas(mainCanvasName);
     }
+    */
 }
+}
+

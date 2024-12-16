@@ -22,12 +22,10 @@ namespace SWPPT3.Main.Prop
 
         protected override void OnSourceStateChanged(StateSource src, bool state)
         {
-            if (maintainState && !State) return;
             state = !state;
             State = state;
             collider.enabled = state;
             animator.SetBool("IsClosed",state);
-            Debug.Log("Shield:"+state);
         }
     }
 }

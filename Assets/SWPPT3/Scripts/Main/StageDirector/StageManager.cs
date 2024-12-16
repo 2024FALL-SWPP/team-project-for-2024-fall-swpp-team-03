@@ -4,15 +4,16 @@ using UnityEngine;
 
 namespace SWPPT3.Main.StageDirector
 {
-    public class StageManager : MonoSingleton<StageManager>
+    public class StageManager : MonoWeakSingleton<StageManager>
     {
         [SerializeField] protected Player player;
 
-        public virtual void InitializeStage() { }
+        public virtual void InitializeStage() { Debug.Log("not stageNdirector");}
 
         public void StartStage()
         {
             Time.timeScale = 1f;
+            //Debug.Log("Starting Stage");
         }
 
         public void PauseStage()
@@ -28,11 +29,13 @@ namespace SWPPT3.Main.StageDirector
         public void FailStage()
         {
             Time.timeScale = 0f;
+            //Debug.Log("FailStage");
         }
 
         public void ClearStage()
         {
             Time.timeScale = 0f;
+            //Debug.Log("Cleared Stage");
         }
     }
 }

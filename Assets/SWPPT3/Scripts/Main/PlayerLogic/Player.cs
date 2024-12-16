@@ -60,7 +60,7 @@ namespace SWPPT3.Main.PlayerLogic
         public void HandleChangeState(InputAction.CallbackContext context)
         {
             string keyPressed = context.control.displayName;
-            Debug.Log(keyPressed);
+            //Debug.Log(keyPressed);
 
             PlayerStates newState = keyPressed switch
             {
@@ -82,8 +82,9 @@ namespace SWPPT3.Main.PlayerLogic
                 PlayerState.ChangeRigidbody(_rb);
                 PlayerState.ChangePhysics(_collider, _physicMaterial);
                 _collider.hasModifiableContacts = newState == PlayerStates.Slime;
-                Debug.Log("newState: "+newState);
             }
+
+            Debug.Log(_currentState);
         }
 
         public void InteractWithProp(PropBase prop)
@@ -102,13 +103,9 @@ namespace SWPPT3.Main.PlayerLogic
         }
         public void SetItemCounts(int newSlimeCount, int newMetalCount, int newRubberCount)
         {
-            slimeCount = newSlimeCount;
-            metalCount = newMetalCount;
-            rubberCount = newRubberCount;
-
-            Item[PlayerStates.Slime] = slimeCount;
-            Item[PlayerStates.Metal] = metalCount;
-            Item[PlayerStates.Rubber] = rubberCount;
+            Item[PlayerStates.Slime] = newSlimeCount;
+            Item[PlayerStates.Metal] = newMetalCount;
+            Item[PlayerStates.Rubber] = newRubberCount;
         }
     }
 }
