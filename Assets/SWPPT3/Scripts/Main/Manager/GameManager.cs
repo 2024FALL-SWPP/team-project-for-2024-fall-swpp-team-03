@@ -178,20 +178,20 @@ namespace SWPPT3.Main.Manager
                     break;
             }
         }
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
-        private static void EnsureInitialized()
-        {
-            if (Instance == null)
-            {
-                var obj = new GameObject(nameof(GameManager));
-                var manager = obj.AddComponent<GameManager>();
-
-                var uiObj = new GameObject(nameof(UIManager));
-                uiObj.AddComponent<UIManager>();
-
-                var inputObj = new GameObject(nameof(InputManager));
-                inputObj.AddComponent<InputManager>();
-            }
-        }
+        // [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+        // private static void EnsureInitialized()
+        // {
+        //     if (Instance == null)
+        //     {
+        //         var obj = new GameObject(nameof(GameManager));
+        //         var manager = obj.AddComponent<GameManager>();
+        //
+        //         var uiObj = new GameObject(nameof(UIManager));
+        //         uiObj.AddComponent<UIManager>();
+        //
+        //         var inputObj = new GameObject(nameof(InputManager));
+        //         inputObj.AddComponent<InputManager>();
+        //     }
+        // }
     }
 }
