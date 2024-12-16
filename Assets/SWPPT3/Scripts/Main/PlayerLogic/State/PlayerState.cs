@@ -24,7 +24,7 @@ namespace SWPPT3.Main.PlayerLogic.State
             }
             else if (obstacle is PoisonPool)
             {
-                Debug.Log("collide with Poison pool");
+                //Debug.Log("collide with Poison pool");
                 GameManager.Instance.OnPlayerStateChanged("GameOver");
             }
             else if (obstacle is Gas)

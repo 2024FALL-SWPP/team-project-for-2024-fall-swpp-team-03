@@ -45,7 +45,6 @@ namespace SWPPT3.Main.PlayerLogic
                 InputManager.Instance.OnJumpCancel += HandleJumpCancel;
                 InputManager.Instance.OnStartRotation += HandleStartRotation;
                 InputManager.Instance.OnLook += HandleLook;
-
             }
             else
             {

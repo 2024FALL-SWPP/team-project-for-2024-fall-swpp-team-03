@@ -314,9 +314,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   stateSources: []
-  maintainState: 0
   animator: {fileID: -7669008571757077187}
-  collider: {fileID: 0}
+  collider: {fileID: 3995583413490709762}
   _propscript: {fileID: 11400000, guid: bc461cd013c148944adbefd422daf285, type: 2}
 --- !u!1 &2821579047454051318
 GameObject:
