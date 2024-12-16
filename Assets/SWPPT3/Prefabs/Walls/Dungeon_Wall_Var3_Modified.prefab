@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 7781147128362494141}
   - component: {fileID: 6652920022515050264}
   - component: {fileID: 8914625645322376146}
+  - component: {fileID: 3348214486462392905}
   m_Layer: 0
   m_Name: Dungeon_Wall_Var3_Modified
   m_TagString: Untagged
@@ -83,3 +84,17 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!64 &3348214486462392905
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6969286041499382279}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: -2065107674742202143, guid: ffdfbdcd3933a4919bcf23f81c3ec308, type: 3}

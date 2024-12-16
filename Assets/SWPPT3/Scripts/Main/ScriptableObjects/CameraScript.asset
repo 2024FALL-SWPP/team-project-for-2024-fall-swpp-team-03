@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: CameraScript
   m_EditorClassIdentifier: 
   mouseSensitivity: 0.2
-  distanceFromPlayer: 3
-  cameraHeight: 1
+  distanceFromPlayer: 2
+  cameraHeight: 2
