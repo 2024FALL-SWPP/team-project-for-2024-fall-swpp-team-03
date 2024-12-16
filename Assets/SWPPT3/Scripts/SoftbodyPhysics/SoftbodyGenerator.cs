@@ -22,10 +22,13 @@ namespace SWPPT3.SoftbodyPhysics
         private List<Rigidbody> _rigidbodyList = new List<Rigidbody>();
         private Rigidbody[] _rigidbodyArray;
 
-        private NativeArray<Vector3> _verticesNa;
-        private TransformAccessArray _verticesTransform;
-        private NativeArray<int> _verticesDictionary;
-        private NativeArray<Vector3> _verticesPositions;
+
+        // NativeArray for Job system
+        private TransformAccessArray _optVerticesTransform; // optimized된 vertex의 transform을 저장
+        private NativeArray<Vector3> _optVerticesBuffer;    // optimize된 vertex를 저장하기 위한 buffer
+        private NativeArray<int> _optToOriDic;              // opt -> ori 를 위한 dictionary
+        private NativeArray<Vector3> _oriPositions;
+        // NativeArray for Job system
 
         private int[] WritableTris { get; set; }
 
@@ -195,7 +198,7 @@ namespace SWPPT3.SoftbodyPhysics
             _originalMeshFilter.mesh.GetNormals(WritableNormals);
             WritableTris = _originalMeshFilter.mesh.triangles;
 
-            _verticesPositions = new NativeArray<Vector3>(_originalMeshFilter.mesh.vertices, Allocator.Persistent);
+            _oriPositions = new NativeArray<Vector3>(_originalMeshFilter.mesh.vertices, Allocator.Persistent);
 
             var localToWorld = transform.localToWorldMatrix;
             for (int i = 0; i < WritableVertices.Count; ++i)
@@ -231,10 +234,10 @@ namespace SWPPT3.SoftbodyPhysics
                 }
             }
 
-            _verticesDictionary = new NativeArray<int>(WritableVertices.Count, Allocator.Persistent);
+            _optToOriDic = new NativeArray<int>(WritableVertices.Count, Allocator.Persistent);
             for (int i = 0; i < WritableVertices.Count; ++i)
             {
-                _verticesDictionary[i] = _vertexDictunery[i];
+                _optToOriDic[i] = _vertexDictunery[i];
             }
 
 
@@ -311,14 +314,14 @@ namespace SWPPT3.SoftbodyPhysics
             _rigidbodyArray  = _rigidbodyList.ToArray();
 
 
-            _verticesTransform = new TransformAccessArray(_rigidbodyArray.Length);
+            _optVerticesTransform = new TransformAccessArray(_rigidbodyArray.Length);
             for (int i = 0; i < _rigidbodyArray.Length; ++i)
             {
-                _verticesTransform.Add(_rigidbodyArray[i].transform);
+                _optVerticesTransform.Add(_rigidbodyArray[i].transform);
             }
-            _verticesNa = new NativeArray<Vector3>(_verticesTransform.length, Allocator.Persistent);
+            _optVerticesBuffer = new NativeArray<Vector3>(_optVerticesTransform.length, Allocator.Persistent);
 
-            Debug.Log($"{_rigidbodyArray.Length}  {_sphereColliderArray.Length} {_verticesTransform.length} {_verticesNa.Length}");
+            // Debug.Log($"{_rigidbodyArray.Length}  {_sphereColliderArray.Length} {_verticesTransform.length} {_verticesNa.Length}");
 
 
 
@@ -560,13 +563,13 @@ namespace SWPPT3.SoftbodyPhysics
 
            var setVertexUpdateJob = new SetVertexUpdateJob
            {
-               LocalPositions = _verticesNa,
-               VertexDictionary = _verticesDictionary,
-               VertexPositions = _verticesPositions
+               LocalPositions = _optVerticesBuffer,
+               OptToOriDic = _optToOriDic,
+               OriPositions = _oriPositions
            };
-           var setVertexUpdateHandle = setVertexUpdateJob.Schedule(_verticesPositions.Length, 16);
+           var setVertexUpdateHandle = setVertexUpdateJob.Schedule(_oriPositions.Length, 16);
            setVertexUpdateHandle.Complete();
-           _originalMeshFilter.mesh.vertices = _verticesPositions.ToArray();
+           _originalMeshFilter.mesh.vertices = _oriPositions.ToArray();
            _originalMeshFilter.mesh.RecalculateBounds();
            _originalMeshFilter.mesh.RecalculateNormals();
         }
@@ -577,18 +580,18 @@ namespace SWPPT3.SoftbodyPhysics
             // {
                 var getVertexLocalPositionJob = new GetVertexLocalPositionJob
                 {
-                    LocalPositions = _verticesNa,
+                    Buffer = _optVerticesBuffer,
                 };
-                var getVertexLocalPositionHandle = getVertexLocalPositionJob.Schedule(_verticesTransform);
+                var getVertexLocalPositionHandle = getVertexLocalPositionJob.Schedule(_optVerticesTransform);
                 getVertexLocalPositionHandle.Complete();
             // }
             // else
             // {
             //     var setVertexLocalPositionJob = new SetVertexLocalPositionJob
             //     {
-            //         LocalPositions = _verticesNa,
+            //         LocalPositions = Buffer,
             //     };
-            //     var getVertexLocalPositionHandle = setVertexLocalPositionJob.Schedule(_verticesTransform);
+            //     var getVertexLocalPositionHandle = setVertexLocalPositionJob.Schedule(_optVerticesTransform);
             //     getVertexLocalPositionHandle.Complete();
             // }
 
@@ -596,45 +599,55 @@ namespace SWPPT3.SoftbodyPhysics
 
         public void OnDestroy()
         {
-            if(_verticesNa.IsCreated) _verticesNa.Dispose();
-            if(_verticesTransform.isCreated) _verticesTransform.Dispose();
-            if(_verticesDictionary.IsCreated) _verticesDictionary.Dispose();
-            if(_verticesPositions.IsCreated) _verticesPositions.Dispose();
+            if(_optVerticesBuffer.IsCreated) _optVerticesBuffer.Dispose();
+            if(_optVerticesTransform.isCreated) _optVerticesTransform.Dispose();
+            if(_optToOriDic.IsCreated) _optToOriDic.Dispose();
+            if(_oriPositions.IsCreated) _oriPositions.Dispose();
         }
     }
 
+    /// <summary>
+    ///
+    /// LocalPosition buffer에 transformacess에 있는 local position을 대입
+    /// </summary>
     [BurstCompile]
     public struct GetVertexLocalPositionJob : IJobParallelForTransform
     {
-        public NativeArray<Vector3> LocalPositions;
+        public NativeArray<Vector3> Buffer;
 
         public void Execute(int index, TransformAccess transform)
         {
-            LocalPositions[index] = transform.localPosition;
+            Buffer[index] = transform.localPosition;
         }
     }
+    /// <summary>
+    /// GetVertexLocalPostionJob과는 반대로 LocalPosition에 있는 값을 transformaccess에 대입
+    /// </summary>
     [BurstCompile]
     public struct SetVertexLocalPositionJob : IJobParallelForTransform
     {
-        public NativeArray<Vector3> LocalPositions;
+        public NativeArray<Vector3> Buffer;
 
         public void Execute(int index, TransformAccess transform)
         {
-            transform.localPosition = LocalPositions[index];
+            transform.localPosition = Buffer[index];
         }
     }
 
+    /// <summary>
+    /// vertex를 optimize하면서 optimize된 vertex를 Original vertex에 대응하기 위한 job
+    /// </summary>
     [BurstCompile]
     public struct SetVertexUpdateJob : IJobParallelFor
     {
         [ReadOnly] public NativeArray<Vector3> LocalPositions;
-        [ReadOnly] public NativeArray<int> VertexDictionary;
+        [ReadOnly] public NativeArray<int> OptToOriDic;
 
-        public NativeArray<Vector3> VertexPositions;
+        public NativeArray<Vector3> OriPositions;
 
         public void Execute(int index)
         {
-            VertexPositions[index] = LocalPositions[VertexDictionary[index]];
+            OriPositions[index] = LocalPositions[OptToOriDic[index]];
         }
 
     }
