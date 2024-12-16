@@ -7,33 +7,41 @@ namespace SWPPT3.Main.Prop
     {
         [SerializeField] private Animator animator;
         [SerializeField] private Collider collider;
-        [SerializeField] private int circleState;
+        private int satisfiedNumber;
+        private int clearStateNumber;
 
         public void Awake()
         {
-            UpdateCircleState();
+            clearStateNumber = stateSources.Count;
+            UpdatesatifiedNumber();
         }
 
         protected override void OnSourceStateChanged(StateSource src, bool state)
         {
-            UpdateCircleState();
+            UpdatesatifiedNumber();
         }
 
-        private void UpdateCircleState()
+        private void UpdatesatifiedNumber()
         {
-            circleState = 0;
+            if (clearStateNumber == 0)
+            {
+                State = true;
+                animator.SetInteger("CircleState", 4);
+                return;
+            }
+            satisfiedNumber = 0;
 
             foreach (var source in stateSources)
             {
                 if (source.State)
                 {
-                    circleState++;
+                    satisfiedNumber+=4/clearStateNumber;
                 }
             }
 
-            animator.SetInteger("CircleState", circleState);
+            animator.SetInteger("CircleState", satisfiedNumber);
 
-            if (circleState == stateSources.Count)
+            if (satisfiedNumber == 4)
             {
                 State = true;
                 ActivateMagicCircle();

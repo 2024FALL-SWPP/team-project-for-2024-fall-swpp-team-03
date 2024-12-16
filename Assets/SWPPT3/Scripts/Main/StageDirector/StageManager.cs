@@ -13,7 +13,7 @@ namespace SWPPT3.Main.StageDirector
         public void StartStage()
         {
             Time.timeScale = 1f;
-            Debug.Log("Starting Stage");
+            //Debug.Log("Starting Stage");
         }
 
         public void PauseStage()
@@ -29,13 +29,13 @@ namespace SWPPT3.Main.StageDirector
         public void FailStage()
         {
             Time.timeScale = 0f;
-            Debug.Log("FailStage");
+            //Debug.Log("FailStage");
         }
 
         public void ClearStage()
         {
             Time.timeScale = 0f;
-            Debug.Log("Cleared Stage");
+            //Debug.Log("Cleared Stage");
         }
     }
 }
