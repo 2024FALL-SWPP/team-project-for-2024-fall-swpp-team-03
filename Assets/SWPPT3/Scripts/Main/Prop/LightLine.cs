@@ -8,18 +8,14 @@ namespace SWPPT3.Main.Prop
 
         protected override void OnSourceStateChanged(StateSource src, bool state)
         {
-            if (animator != null)
+            if (src.State == On)
             {
-                if (this.State == On)
-                {
-                    animator.SetBool("IsOn", true);
-                }
-                else if (this.State == Off)
-                {
-                    animator.SetBool("IsOn", false);
-                }
+                animator.SetBool("IsOn", true);
             }
-            Debug.Log("LightLine" + State);
+            else if (src.State == Off)
+            {
+                animator.SetBool("IsOn", false);
+            }
         }
     }
 }

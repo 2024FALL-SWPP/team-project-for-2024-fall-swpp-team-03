@@ -9,7 +9,7 @@ namespace SWPPT3.Main.StageDirector
         {
             StartStage();
             player.SetItemCounts(0,0,1);
-
+            //Debug.Log("Tutorial2Director Initialized");
         }
     }
 }

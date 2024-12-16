@@ -35,78 +35,93 @@ namespace SWPPT3.Main.Manager
         }
         private int stageNumber;
 
+        public int StageNumber
+        {
+            get => stageNumber;
+            set { stageNumber = value; }
+        }
+
+
         public void Awake()
         {
             //UIManager.Instance.Initialize(this);
             //UIManager.Instance.ShowCanvas("BeforeStart");
-            InitializeStage(1);
+            //InitializeStage(1);
         }
 
 
         private void HandleGameStateChanged(GameState newState)
         {
             OnGameStateChanged?.Invoke(newState);
-            var stageManager = StageManager.Instance;
+            StageManager stageManager = getStageManager();
 
-            if (stageManager == null)  { return; }
             switch (newState)
             {
                 case GameState.BeforeStart:
                     break;
                 case GameState.Playing:
-                    stageManager.StartStage();
+                    LoadScene(stageNumber);
                     break;
                 case GameState.Paused:
-                    stageManager.PauseStage();
+                    stageManager?.PauseStage();
                     break;
                 case GameState.GameOver:
-                    stageManager.FailStage();
+                    stageManager?.FailStage();
                     break;
                 case GameState.StageCleared:
-                    stageManager.ClearStage();
-                    stageNumber++;
-                    InitializeStage(stageNumber);
+                    stageManager?.ClearStage();
+                    ProceedToNextStage();
+                    SetGameState(GameState.Playing);
                     break;
             }
         }
 
-        private void InitializeStage(int stageNumber)
+        private void InitializeStage()
+        {
+            LoadScene(stageNumber);
+            StageManager stageManager = getStageManager();
+            if (stageManager != null)
+            {
+                stageManager.InitializeStage();
+            }
+            else
+            {
+                Debug.Log("Stage Manager is null");
+            }
+        }
+
+        private StageManager getStageManager()
         {
             StageManager stageManager = null;
 
             switch (stageNumber)
             {
                 case 1:
-                    stageManager = Stage1Director.Instance;
-                    break;
-                case 2:
-                    stageManager = Stage2Director.Instance;
-                    break;
-                case 3:
-                    stageManager = Stage3Director.Instance;
-                    break;
-                case 4:
-                    stageManager = Stage4Director.Instance;
-                    break;
-                case 5:
-                    stageManager = Stage5Director.Instance;
-                    break;
-                case 6:
                     stageManager = Tutorial1Director.Instance;
                     break;
-                case 7:
+                case 2:
                     stageManager = Tutorial2Director.Instance;
+                    break;
+                case 3:
+                    stageManager = Stage1Director.Instance;
+                    break;
+                case 4:
+                    stageManager = Stage2Director.Instance;
+                    break;
+                case 5:
+                    stageManager = Stage4Director.Instance;
+                    break;
+                case 6:
+                    stageManager = Stage5Director.Instance;
+                    break;
+                case 7:
+                    stageManager = Stage3Director.Instance;
                     break;
                 default:
                     break;
             }
 
-            if (stageManager != null)
-            {
-                stageManager.InitializeStage();
-            }
-
-            SetGameState(GameState.BeforeStart);
+            return stageManager;
         }
 
 
@@ -122,7 +137,7 @@ namespace SWPPT3.Main.Manager
 
         public void ResetStage()
         {
-            InitializeStage(stageNumber);
+            InitializeStage();
         }
 
         public void OnUIButtonClicked(string buttonName)
@@ -150,19 +165,49 @@ namespace SWPPT3.Main.Manager
         }
         public void OnUIButtonClicked(int stageNum)
         {
-            //Debug.Log("GameManager button clicked");
             stageNumber = stageNum;
+            SetGameState(GameState.Playing);
+        }
+
+        public void LoadScene(int stageNum)
+        {
             string sceneName;
-            if (stageNum < 6)
+            // if (stageNum > 2)
+            // {
+            //      sceneName = $"Stage{stageNum-2}";
+            // }
+            // else
+            // {
+            //     sceneName = $"Tutorial{stageNum}";
+            // }
+            switch (stageNum)
             {
-                 sceneName = $"Stage{stageNum}test";
-            }
-            else
-            {
-                sceneName = $"Tutorial{stageNum - 5}test";
+                case 1:
+                    sceneName = "Tutorial1test";
+                    break;
+                case 2:
+                    sceneName = "Tutorial2test";
+                    break;
+                case 3:
+                    sceneName = "Stage1test";
+                    break;
+                case 4:
+                    sceneName = "Stage2test";
+                    break;
+                case 5:
+                    sceneName = "Stage4test";
+                    break;
+                case 6:
+                    sceneName = "Stage5test";
+                    break;
+                case 7:
+                    sceneName = "Stage3test";
+                    break;
+                default:
+                    Debug.LogError($"Invalid stage number: {stageNum}");
+                    return;
             }
             SceneManager.LoadScene(sceneName);
-            SetGameState(GameState.Playing);
         }
 
         public void OnPlayerStateChanged(string state)
@@ -179,20 +224,45 @@ namespace SWPPT3.Main.Manager
                     break;
             }
         }
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
-        private static void EnsureInitialized()
+        private void OnEnable()
         {
-            if (Instance == null)
+            SceneManager.sceneLoaded += OnSceneLoaded;
+        }
+
+        private void OnDisable()
+        {
+            SceneManager.sceneLoaded -= OnSceneLoaded;
+        }
+        private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+        {
+            if (GameState == GameState.Playing)
             {
-                var obj = new GameObject(nameof(GameManager));
-                var manager = obj.AddComponent<GameManager>();
-
-                var uiObj = new GameObject(nameof(UIManager));
-                uiObj.AddComponent<UIManager>();
-
-                var inputObj = new GameObject(nameof(InputManager));
-                inputObj.AddComponent<InputManager>();
+                StageManager stageManager = getStageManager();
+                if (stageManager != null)
+                {
+                    stageManager.InitializeStage();
+                    stageManager.StartStage();
+                }
+                else
+                {
+                    Debug.LogError("Stage Manager is null after loading scene");
+                }
             }
         }
+        // [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+        // private static void EnsureInitialized()
+        // {
+        //     if (Instance == null)
+        //     {
+        //         var obj = new GameObject(nameof(GameManager));
+        //         var manager = obj.AddComponent<GameManager>();
+        //
+        //         var uiObj = new GameObject(nameof(UIManager));
+        //         uiObj.AddComponent<UIManager>();
+        //
+        //         var inputObj = new GameObject(nameof(InputManager));
+        //         inputObj.AddComponent<InputManager>();
+        //     }
+        // }
     }
 }

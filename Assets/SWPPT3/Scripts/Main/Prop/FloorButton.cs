@@ -10,14 +10,14 @@ namespace SWPPT3.Main.Prop
         {
             State = On;
             animator.SetBool("IsPressed", true);
-            Debug.Log("FloorButton"+State);
+            //Debug.Log("FloorButton"+State);
         }
 
         private void OnTriggerExit(Collider other)
         {
             State = Off;
             animator.SetBool("IsPressed", false);
-            Debug.Log("FloorButton"+State);
+            //Debug.Log("FloorButton"+State);
         }
     }
 }

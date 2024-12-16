@@ -16,7 +16,6 @@ namespace SWPPT3.Main.Prop
 
         protected override void OnSourceStateChanged(StateSource src, bool state)
         {
-            if (maintainState && State) return;
             UpdateCircleState();
         }
 

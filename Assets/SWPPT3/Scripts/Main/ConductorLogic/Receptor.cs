@@ -10,7 +10,10 @@ namespace SWPPT3.Main.ConductorLogic
 
         public void UpdateState(bool state)
         {
-            connectedStateSource.State = state;
+            if (!connectedStateSource.State)
+            {
+                connectedStateSource.State = state;
+            }
             //Debug.Log("Receptor:"+state);
         }
     }

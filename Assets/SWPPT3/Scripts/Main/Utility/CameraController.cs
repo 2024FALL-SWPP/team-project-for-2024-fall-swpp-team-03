@@ -23,13 +23,15 @@ namespace SWPPT3.Main.Utility
 
         private void Start()
         {
-            if (player == null) return;
-            Vector3 initialPosition = player.position - player.forward * camerascript.DistanceFromPlayer + Vector3.up * camerascript.CameraHeight;
-            transform.position = initialPosition;
+            if (player != null)
+            {
+                Vector3 initialPosition = player.position - player.forward * camerascript.DistanceFromPlayer + Vector3.up * camerascript.CameraHeight;
+                transform.position = initialPosition;
 
-            transform.LookAt(player);
+                transform.LookAt(player);
 
-            _currentRotation = transform.eulerAngles;
+                _currentRotation = transform.eulerAngles;
+            }
 
             if (InputManager.Instance != null)
             {
@@ -86,6 +88,7 @@ namespace SWPPT3.Main.Utility
                 InputManager.Instance.OnStartRotation -= HandleStartRotation;
                 InputManager.Instance.OnStartTransform -= HandleStartTransform;
             }
+
         }
     }
 }

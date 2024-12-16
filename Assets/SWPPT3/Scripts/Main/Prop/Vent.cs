@@ -19,7 +19,6 @@ namespace SWPPT3.Main.Prop
 
         protected override void OnSourceStateChanged(StateSource src, bool state)
         {
-            if (maintainState && State) return;
             State = state;
             if (_isCooldownActive)
                 return;
