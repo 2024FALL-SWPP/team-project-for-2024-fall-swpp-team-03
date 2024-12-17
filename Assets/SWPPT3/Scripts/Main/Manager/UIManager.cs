@@ -113,7 +113,7 @@ namespace SWPPT3.Main.Manager
             _metalNumTmp = _metalNum.GetComponent<TextMeshProUGUI>();
             _rubberNumTmp = _rubberNum.GetComponent<TextMeshProUGUI>();
 
-            _playerScript = FindObjectOfType<Player>();
+            // _playerScript = FindObjectOfType<Player>();
             HideAllUI();
             ShowStartStage();
             Debug.Log("initinalize ");
@@ -178,10 +178,10 @@ namespace SWPPT3.Main.Manager
         {
             _startScreen.SetActive(true);
             _loadingScreen.SetActive(true);
-            Invoke("showPlayingScreen", 2);
+            // Invoke("showPlayingScreen", 2);
         }
 
-        private void showPlayingScreen()
+        public void showPlayingScreen()
         {
             _startScreen.SetActive(false);
             _loadingScreen.SetActive(false);
@@ -194,6 +194,11 @@ namespace SWPPT3.Main.Manager
             _playTime.SetActive(true);
             MetalNumUpdate(_playerScript.Item[PlayerStates.Metal]);
             RubberNumUpdate(_playerScript.Item[PlayerStates.Rubber]);
+        }
+
+        public void IntializePlayer(Player player)
+        {
+            _playerScript = player;
         }
 
         public void HidePlayingScreen()
