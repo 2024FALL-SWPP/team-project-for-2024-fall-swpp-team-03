@@ -723,12 +723,12 @@ PositionConstraint:
   m_Enabled: 1
   m_Weight: 1
   m_TranslationAtRest: {x: 0, y: 1.6, z: 7.305}
-  m_TranslationOffset: {x: 0, y: 0, z: 0}
+  m_TranslationOffset: {x: 0, y: 1.0000001, z: 0.021999836}
   m_AffectTranslationX: 1
   m_AffectTranslationY: 1
   m_AffectTranslationZ: 1
-  m_IsContraintActive: 0
-  m_IsLocked: 0
+  m_IsContraintActive: 1
+  m_IsLocked: 1
   m_Sources:
   - sourceTransform: {fileID: 1520696117}
     weight: 1
