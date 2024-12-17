@@ -66,7 +66,7 @@ namespace SWPPT3.Main.PlayerLogic
             }
             if (_player.CurrentState == PlayerStates.Rubber && _groundedObjects.Count == 0  && _isHoldingJump)
             {
-                _player.SetBounciness(1.0f);
+                // _player.SetBounciness(1.0f);
             }
         }
 
@@ -135,7 +135,7 @@ namespace SWPPT3.Main.PlayerLogic
             _isHoldingJump = true;
             if (_player.CurrentState == PlayerStates.Rubber)
             {
-                _player.SetBounciness(1.0f);
+                // _player.SetBounciness(1.0f);
             }
         }
 
@@ -144,7 +144,7 @@ namespace SWPPT3.Main.PlayerLogic
             _isHoldingJump = false;
             if (_player.CurrentState == PlayerStates.Rubber)
             {
-                _player.SetBounciness(0.5f);
+                // _player.SetBounciness(0.5f);
             }
         }
 

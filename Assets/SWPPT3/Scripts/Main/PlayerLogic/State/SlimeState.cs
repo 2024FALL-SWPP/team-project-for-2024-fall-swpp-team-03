@@ -17,19 +17,5 @@ namespace SWPPT3.Main.PlayerLogic.State
                 base.InteractWithProp(player, obstacle);
             }
         }
-        public override void ChangeRigidbody(Rigidbody rb)
-        {
-
-        }
-        public override void ChangePhysics(Collider collider, PhysicMaterial physicMaterial)
-        {
-            physicMaterial.bounciness = 0f;
-            physicMaterial.dynamicFriction = 0f;
-            physicMaterial.staticFriction = 0f;
-
-            physicMaterial.bounceCombine = PhysicMaterialCombine.Maximum;
-
-            collider.material = physicMaterial;
-        }
     }
 }

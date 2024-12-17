@@ -169,6 +169,35 @@ namespace SWPPT3.SoftbodyPhysics
             }
         }
 
+        public void OnEnable()
+        {
+            Physics.ContactModifyEvent += ModificationEvent;
+        }
+
+        public void OnDisable()
+        {
+            Physics.ContactModifyEvent -= ModificationEvent;
+        }
+
+        public void ModificationEvent(PhysicsScene scene, NativeArray<ModifiableContactPair> pairs)
+        {
+            for (int i = 0; i < pairs.Length; i++)
+            {
+                var pair = pairs[i];
+
+                var properties = pair.massProperties;
+
+                properties.inverseMassScale = 1f;
+                properties.inverseInertiaScale = 1f;
+                properties.otherInverseMassScale = 0;
+                properties.otherInverseInertiaScale = 0;
+
+                pair.massProperties = properties;
+
+                pairs[i] = pair;
+            }
+        }
+
 
 
         private GameObject centerOfMasObj = null;
@@ -296,7 +325,7 @@ namespace SWPPT3.SoftbodyPhysics
 
 
             // Add sphere collider and rigidbody to root object
-            rootRB = gameObject.AddComponent<Rigidbody>();
+            rootRB = gameObject.GetComponent<Rigidbody>();
             rootRB.mass = 1;
             _rigidbodyList.Add(rootRB);
 
@@ -470,16 +499,26 @@ namespace SWPPT3.SoftbodyPhysics
 
         List<Vector2Int> noDupesListOfSprings = new List<Vector2Int>();
 
+
+
         public void SetSlime()
         {
+            if(_physicsMaterial == null) return;
             _physicsMaterial.bounciness = 0f;
             _physicsMaterial.dynamicFriction = 0f;
             _physicsMaterial.staticFriction = 0f;
             _physicsMaterial.bounceCombine = PhysicMaterialCombine.Maximum;
+            if (!IsSlime)
+            {
+                FreeJoint();
+                foreach (var sc in _sphereColliderArray)
+                {
+                    sc.hasModifiableContacts = true;
+                }
+            }
 
             IsSlime = true;
 
-            FreeJoint();
         }
 
         public void SetMetal()
@@ -491,6 +530,10 @@ namespace SWPPT3.SoftbodyPhysics
             if (IsSlime)
             {
                 FixJoint();
+                foreach (var sc in _sphereColliderArray)
+                {
+                    sc.hasModifiableContacts = false;
+                }
             }
             IsSlime = false;
         }
@@ -504,6 +547,10 @@ namespace SWPPT3.SoftbodyPhysics
             if (IsSlime)
             {
                 FixJoint();
+                foreach (var sc in _sphereColliderArray)
+                {
+                    sc.hasModifiableContacts = false;
+                }
             }
             IsSlime = false;
         }
@@ -517,6 +564,10 @@ namespace SWPPT3.SoftbodyPhysics
             if (IsSlime)
             {
                 FixJoint();
+                foreach (var sc in _sphereColliderArray)
+                {
+                    sc.hasModifiableContacts = false;
+                }
             }
             IsSlime = false;
         }
@@ -541,13 +592,10 @@ namespace SWPPT3.SoftbodyPhysics
 
         public void Update()
         {
-            if (IsSlime)
-            {
-                Softness = _script.Softness;
-                Mass = _script.Mass;
-                PhysicsRoughness = _script.PhysicsRoughness;
-                Damp = _script.Damp;
-            }
+            Softness = _script.Softness;
+            Mass = _script.Mass;
+            PhysicsRoughness = _script.PhysicsRoughness;
+            Damp = _script.Damp;
 
            if (DebugMode)
            {
