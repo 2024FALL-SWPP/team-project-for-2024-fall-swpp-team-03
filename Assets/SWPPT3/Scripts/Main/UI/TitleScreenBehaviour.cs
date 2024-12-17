@@ -1,7 +1,10 @@
 using System;
 using SWPPT3.Main.Manager;
+using SWPPT3.Main.PlayerLogic;
+using SWPPT3.Main.Utility;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.UI;
 
 namespace SWPPT3.Main.UI
 {
@@ -20,6 +23,18 @@ namespace SWPPT3.Main.UI
     public class TitleScreenBehaviour : MonoBehaviour
     {
         [SerializeField] private UnityEvent<bool> _onTryingExitStatusChanged;
+        [SerializeField] private UnityEvent<bool> _onTryingOptionStatusChanged;
+
+        [SerializeField] private PlayerScript _playerScript;
+        [SerializeField] private CameraScript _cameraScript;
+
+
+        [SerializeField] private GameObject _optionScene;
+
+        private Slider _bgmSlider;
+        private Slider _sfxSlider;
+        private Slider _cameraSensitivitySlider;
+        private Slider _rotationSensitivitySlider;
 
         public void OnButtonClick(int type)
         {
@@ -31,34 +46,92 @@ namespace SWPPT3.Main.UI
             switch (type)
             {
                 case ButtonClickType.Tutorial1:
-                    UIManager.Instance.();
-                    break;
                 case ButtonClickType.Tutorial2:
-                    break;
                 case ButtonClickType.Stage1:
-                    break;
                 case ButtonClickType.Stage2:
-                    break;
                 case ButtonClickType.Stage3:
-                    break;
                 case ButtonClickType.Stage4:
-                    break;
                 case ButtonClickType.Stage5:
+                    if (GameManager.Instance.GameState == GameState.BeforeStart)
+                    {
+                        GameManager.Instance.StageSelect((int)type);
+                    }
                     break;
                 case ButtonClickType.Option:
+                    ClickOption();
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(type), type, null);
             }
         }
 
+        public void ClickOption()
+        {
+            if (GameManager.Instance.GameState == GameState.BeforeStart)
+            {
+                _optionScene.SetActive(true);
+                GameManager.Instance.GameState = GameState.OnOption;
+            }
+        }
+
+        public void ClickMainMenu()
+        {
+            GameManager.Instance.GameState = GameState.BeforeStart;
+            _optionScene.SetActive(false);
+            _onTryingExitStatusChanged.Invoke(false);
+        }
+
+        public void ClickExitGame()
+        {
+            Application.Quit();
+        }
+
         private void Start()
         {
             _onTryingExitStatusChanged.Invoke(false);
+            _onTryingOptionStatusChanged.Invoke(false);
+            GameManager.Instance.GameState = GameState.BeforeStart;
+            // _exitGame = transform.Find("ExitGame");
+            // _optionScene = GameObject.Find("OptionScene");
+
+            Debug.Log($"{_optionScene == null}");
+            var parentSlider = _optionScene.transform.Find("VerticalAlign");
+            _bgmSlider = parentSlider.Find("BGMSlider").GetComponent<Slider>();
+            _sfxSlider = parentSlider.Find("SoundEffectSlider").GetComponent<Slider>();
+            _cameraSensitivitySlider = parentSlider.Find("CameraSensitivitySlider").GetComponent<Slider>();
+            _rotationSensitivitySlider = parentSlider.Find("RotationSensitivitySlider").GetComponent<Slider>();
+
+            if (InputManager.Instance != null)
+            {
+                InputManager.Instance.OnEsc += HandleEsc;
+            }
+            else
+            {
+                Debug.LogError("InputManager is null");
+            }
+        }
+
+        public void Update()
+        {
+            _cameraScript.MouseSensitivity = _cameraSensitivitySlider.value;
+            _playerScript.RotationSpeed = _rotationSensitivitySlider.value;
+        }
+
+        private void HandleEsc()
+        {
+            if (GameManager.Instance.GameState == GameState.BeforeStart)
+            {
+                GameManager.Instance.GameState = GameState.Exit;
+                _onTryingExitStatusChanged.Invoke(true);
+            }
         }
 
         private void OnDestroy()
         {
+            if (InputManager.Instance != null)
+            {
+                InputManager.Instance.OnEsc -= HandleEsc;
+            }
         }
     }
 }

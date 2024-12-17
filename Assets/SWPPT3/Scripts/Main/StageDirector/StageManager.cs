@@ -1,6 +1,8 @@
 using SWPPT3.Main.Manager;
 using SWPPT3.Main.PlayerLogic;
+using SWPPT3.Main.UI;
 using SWPPT3.Main.Utility.Singleton;
+using UnityEditor.SceneManagement;
 using UnityEngine;
 
 namespace SWPPT3.Main.StageDirector
@@ -8,12 +10,20 @@ namespace SWPPT3.Main.StageDirector
     public abstract class StageManager : MonoWeakSingleton<StageManager>
     {
         [SerializeField] protected Player player;
+        [SerializeField] protected InGameScreenBehaviour inGameScreen;
 
         public Player Player{ get => player;}
-        protected int Time;
+        public int Time;
 
-        public virtual void InitializeStage()
+        public abstract void InitializeStage();
+
+        public void Awake()
         {
+            Debug.Log("Stage Manager initialized");
+            InitializeStage();
+            StartStage();
+            GameManager.Instance._stageManager = this;
+            GameManager.Instance.GameState = GameState.Playing;
         }
 
         public void StartStage()
@@ -49,7 +59,7 @@ namespace SWPPT3.Main.StageDirector
         public void UpdateTime()
         {
             Time++;
-            UIManager.Instance.PlayTimeUpdate(Time);
+            inGameScreen.PlayTimeUpdate(Time);
         }
 
     }
