@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 namespace SWPPT3.Main.Prop
 {
@@ -6,8 +7,11 @@ namespace SWPPT3.Main.Prop
     {
         [SerializeField] private Animator animator;
 
+        private HashSet<GameObject> _collidedObjects = new HashSet<GameObject>();
+
         private void OnTriggerEnter(Collider other)
         {
+            _collidedObjects.Add(other.gameObject);
             State = On;
             animator.SetBool("IsPressed", true);
             //Debug.Log("FloorButton"+State);
@@ -15,8 +19,12 @@ namespace SWPPT3.Main.Prop
 
         private void OnTriggerExit(Collider other)
         {
-            State = Off;
-            animator.SetBool("IsPressed", false);
+            _collidedObjects.Remove(other.gameObject);
+            if(_collidedObjects.Count == 0)
+            {
+                State = Off;
+                animator.SetBool("IsPressed", false);
+            }
             //Debug.Log("FloorButton"+State);
         }
     }
