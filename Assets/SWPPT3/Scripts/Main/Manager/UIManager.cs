@@ -4,175 +4,227 @@ using UnityEngine.UI;
 using SWPPT3.Main.Manager;
 using SWPPT3.Main.Utility.Singleton;
 using System.Collections;
+using TMPro;
 using Unity.VisualScripting.YamlDotNet.Serialization.ObjectGraphVisitors;
 using UnityEngine.SceneManagement;
 
 namespace SWPPT3.Main.Manager
 {
     public class UIManager : MonoSingleton<UIManager>
-{
-
-    private GameManager _gameManager;
-    /*
-    [Header("Canvases")]
-    [SerializeField] private Canvas beforeCanvas;
-    [SerializeField] private Canvas playingCanvas;
-    [SerializeField] private Canvas pausedCanvas;
-    [SerializeField] private Canvas gameOverCanvas;
-    [SerializeField] private Canvas stageClearedCanvas;
-    [SerializeField] private Canvas beforeOptionCanvas;
-    [SerializeField] private Canvas startIntroCanvas;
-    [SerializeField] private Canvas clearIntroCanvas;
-
-    [Header("Buttons")]
-    [SerializeField] private Button pauseButton;
-    [SerializeField] private Button resumeButton;
-    [SerializeField] private Button resetButton;
-    [SerializeField] private Button nextStageButton;
-    [SerializeField] private Button finishStageButton;*/
-
-    [Header("Stage Buttons")]
-    [SerializeField] private Button stage1Button;
-    [SerializeField] private Button stage2Button;
-    [SerializeField] private Button stage3Button;
-    [SerializeField] private Button stage4Button;
-    [SerializeField] private Button stage5Button;
-    [SerializeField] private Button tutorial1Button;
-    [SerializeField] private Button tutorial2Button;
-
-    private float introDuration = 1.0f;
-
-    public void Initialize(GameManager gameManager)
-    {
-        _gameManager = gameManager;
-
-        //_gameManager.OnGameStateChanged += OnGameStateChanged;
-    }
-
-    private void Start()
-    {
-        InitializeButtons();
-        //HideAllCanvases();
-    }
-
-    private void InitializeButtons()
     {
 
-        // pauseButton.onClick.AddListener(() => OnButtonClicked("Pause"));
-        // resumeButton.onClick.AddListener(() => OnButtonClicked("Resume"));
-        // resetButton.onClick.AddListener(() => OnButtonClicked("Reset"));
-        // nextStageButton.onClick.AddListener(() => OnButtonClicked("NextStage"));
-        // finishStageButton.onClick.AddListener(() => OnButtonClicked("Finish"));
+        private GameManager _gameManager;
 
-        stage1Button.onClick.AddListener(() => OnButtonClicked(3));
-        stage2Button.onClick.AddListener(() => OnButtonClicked(4));
-        stage3Button.onClick.AddListener(() => OnButtonClicked(7));
-        stage4Button.onClick.AddListener(() => OnButtonClicked(5));
-        stage5Button.onClick.AddListener(() => OnButtonClicked(6));
-        tutorial1Button.onClick.AddListener(() => OnButtonClicked(1));
-        tutorial2Button.onClick.AddListener(() => OnButtonClicked(2));
-    }
+        [SerializeField] private GameObject mainCanvas;
 
-    // public void ShowCanvas(string canvasName)
-    // {
-    //     HideAllCanvases();
-    //
-    //     switch (canvasName)
-    //     {
-    //         case "BeforeStart":
-    //             beforeCanvas.gameObject.SetActive(true);
-    //             break;
-    //         case "Playing":
-    //             playingCanvas.gameObject.SetActive(true);
-    //             break;
-    //         case "Paused":
-    //             pausedCanvas.gameObject.SetActive(true);
-    //             break;
-    //         case "GameOver":
-    //             gameOverCanvas.gameObject.SetActive(true);
-    //             break;
-    //         case "StageCleared":
-    //             stageClearedCanvas.gameObject.SetActive(true);
-    //             break;
-    //         default:
-    //             Debug.LogWarning("Unknown canvas name: " + canvasName);
-    //             break;
-    //     }
-    // }
-    // private void HideAllCanvases()
-    // {
-    //     beforeCanvas.gameObject.SetActive(false);
-    //     playingCanvas.gameObject.SetActive(false);
-    //     pausedCanvas.gameObject.SetActive(false);
-    //     gameOverCanvas.gameObject.SetActive(false);
-    //     stageClearedCanvas.gameObject.SetActive(false);
-    //     beforeOptionCanvas.gameObject.SetActive(false);
-    // }
+        [Header("Button for start")]
+        private GameObject _stage1Button;
+        private GameObject _stage2Button;
+        private GameObject _stage3Button;
+        private GameObject _stage4Button;
+        private GameObject _stage5Button;
+        private GameObject _tutorial1Button;
+        private GameObject _tutorial2Button;
+
+        [Header("Button for stage")]
+        private GameObject _pauseButton;
+
+        [Header("Image for start")]
+        private GameObject _logo;
+        private GameObject _exitGame;
+
+        [Header("Image for stage")]
+        private GameObject _itemState;
+        private GameObject _metalText;
+        private GameObject _rubberText;
+        private GameObject _metalNum;
+        private GameObject _rubberNum;
+        private GameObject _playTime;
+        private GameObject _pauseScreen;
+        private GameObject _failScreen;
+        private GameObject _clearScreen;
+        private GameObject _loadingScreen;
+        private GameObject _startScreen;
+
+        [Header("stage Button")]
+        private Button _resumeButton_PauseMenu;
+        private Button _restartButton_PauseMenu;
+
+        private Button _outButton_PauseMenu;
+
+        // FailScreen Buttons
+        private Button _restartButton_FailedMenu;
+
+        private Button _outButton_FailedMenu;
+
+        // ClearScreen Buttons
+        private Button _nextButton_ClearedMenu;
+        private Button _outButton_ClearedMenu;
+
+        private TextMeshProUGUI _playTimeTmp;
+        private TextMeshProUGUI _metalNumTmp;
+        private TextMeshProUGUI _rubberNumTmp;
 
 
-    // private void OnEnable()
-    // {
-    //     GameManager.Instance.OnGameStateChanged += OnGameStateChanged;
-    // }
-    //
-    // private void OnDisable()
-    // {
-    //     GameManager.Instance.OnGameStateChanged -= OnGameStateChanged;
-    // }
 
-    private void OnDestroy()
-    {
-        if (_gameManager != null)
+        private float introDuration = 1.0f;
+
+        private void Awake()
         {
-            //_gameManager.OnGameStateChanged -= OnGameStateChanged;
-        }
-    }
+            _pauseButton = transform.Find("pauseButton")?.gameObject;
+            _stage1Button = transform.Find("stage1Button")?.gameObject;
+            _stage2Button = transform.Find("stage2Button")?.gameObject;
+            _stage3Button = transform.Find("stage3Button")?.gameObject;
+            _stage4Button = transform.Find("stage4Button")?.gameObject;
+            _stage5Button = transform.Find("stage5Button")?.gameObject;
+            _tutorial1Button = transform.Find("tutorial1Button")?.gameObject;
+            _tutorial2Button = transform.Find("tutorial2Button")?.gameObject;
 
+            _resumeButton_PauseMenu = _pauseScreen.transform.Find("PausedMenu/ResumeButton").GetComponent<Button>();
+            _restartButton_PauseMenu = _pauseScreen.transform.Find("PausedMenu/RestartButton").GetComponent<Button>();
+            _outButton_PauseMenu = _pauseScreen.transform.Find("PausedMenu/OutButton").GetComponent<Button>();
+            // Fail Screen
+            _restartButton_FailedMenu = _failScreen.transform.Find("FailedMenu/RestartButton").GetComponent<Button>();
+            _outButton_FailedMenu = _failScreen.transform.Find("FailedMenu/OutButton").GetComponent<Button>();
+            // Clear Screen
+            _nextButton_ClearedMenu = _clearScreen.transform.Find("ClearedMenu/NextButton").GetComponent<Button>();
+            _outButton_ClearedMenu = _clearScreen.transform.Find("ClearedMenu/OutButton").GetComponent<Button>();
 
-    private void OnButtonClicked(string buttonName)
-    {
-        GameManager.Instance.OnUIButtonClicked(buttonName);
-    }
+            _playTimeTmp = _playTime.transform.Find("PlayTimeText").GetComponent<TextMeshProUGUI>();
+            _metalNumTmp = _metalNum.GetComponent<TextMeshProUGUI>();
+            _rubberNumTmp = _rubberNum.transform.Find("PlayTimeText").GetComponent<TextMeshProUGUI>();
 
-    public void OnButtonClicked(int stageNum)
-    {
-        //Debug.Log("UIManager button clicked");
-        GameManager.Instance.OnUIButtonClicked(stageNum);
-    }
-    /*
-    private void OnGameStateChanged(GameState newState)
-    {
-        StopAllCoroutines();
-        switch (newState)
-        {
-            case GameState.BeforeStart:
-                ShowCanvas("BeforeStart");
-                break;
-            case GameState.Playing:
-                StartCoroutine(ShowIntroAndMainCanvas(startIntroCanvas, "Playing"));
-                break;
-            case GameState.Paused:
-                ShowCanvas("Paused");
-                break;
-            case GameState.GameOver:
-                ShowCanvas("GameOver");
-                break;
-            case GameState.StageCleared:
-                StartCoroutine(ShowIntroAndMainCanvas(clearIntroCanvas, "Clear"));
-                break;
-            default:
-                break;
+            InitializeButtons();
         }
 
+        private void InitializeButtons()
+        {
+
+            _pauseButton.GetComponent<Button>().onClick.AddListener(() => OnButtonClicked("Pause"));
+            _tutorial1Button.GetComponent<Button>().onClick.AddListener(() => OnButtonClicked(1));
+            _tutorial2Button.GetComponent<Button>().onClick.AddListener(() => OnButtonClicked(2));
+            _stage1Button.GetComponent<Button>().onClick.AddListener(() => OnButtonClicked(3));
+            _stage2Button.GetComponent<Button>().onClick.AddListener(() => OnButtonClicked(4));
+            _stage3Button.GetComponent<Button>().onClick.AddListener(() => OnButtonClicked(7));
+            _stage4Button.GetComponent<Button>().onClick.AddListener(() => OnButtonClicked(5));
+            _stage5Button.GetComponent<Button>().onClick.AddListener(() => OnButtonClicked(6));
+        }
+
+        private void SetAllUIInactive()
+        {
+            _stage1Button.SetActive(false);
+            _stage2Button.SetActive(false);
+            _stage3Button.SetActive(false);
+            _stage4Button.SetActive(false);
+            _stage5Button.SetActive(false);
+            _tutorial1Button.SetActive(false);
+            _tutorial2Button.SetActive(false);
+            _pauseButton.SetActive(false);
+            _logo.SetActive(false);
+            _exitGame.SetActive(false);
+            _itemState.SetActive(false);
+            _metalText.SetActive(false);
+            _rubberText.SetActive(false);
+            _metalNum.SetActive(false);
+            _rubberNum.SetActive(false);
+            _playTime.SetActive(false);
+            _pauseScreen.SetActive(false);
+            _failScreen.SetActive(false);
+            _clearScreen.SetActive(false);
+            _loadingScreen.SetActive(false);
+            _startScreen.SetActive(false);
+            _resumeButton_PauseMenu.gameObject.SetActive(false);
+            _restartButton_PauseMenu.gameObject.SetActive(false);
+            _outButton_PauseMenu.gameObject.SetActive(false);
+            _restartButton_FailedMenu.gameObject.SetActive(false);
+            _outButton_FailedMenu.gameObject.SetActive(false);
+            _nextButton_ClearedMenu.gameObject.SetActive(false);
+            _outButton_ClearedMenu.gameObject.SetActive(false);
+        }
+
+        public void ShowStartStage()
+        {
+            _pauseButton.SetActive(true);
+            _stage1Button.SetActive(true);
+            _stage2Button.SetActive(true);
+            _stage3Button.SetActive(true);
+            _stage4Button.SetActive(true);
+            _stage5Button.SetActive(true);
+            _tutorial1Button.SetActive(true);
+            _tutorial2Button.SetActive(true);
+            _logo.SetActive(true);
+        }
+
+        public void ShowPlaying()
+        {
+            _startScreen.SetActive(true);
+            Invoke("ShowPlayingScreen", 2);
+            _startScreen.SetActive(false);
+        }
+
+        public void ShowPlayingScreen()
+        {
+            _itemState.SetActive(true);
+            _metalText.SetActive(true);
+            _rubberText.SetActive(true);
+            _metalNum.SetActive(true);
+            _rubberNum.SetActive(true);
+        }
+
+        public void ShowLoading()
+        {
+            HideScreen();
+            _loadingScreen.SetActive(true);
+        }
+
+        public void ShowPause()
+        {
+            HideScreen();
+            _pauseScreen.SetActive(true);
+        }
+
+        public void ShowClear()
+        {
+            HideScreen();
+            _clearScreen.SetActive(true);
+        }
+
+        public void ShowFail()
+        {
+            HideScreen();
+            _failScreen.SetActive(true);
+        }
+
+        public void HideScreen()
+        {
+            _pauseScreen.SetActive(false);
+            _failScreen.SetActive(false);
+            _clearScreen.SetActive(false);
+            _loadingScreen.SetActive(false);
+        }
+
+
+
+        private void OnButtonClicked(string buttonName)
+        {
+            GameManager.Instance.OnUIButtonClicked(buttonName);
+        }
+
+        public void OnButtonClicked(int stageNum)
+        {
+            GameManager.Instance.OnUIButtonClicked(stageNum);
+        }
+        public void PlayTimeUpdate(int time){
+            int min = time/60;
+            int sec = time%60;
+            _playTimeTmp.text = min+":"+sec;
+        }
+        public void MetalNumUpdate(int num){
+            _metalNumTmp.text = num.ToString();
+        }
+        public void RubberNumUpdate(int num){
+            _rubberNumTmp.text = num.ToString();
+        }
     }
-    private IEnumerator ShowIntroAndMainCanvas(Canvas introCanvas, string mainCanvasName)
-    {
-        introCanvas.gameObject.SetActive(true);
-        yield return new WaitForSeconds(introDuration);
-        introCanvas.gameObject.SetActive(false);
-        ShowCanvas(mainCanvasName);
-    }
-    */
-}
 }
 

@@ -648,6 +648,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: MetalText
       objectReference: {fileID: 0}
+    - target: {fileID: 1964700161073110716, guid: ffabef52d2d6f40a9a3a6505e0a9a5b2,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ffabef52d2d6f40a9a3a6505e0a9a5b2, type: 3}
 --- !u!224 &4136735325930817255 stripped
@@ -681,7 +686,7 @@ PrefabInstance:
     - target: {fileID: 2138060178070420173, guid: 05ca5c81d1a28438892d7486d6ee8fc1,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2138060178070420174, guid: 05ca5c81d1a28438892d7486d6ee8fc1,
         type: 3}
@@ -913,6 +918,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: RadialUI
       objectReference: {fileID: 0}
+    - target: {fileID: 2063964203652123132, guid: bdae13665e6a34366a4e4d740ba6a6f4,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bdae13665e6a34366a4e4d740ba6a6f4, type: 3}
 --- !u!224 &4136735326200131215 stripped
@@ -932,6 +942,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Playtime
+      objectReference: {fileID: 0}
+    - target: {fileID: 1723225574773442301, guid: 7fc4bea5132eb4f9ab3f6e2e6e7cf31d,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1723225574773442302, guid: 7fc4bea5132eb4f9ab3f6e2e6e7cf31d,
         type: 3}
@@ -1162,6 +1177,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: RubberNum
+      objectReference: {fileID: 0}
+    - target: {fileID: 8226728132802608685, guid: 36d2f58aed28144e2a30721addebfb0d,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8226728132802608687, guid: 36d2f58aed28144e2a30721addebfb0d,
         type: 3}
@@ -1427,6 +1447,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: RubberText
+      objectReference: {fileID: 0}
+    - target: {fileID: 1964700161073110716, guid: ffabef52d2d6f40a9a3a6505e0a9a5b2,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ffabef52d2d6f40a9a3a6505e0a9a5b2, type: 3}
@@ -1703,6 +1728,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: MetalNum
       objectReference: {fileID: 0}
+    - target: {fileID: 8226728132802608685, guid: 36d2f58aed28144e2a30721addebfb0d,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 36d2f58aed28144e2a30721addebfb0d, type: 3}
 --- !u!224 &4136735327738300034 stripped
@@ -1827,6 +1857,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: PauseButton
+      objectReference: {fileID: 0}
+    - target: {fileID: 7744663415273716893, guid: bc753bc84717d40698ac50946ee86695,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bc753bc84717d40698ac50946ee86695, type: 3}
