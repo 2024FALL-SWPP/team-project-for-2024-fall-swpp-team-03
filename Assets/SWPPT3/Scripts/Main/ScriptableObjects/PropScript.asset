@@ -12,6 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3794af9eb8ff415dbace1fd4c68f2be4, type: 3}
   m_Name: PropScript
   m_EditorClassIdentifier: 
-  colliderDisableDelay: 0.2
-  stateCooldownDelay: 1
-  offCooldownDelay: 0.2
+  _colliderDisableDelay: 0.2
+  _stateCooldownDelay: 1
+  _offCooldownDelay: 0.2
+  _buoyancyCoefficient: 2
+  _dampingFactor: 0.5
+  _clampFactor: 3
