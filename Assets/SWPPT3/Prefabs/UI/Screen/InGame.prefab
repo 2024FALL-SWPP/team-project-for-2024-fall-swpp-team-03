@@ -2755,7 +2755,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3061622423582226959}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -2867,6 +2867,9 @@ MonoBehaviour:
   _metalNumTmp: {fileID: 2895323979621877206}
   _rubberNumTmp: {fileID: 818430995981542076}
   _radialUI: {fileID: 8488859834885466518}
+  _rubberButton: {fileID: 8488859835809235302}
+  _metalButton: {fileID: 8488859835077312272}
+  _slimeButton: {fileID: 8488859835786804939}
 --- !u!1 &4169080372856693958
 GameObject:
   m_ObjectHideFlags: 0
