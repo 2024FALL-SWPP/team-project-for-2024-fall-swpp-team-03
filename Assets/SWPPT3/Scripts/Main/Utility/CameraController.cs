@@ -48,7 +48,7 @@ namespace SWPPT3.Main.Utility
         private void Update()
         {
             if (player == null) return;
-            if ( !_isRightButton)
+            if (!_isRightButton && GameManager.Instance.GameState == GameState.Playing)
             {
                 float mouseX = _lookInput.x * _mouseSensitivity;
                 float mouseY = _lookInput.y * _mouseSensitivity;
