@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using SWPPT3.Main.StageDirector;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 
 namespace SWPPT3.Main.Manager
@@ -44,11 +45,12 @@ namespace SWPPT3.Main.Manager
         public int StageNumber { get => stageNumber; set => stageNumber = value; }
 
         public StageManager _stageManager;
+        [SerializeField] private UnityEvent<bool> _onTryingLoadStatusChanged;
 
 
         public void Awake()
         {
-
+            _onTryingLoadStatusChanged.Invoke(false);
         }
 
 
@@ -62,9 +64,11 @@ namespace SWPPT3.Main.Manager
                     // UIManager.Instance.ShowStartStage();
                     break;
                 case GameState.Ready:
+                    _onTryingLoadStatusChanged.Invoke(true);
                     LoadScene();
                     break;
                 case GameState.Playing:
+                    _onTryingLoadStatusChanged.Invoke(false);
                     _stageManager.ResumeStage();
                     break;
                 case GameState.Paused:

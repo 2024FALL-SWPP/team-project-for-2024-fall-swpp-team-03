@@ -4,6 +4,7 @@ using SWPPT3.Main.Manager;
 using SWPPT3.Main.PlayerLogic;
 using SWPPT3.Main.PlayerLogic.State;
 using TMPro;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
@@ -26,6 +27,12 @@ namespace SWPPT3.Main.UI
         [SerializeField] private TextMeshProUGUI _rubberNumTmp;
 
         [SerializeField] private GameObject _radialUI;
+        [SerializeField] private RectTransform _rubberButton;
+        [SerializeField] private RectTransform _metalButton;
+        [SerializeField] private RectTransform _slimeButton;
+        private float _maxDistance = 200f; // 최대 거리 (이 값에 따라 확대 감도가 달라짐)
+        private Vector2 _screenCenter;
+
 
         public void ClickResume()
         {
@@ -74,11 +81,9 @@ namespace SWPPT3.Main.UI
         public void ShowRadialUI()
         {
             _radialUI.SetActive(true);
-            Debug.Log($"{_player.Item[PlayerStates.Rubber]} {_player.Item[PlayerStates.Metal]}");
             if (_player.Item[PlayerStates.Rubber] == 0)
             {
                 _radialUI.transform.Find("RightButton/RightActive").gameObject.SetActive(false);
-
             }
             else
             {
@@ -94,6 +99,52 @@ namespace SWPPT3.Main.UI
                 _radialUI.transform.Find("LeftButton/LeftActive").gameObject.SetActive(true);
             }
         }
+        private void UpdateRadialScale()
+        {
+            Vector2 mousePosition = Mouse.current.position.ReadValue();
+            UpdateButtonScale();
+        }
+
+        private void UpdateButtonScale()
+        {
+            Vector2 screenCenter = new Vector2(Screen.width / 2f, Screen.height / 2f);
+            Vector2 relativePos = Mouse.current.position.ReadValue() - screenCenter;
+            if (relativePos.magnitude < 70f) return;
+
+            float angle = Mathf.Atan2(relativePos.y, relativePos.x) * Mathf.Rad2Deg;
+            if (angle < 0) angle += 360f;
+
+            float scaleFactor = Mathf.Lerp(3.0f, 1.0f, relativePos.magnitude / _maxDistance);
+            scaleFactor = Mathf.Clamp(scaleFactor, 1.0f, 3.0f);
+
+            if (angle >= 0 && angle < 120)
+            {
+                SetButtonScale(_slimeButton, scaleFactor);
+                SetButtonScale(_metalButton, 1.0f);
+                SetButtonScale(_rubberButton, 1.0f);
+            }
+            else if (angle >= 120 && angle < 240)
+            {
+                SetButtonScale(_metalButton, scaleFactor);
+                SetButtonScale(_rubberButton, 1.0f);
+                SetButtonScale(_slimeButton, 1.0f);
+            }
+            else
+            {
+                SetButtonScale(_rubberButton, scaleFactor);
+                SetButtonScale(_metalButton, 1.0f);
+                SetButtonScale(_slimeButton, 1.0f);
+            }
+        }
+
+        private void SetButtonScale(RectTransform button, float scale)
+        {
+            if (button.gameObject.activeSelf)
+            {
+                button.localScale = new Vector3(scale, scale, 1.0f);
+            }
+        }
+
 
         public void PlayTimeUpdate(int time){
             int min = time/60;
@@ -152,6 +203,10 @@ namespace SWPPT3.Main.UI
             {
                 _onTryingLoadStatusChanged.Invoke(false);
             }
+            if (GameManager.Instance.GameState == GameState.OnChoice)
+            {
+                UpdateRadialScale();
+            }
         }
         private void HandleEsc()
         {
@@ -195,6 +250,7 @@ namespace SWPPT3.Main.UI
             Vector2 cursorPos = Mouse.current.position.ReadValue();
             Vector2 screenCenter = new Vector2(Screen.width / 2f, Screen.height / 2f);
             Vector2 relativePos = cursorPos - screenCenter;
+            if (relativePos.magnitude < 50f) return;
             float angle = Mathf.Atan2(relativePos.y, relativePos.x) * Mathf.Rad2Deg;
             if (angle < 0)
             {
