@@ -24,7 +24,6 @@ namespace SWPPT3.Main.PlayerLogic
 
         private Vector2 _moveVector;
         private Vector2 _lookInput;
-        private bool _isGrounded;
         private Transform _playerTransform;
 
         private bool isRightButton = false;
@@ -36,7 +35,6 @@ namespace SWPPT3.Main.PlayerLogic
             _rotationSpeed = _playerScript.RotationSpeed;
             _jumpForce = _playerScript.JumpForce * _rb.mass;
             _isHoldingJump = false;
-            _isGrounded = false;
             _playerTransform = transform;
             if (InputManager.Instance != null)
             {
@@ -62,7 +60,7 @@ namespace SWPPT3.Main.PlayerLogic
             {
                 RotatePlayer();
             }
-            if (_player.CurrentState == PlayerStates.Rubber && !_isGrounded  && _isHoldingJump)
+            if (_player.CurrentState == PlayerStates.Rubber && _groundedObjects.Count == 0  && _isHoldingJump)
             {
                 _player.SetBounciness(1.0f);
             }
@@ -129,7 +127,7 @@ namespace SWPPT3.Main.PlayerLogic
         {
             //Debug.Log(_player.CurrentState);
 
-            if (_isGrounded)
+            if (_groundedObjects.Count > 0)
             {
                 _rb.AddForce(Vector3.up * _jumpForce, ForceMode.Impulse);
                 // Debug.Log(player._physicMaterial.bounciness);
@@ -168,23 +166,34 @@ namespace SWPPT3.Main.PlayerLogic
 
         private void OnCollisionEnter(Collision collision)
         {
-
-            var contactPoint = collision.contacts[0];
-            if (contactPoint.normal.y > _playerScript.Normalcriteria)
-            {
-                _groundedObjects.Add(collision.gameObject);
-                _isGrounded = true;
-            }
             var obstacle = collision.gameObject.GetComponent<PropBase>();
             if (obstacle != null)
             {
                 _player.InteractWithProp(obstacle);
             }
         }
+        private void OnCollisionStay(Collision collision)
+        {
+            var isGroundedObject = false;
+            foreach(var contactPoint in collision.contacts)
+            {
+                if (contactPoint.normal.y > _playerScript.Normalcriteria)
+                {
+                    isGroundedObject = true;
+                }
+            }
+            if(isGroundedObject)
+            {
+                _groundedObjects.Add(collision.gameObject);
+            }
+            else
+            {
+                _groundedObjects.Remove(collision.gameObject);
+            }
+        }
         private void OnCollisionExit(Collision collision)
         {
             _groundedObjects.Remove(collision.gameObject);
-            _isGrounded = _groundedObjects.Count > 0;
             var obstacle = collision.gameObject.GetComponent<PropBase>();
             if (obstacle != null)
             {
