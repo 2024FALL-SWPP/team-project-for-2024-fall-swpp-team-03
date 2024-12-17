@@ -29,6 +29,10 @@ namespace SWPPT3.Main.PlayerLogic.State
             }
             else if (obstacle is Gas)
             {
+                foreach(PlayerStates playerState in System.Enum.GetValues(typeof(PlayerStates)))
+                {
+                    player.Item[playerState] = 0;
+                }
                 player.TryChangeState(PlayerStates.Slime);
             }
             else if (obstacle is MagicCircle)
