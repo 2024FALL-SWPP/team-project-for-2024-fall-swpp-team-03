@@ -18,7 +18,6 @@ namespace SWPPT3.Main.Utility
 
         private Vector2 _lookInput;
 
-        private bool _isLeftButton = false;
         private bool _isRightButton = false;
 
         [SerializeField] private LayerMask cameraCollision;
@@ -39,7 +38,6 @@ namespace SWPPT3.Main.Utility
             {
                 InputManager.Instance.OnLook += HandleLook;
                 InputManager.Instance.OnStartRotation += HandleStartRotation;
-                InputManager.Instance.OnStartTransform += HandleStartTransform;
             }
             else
             {
@@ -50,7 +48,7 @@ namespace SWPPT3.Main.Utility
         private void Update()
         {
             if (player == null) return;
-            if (!_isLeftButton && !_isRightButton)
+            if ( !_isRightButton)
             {
                 float mouseX = _lookInput.x * _mouseSensitivity;
                 float mouseY = _lookInput.y * _mouseSensitivity;
@@ -76,17 +74,15 @@ namespace SWPPT3.Main.Utility
 
         private void HandleLook(Vector2 lookInput)
         {
-            _lookInput = lookInput;
+            if (GameManager.Instance.GameState == GameState.Playing)
+            {
+                _lookInput = lookInput;
+            }
         }
 
         private void HandleStartRotation(bool isRightButtonPressed)
         {
             _isRightButton = isRightButtonPressed;
-        }
-
-        private void HandleStartTransform(bool isLeftButtonPressed)
-        {
-            _isLeftButton = isLeftButtonPressed;
         }
 
         private void OnDestroy()
@@ -95,7 +91,6 @@ namespace SWPPT3.Main.Utility
             {
                 InputManager.Instance.OnLook -= HandleLook;
                 InputManager.Instance.OnStartRotation -= HandleStartRotation;
-                InputManager.Instance.OnStartTransform -= HandleStartTransform;
             }
 
         }

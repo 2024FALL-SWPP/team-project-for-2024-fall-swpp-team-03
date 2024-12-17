@@ -203,7 +203,7 @@ namespace SWPPT3.Main.Manager
                     _stageManager.InitializeStage();
                     _stageManager.StartStage();
                     UIManager.Instance.IntializePlayer(_stageManager.Player);
-                    UIManager.Instance.showPlayingScreen();
+                    UIManager.Instance.ShowPlayingScreen();
                 }
                 else
                 {
