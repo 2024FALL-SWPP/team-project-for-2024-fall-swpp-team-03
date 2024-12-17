@@ -74,7 +74,7 @@ namespace SWPPT3.Main.Manager
                     UIManager.Instance.ShowFail();
                     break;
                 case GameState.OnChoice:
-
+                    _stageManager?.PauseStage();
                     break;
                 case GameState.Exit:
                     break;
