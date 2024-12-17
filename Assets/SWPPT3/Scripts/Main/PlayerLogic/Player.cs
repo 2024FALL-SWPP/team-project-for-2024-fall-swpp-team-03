@@ -13,10 +13,17 @@ namespace SWPPT3.Main.PlayerLogic
     {
         private PlayerStates _currentState = PlayerStates.Slime;
         private Vector2 _inputMovement;
-        private int slimeCount , metalCount, rubberCount;
+
         public Dictionary<PlayerStates, int> Item;
 
         private SoftbodyGenerator _softbody;
+
+        [SerializeField] private MeshRenderer _meshRenderer;
+        [SerializeField] private Material _slimeMaterial;
+        [SerializeField] private Material _rubberMaterial;
+        [SerializeField] private Material _metalMaterial;
+
+
 
         public event Action OnItemChanged;
 
