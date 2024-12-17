@@ -1,19 +1,13 @@
-using System;
 using UnityEngine;
 using UnityEngine.UI;
-using SWPPT3.Main.Manager;
 using SWPPT3.Main.Utility.Singleton;
-using System.Collections;
 using TMPro;
-using Unity.VisualScripting.YamlDotNet.Serialization.ObjectGraphVisitors;
 using UnityEngine.SceneManagement;
 
 namespace SWPPT3.Main.Manager
 {
     public class UIManager : MonoSingleton<UIManager>
     {
-
-        private GameManager _gameManager;
 
         [SerializeField] private GameObject mainCanvas;
 
@@ -69,10 +63,6 @@ namespace SWPPT3.Main.Manager
         private TextMeshProUGUI _metalNumTmp;
         private TextMeshProUGUI _rubberNumTmp;
 
-
-
-        private float introDuration = 1.0f;
-
         private void Awake()
         {
             _stage1Button = mainCanvas.transform.Find("stage1Button")?.gameObject;
@@ -123,8 +113,7 @@ namespace SWPPT3.Main.Manager
 
         private void InitializeButtons()
         {
-
-            _pauseButton.GetComponent<Button>().onClick.AddListener(() => OnButtonClicked("Pause"));
+            _pauseButton.GetComponent<Button>().onClick.AddListener(clickPause);
             _tutorial1Button.GetComponent<Button>().onClick.AddListener(() => StageSelect(1));
             _tutorial2Button.GetComponent<Button>().onClick.AddListener(() => StageSelect(2));
             _stage1Button.GetComponent<Button>().onClick.AddListener(() => StageSelect(3));
@@ -132,15 +121,15 @@ namespace SWPPT3.Main.Manager
             _stage3Button.GetComponent<Button>().onClick.AddListener(() => StageSelect(7));
             _stage4Button.GetComponent<Button>().onClick.AddListener(() => StageSelect(5));
             _stage5Button.GetComponent<Button>().onClick.AddListener(() => StageSelect(6));
-            _resumeButton_PauseMenu.onClick.AddListener(() => OnButtonClicked("Resume"));
-            _restartButton_PauseMenu.onClick.AddListener(() => OnButtonClicked("Restart"));
-            _outButton_PauseMenu.onClick.AddListener(() => OnButtonClicked("StartMenu"));
-            _restartButton_FailedMenu.onClick.AddListener(() => OnButtonClicked("Restart"));
-            _outButton_FailedMenu.onClick.AddListener(() => OnButtonClicked("StartMenu"));
-            _nextButton_ClearedMenu.onClick.AddListener(() => OnButtonClicked("NextStage"));
-            _outButton_ClearedMenu.onClick.AddListener(() => OnButtonClicked("StartMenu"));
-            _exitButton_StartMenu.onClick.AddListener(()=> OnButtonClicked("GameFinish"));
-            _returnButton_StartMenu.onClick.AddListener(() => OnButtonClicked("ReturnStart"));
+            _resumeButton_PauseMenu.onClick.AddListener(clickResume);
+            _restartButton_PauseMenu.onClick.AddListener(clickReStart);
+            _outButton_PauseMenu.onClick.AddListener(clickStartScene);
+            _restartButton_FailedMenu.onClick.AddListener(clickReStart);
+            _outButton_FailedMenu.onClick.AddListener(clickStartScene);
+            _nextButton_ClearedMenu.onClick.AddListener(clickNext);
+            _outButton_ClearedMenu.onClick.AddListener(clickStartScene);
+            _exitButton_StartMenu.onClick.AddListener(exitGame);
+            _returnButton_StartMenu.onClick.AddListener(returnStart);
         }
 
         private void HideAllUI()
@@ -179,13 +168,13 @@ namespace SWPPT3.Main.Manager
         {
             _startScreen.SetActive(true);
             _loadingScreen.SetActive(true);
-            Invoke("ShowPlayingScreen", 2);
-            _startScreen.SetActive(false);
-            _loadingScreen.SetActive(false);
+            Invoke("showPlayingScreen", 2);
         }
 
-        public void ShowPlayingScreen()
+        private void showPlayingScreen()
         {
+            _startScreen.SetActive(false);
+            _loadingScreen.SetActive(false);
             _pauseButton.SetActive(true);
             _itemState.SetActive(true);
             _metalText.SetActive(true);
@@ -206,11 +195,13 @@ namespace SWPPT3.Main.Manager
             _playTime .SetActive(false);
         }
 
-        public void ShowPause()
+        public void clickPause()
         {
-            HideScreen();
-            _pauseScreen.SetActive(true);
-
+            if (GameManager.Instance.GameState == GameState.Playing)
+            {
+                _pauseScreen.SetActive(true);
+                GameManager.Instance.GameState = GameState.Paused;
+            }
         }
 
         public void ShowClear()
@@ -232,6 +223,36 @@ namespace SWPPT3.Main.Manager
             _clearScreen.SetActive(false);
         }
 
+        public void clickNext()
+        {
+            HideScreen();
+            GameManager.Instance.StageNumber++;
+            GameManager.Instance.GameState = GameState.Playing;
+            GameManager.Instance.LoadScene();
+        }
+
+        public void clickResume()
+        {
+            HideScreen();
+            GameManager.Instance.GameState = GameState.Playing;
+        }
+
+        public void clickReStart()
+        {
+            HideScreen();
+            GameManager.Instance.LoadScene();
+            GameManager.Instance.GameState = GameState.Playing;
+        }
+
+        public void clickStartScene()
+        {
+            HideScreen();
+            GameManager.Instance.GameState = GameState.BeforeStart;
+            GameManager.Instance.StageNumber = 0;
+            SceneManager.LoadScene("Start");
+        }
+
+        //input 에 의해 바뀌는 method
         public void ShowExitGame()
         {
             _exitGame.SetActive(true);
@@ -252,21 +273,24 @@ namespace SWPPT3.Main.Manager
             _radialUI.SetActive(false);
         }
 
-        public void ReturnStart()
+        public void returnStart()
         {
+            GameManager.Instance.GameState = GameState.BeforeStart;
             _exitGame.SetActive(false);
         }
-        public void
 
-
-
-        private void OnButtonClicked(string buttonName)
+        public void exitGame()
         {
+            Application.Quit();
         }
 
         public void StageSelect(int stageNum)
         {
-            GameManager.Instance.StageSelect(stageNum);
+            if (GameManager.Instance.GameState == GameState.BeforeStart)
+            {
+                HideStartStage();
+                GameManager.Instance.StageSelect(stageNum);
+            }
         }
         public void PlayTimeUpdate(int time){
             int min = time/60;

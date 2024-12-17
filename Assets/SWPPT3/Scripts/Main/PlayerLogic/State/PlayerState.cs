@@ -25,7 +25,7 @@ namespace SWPPT3.Main.PlayerLogic.State
             else if (obstacle is PoisonPool)
             {
                 //Debug.Log("collide with Poison pool");
-                GameManager.Instance.OnPlayerStateChanged("GameOver");
+                GameManager.Instance.GameState = GameState.GameOver;
             }
             else if (obstacle is Gas)
             {
@@ -33,7 +33,7 @@ namespace SWPPT3.Main.PlayerLogic.State
             }
             else if (obstacle is MagicCircle)
             {
-                GameManager.Instance.OnPlayerStateChanged("StageCleared");
+                GameManager.Instance.GameState = Gamestate.StageCleared;
             }
             else
             {

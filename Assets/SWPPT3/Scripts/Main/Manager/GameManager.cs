@@ -14,6 +14,7 @@ namespace SWPPT3.Main.Manager
         Paused,
         OnChoice,
         GameOver,
+        Exit,
         StageCleared
     }
 
@@ -56,23 +57,27 @@ namespace SWPPT3.Main.Manager
             switch (newState)
             {
                 case GameState.BeforeStart:
+                    UIManager.Instance.ShowStartStage();
                     break;
                 case GameState.Playing:
-                    LoadScene(stageNumber);
+                    stageManager?.StartStage();
                     break;
                 case GameState.Paused:
                     stageManager?.PauseStage();
                     break;
                 case GameState.GameOver:
                     stageManager?.FailStage();
+                    UIManager.Instance.ShowFail();
                     break;
                 case GameState.OnChoice:
 
                     break;
+                case GameState.Exit:
+                    break;
                 case GameState.StageCleared:
                     stageManager?.ClearStage();
                     ProceedToNextStage();
-                    GameState = GameState.Playing;
+                    UIManager.Instance.ShowClear();
                     break;
             }
         }
@@ -80,7 +85,7 @@ namespace SWPPT3.Main.Manager
         private void InitializeStage()
         {
             //loadingscene을 켜고
-            LoadScene(stageNumber);
+            LoadScene();
             StageManager stageManager = StageManager.Instance;
             if (stageManager != null)
             {
@@ -133,8 +138,9 @@ namespace SWPPT3.Main.Manager
             GameState = GameState.Playing;
         }
 
-        public void LoadScene(int stageNum)
+        public void LoadScene()
         {
+            UIManager.Instance.ShowPlaying();
             string sceneName;
             // if (stageNum > 2)
             // {
@@ -144,7 +150,7 @@ namespace SWPPT3.Main.Manager
             // {
             //     sceneName = $"Tutorial{stageNum}";
             // }
-            switch (stageNum)
+            switch (stageNumber)
             {
                 case 1:
                     sceneName = "Tutorial1test";
@@ -168,7 +174,7 @@ namespace SWPPT3.Main.Manager
                     sceneName = "Stage3test";
                     break;
                 default:
-                    Debug.LogError($"Invalid stage number: {stageNum}");
+                    Debug.LogError($"Invalid stage number: {stageNumber}");
                     return;
             }
             SceneManager.LoadScene(sceneName);
