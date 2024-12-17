@@ -588,7 +588,7 @@ PrefabInstance:
     - target: {fileID: 8367860957401779749, guid: 3653953326f2f4275a60a51aadfe9328,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.7
+      value: 1.6
       objectReference: {fileID: 0}
     - target: {fileID: 8367860957401779749, guid: 3653953326f2f4275a60a51aadfe9328,
         type: 3}
@@ -638,6 +638,31 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 292516840}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &292516842 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1310564158333579539, guid: 3653953326f2f4275a60a51aadfe9328,
+    type: 3}
+  m_PrefabInstance: {fileID: 292516840}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1818360608 &292516843
+PositionConstraint:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 292516842}
+  m_Enabled: 1
+  m_Weight: 1
+  m_TranslationAtRest: {x: 0, y: 1.6, z: 7.305}
+  m_TranslationOffset: {x: 0, y: 0, z: 0}
+  m_AffectTranslationX: 1
+  m_AffectTranslationY: 1
+  m_AffectTranslationZ: 1
+  m_IsContraintActive: 0
+  m_IsLocked: 0
+  m_Sources:
+  - sourceTransform: {fileID: 1520696117}
+    weight: 1
 --- !u!1001 &349970448
 PrefabInstance:
   m_ObjectHideFlags: 0
