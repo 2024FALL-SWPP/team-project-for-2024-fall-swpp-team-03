@@ -4,6 +4,7 @@ using Unity.Burst;
 using Unity.Collections;
 using Unity.Jobs;
 using UnityEditor;
+using UnityEditor.Profiling.Memory.Experimental;
 using UnityEngine;
 using UnityEngine.Jobs;
 using Random = UnityEngine.Random;
@@ -12,6 +13,8 @@ namespace SWPPT3.SoftbodyPhysics
 {
     public class SoftbodyGenerator : MonoBehaviour
     {
+        [SerializeField] private SoftbodyScript _script;
+
         private MeshFilter _originalMeshFilter;
         private List<Vector3> WritableVertices { get; set; }
         private List<Vector3> WritableNormals { get; set; }
@@ -22,12 +25,25 @@ namespace SWPPT3.SoftbodyPhysics
         private List<Rigidbody> _rigidbodyList = new List<Rigidbody>();
         private Rigidbody[] _rigidbodyArray;
 
+        private Rigidbody rootRB;
+
 
         // NativeArray for Job system
         private TransformAccessArray _optVerticesTransform; // optimized된 vertex의 transform을 저장
         private NativeArray<Vector3> _optVerticesBuffer;    // optimize된 vertex를 저장하기 위한 buffer
         private NativeArray<int> _optToOriDic;              // opt -> ori 를 위한 dictionary
         private NativeArray<Vector3> _oriPositions;
+
+        private List<Vector3> _oriJointAnchorsList;
+        private Vector3[] _oriJointAnchorArray;
+        private NativeArray<Vector3> _bufferJointAnchors;
+
+        private List<ConfigurableJoint> _configurableJointList;
+        private ConfigurableJoint[] _configurableJointsArray;
+
+        private List<(int, int)> _jointsDict;
+        private NativeArray<(int,int)> _jointsDictNa;
+
         // NativeArray for Job system
 
         private int[] WritableTris { get; set; }
@@ -73,12 +89,12 @@ namespace SWPPT3.SoftbodyPhysics
                 _softness = value;
                 if(_phyisicedVertexes!=null)
                     foreach (var gObject in _phyisicedVertexes)
-                        gObject.GetComponent<SpringJoint>().spring = _softness;
+                        gObject.GetComponent<ConfigurableJoint>().linearLimitSpring = new SoftJointLimitSpring { spring = _softness, damper = gObject.GetComponent<ConfigurableJoint>().linearLimitSpring.damper };
 
                 Springlimit.spring = _softness;
             }
         }
-        private float _damp = .2f;
+        private float _damp = .5f;
         public float Damp
         {
             get
@@ -90,13 +106,13 @@ namespace SWPPT3.SoftbodyPhysics
                 _damp = value;
                 if (_phyisicedVertexes != null)
                     foreach (var gObject in _phyisicedVertexes)
-                        gObject.GetComponent<SpringJoint>().damper = _damp;
+                        gObject.GetComponent<ConfigurableJoint>().linearLimitSpring = new SoftJointLimitSpring { spring = gObject.GetComponent<ConfigurableJoint>().linearLimitSpring.spring, damper = _damp };
 
                 Springlimit.damper = _damp;
             }
         }
-        public float _mass = 1f;
-        public float mass
+        private float _mass = 1f;
+        public float Mass
         {
             get
             {
@@ -126,8 +142,8 @@ namespace SWPPT3.SoftbodyPhysics
                     if (_phyisicedVertexes != null)
                         foreach (var gObject in _phyisicedVertexes)
                             gObject.hideFlags = HideFlags.HideAndDontSave;
-                    if (centerOfMasObj != null)
-                        centerOfMasObj.hideFlags = HideFlags.HideAndDontSave;
+                    // if (centerOfMasObj != null)
+                    //     centerOfMasObj.hideFlags = HideFlags.HideAndDontSave;
                 } else {
                     if (_phyisicedVertexes != null)
                         foreach (var gObject in _phyisicedVertexes)
@@ -140,7 +156,7 @@ namespace SWPPT3.SoftbodyPhysics
         }
 
 
-        private float _physicsRoughness = 4;
+        private float _physicsRoughness = 2;
         public float PhysicsRoughness {
             get {
                 return _physicsRoughness;
@@ -152,40 +168,34 @@ namespace SWPPT3.SoftbodyPhysics
                         rb.drag = PhysicsRoughness;
             }
         }
-        private bool _gravity = true;
-        public bool Gravity
-        {
-            get
-            {
-                return _gravity;
-            }
-            set
-            {
-                _gravity = value;
-                if (_phyisicedVertexes != null)
-                    foreach (var rb in _rigidbodyArray)
-                        rb.useGravity = _gravity;
-                if (centerOfMasObj != null)
-                    _rbOfCenter.useGravity = _gravity;
-            }
-        }
-        public GameObject centerOfMasObj = null;
+
+
+
+        private GameObject centerOfMasObj = null;
         private Rigidbody _rbOfCenter = null;
 
         private PhysicMaterial _physicsMaterial = null;
 
         private bool _isJumping;
 
-        private int i = 0;
         private void Awake()
         {
-            i = 0;
+            Softness = _script.Softness;
+            Mass = _script.Mass;
+            PhysicsRoughness = _script.PhysicsRoughness;
+            Damp = _script.Damp;
+            // CollissionSurfaceOffset = _script.CollissionSurfaceOffset;
+
+            _oriJointAnchorsList = new List<Vector3>();
+            _configurableJointList = new List<ConfigurableJoint>();
+            _jointsDict = new List<(int, int)>();
+
             _isJumping = false;
 
             _physicsMaterial = new PhysicMaterial();
             _physicsMaterial.bounciness = 0f;
-            _physicsMaterial.dynamicFriction = 1f;
-            _physicsMaterial.staticFriction = 1f;
+            _physicsMaterial.dynamicFriction = 0f;
+            _physicsMaterial.staticFriction = 0f;
 
             _physicsMaterial.bounceCombine = PhysicMaterialCombine.Maximum;
 
@@ -264,8 +274,10 @@ namespace SWPPT3.SoftbodyPhysics
 
                 // add rigidBody to each of vertex
                 var _tempRigidBody = _tempObj.AddComponent<Rigidbody>();
-                _tempRigidBody.mass = mass / _optimizedVertex.Count;
+                _tempRigidBody.mass = Mass / _optimizedVertex.Count;
                 _tempRigidBody.drag = PhysicsRoughness;
+
+                _tempObj.AddComponent<RubberJump>();
 
                 _rigidbodyList.Add(_tempRigidBody);
 
@@ -282,33 +294,15 @@ namespace SWPPT3.SoftbodyPhysics
             foreach (var vertecs in _optimizedVertex)
                 tempCenter = new Vector3(tempCenter.x + vertecs.x, tempCenter.y + vertecs.y,tempCenter.z + vertecs.z );
 
-            Vector3 centerOfMass = new Vector3(
-                  tempCenter.x / _optimizedVertex.Count
-                , tempCenter.y / _optimizedVertex.Count
-                , tempCenter.z / _optimizedVertex.Count
-            );
-            // add center of mass vertex to OptimizedVertex list
-            {
-                var _tempObj = new GameObject("centerOfMass");
 
-                if (!DebugMode)
-                    _tempObj.hideFlags = HideFlags.HideAndDontSave;
-                _tempObj.transform.parent = this.transform;
-                _tempObj.transform.position = centerOfMass;
+            // Add sphere collider and rigidbody to root object
+            rootRB = gameObject.AddComponent<Rigidbody>();
+            rootRB.mass = 1;
+            _rigidbodyList.Add(rootRB);
 
-                // add collider to center of mass as a sphere collider
-                var sphereColider = _tempObj.AddComponent<SphereCollider>() as SphereCollider;
-                sphereColider.radius = CollissionSurfaceOffset;
-                // add current collider to Collider list ;
-                _sphereColliderList.Add(sphereColider);
-
-                // add rigidBody to center of mass as a sphere collider
-                var _tempRigidBody = _tempObj.AddComponent<Rigidbody>();
-                _rigidbodyList.Add(_tempRigidBody);
-                _rbOfCenter = _tempRigidBody;
-
-                centerOfMasObj = _tempObj;
-            }
+            // var rootSC = gameObject.AddComponent<SphereCollider>();
+            // rootSC.radius = CollissionSurfaceOffset;
+            // _sphereColliderList.Add(rootSC);
 
             _sphereColliderArray = _sphereColliderList.ToArray();
             _rigidbodyArray  = _rigidbodyList.ToArray();
@@ -320,10 +314,6 @@ namespace SWPPT3.SoftbodyPhysics
                 _optVerticesTransform.Add(_rigidbodyArray[i].transform);
             }
             _optVerticesBuffer = new NativeArray<Vector3>(_optVerticesTransform.length, Allocator.Persistent);
-
-            // Debug.Log($"{_rigidbodyArray.Length}  {_sphereColliderArray.Length} {_verticesTransform.length} {_verticesNa.Length}");
-
-
 
             // IGNORE COLLISTION BETWEEN ALL OF THE VERTEXES AND CENTER OFF MASS
             foreach (var collider1 in _sphereColliderArray)
@@ -386,158 +376,178 @@ namespace SWPPT3.SoftbodyPhysics
             foreach (var jointIndex in noDupesListOfSprings)
             {
                 var thisGameObject = _phyisicedVertexes[jointIndex.x];
-                var thisBodyJoint = thisGameObject.AddComponent<CharacterJoint>();
+                var thisBodyJoint = thisGameObject.AddComponent<ConfigurableJoint>();
                 var destinationBody = _phyisicedVertexes[jointIndex.y].GetComponent<Rigidbody>();
                 float distanceBetween = Vector3.Distance(thisGameObject.transform.position, destinationBody.transform.position);
+
+                _jointsDict.Add((jointIndex.x, jointIndex.y));
+
 
 
                 // configure current spring joint
                 thisBodyJoint.connectedBody = destinationBody;
-                SoftJointLimit jointlimitHihj = new SoftJointLimit();
-                jointlimitHihj.bounciness = 1.1f;
-                jointlimitHihj.contactDistance = distanceBetween;
-                jointlimitHihj.limit = 10;
 
-                SoftJointLimit jointlimitLow = new SoftJointLimit();
-                jointlimitLow.bounciness = 1.1f;
-                jointlimitLow.contactDistance = distanceBetween;
-                jointlimitLow.limit = -10;
-
-
-                thisBodyJoint.highTwistLimit = jointlimitHihj;
-                thisBodyJoint.lowTwistLimit = jointlimitLow;
-                thisBodyJoint.swing1Limit = jointlimitLow;
-                thisBodyJoint.swing2Limit = jointlimitHihj;
-
+                thisBodyJoint.xMotion = ConfigurableJointMotion.Limited;
+                thisBodyJoint.yMotion = ConfigurableJointMotion.Limited;
+                thisBodyJoint.zMotion = ConfigurableJointMotion.Limited;
 
                 //thisBodyJoint.
 
                 Springlimit.damper = Damp;
                 Springlimit.spring = Softness;
 
-                thisBodyJoint.swingLimitSpring = Springlimit;
-                thisBodyJoint.twistLimitSpring = Springlimit;
+                thisBodyJoint.linearLimitSpring = Springlimit;
 
+                _oriJointAnchorsList.Add(thisBodyJoint.connectedAnchor);
+                _configurableJointList.Add(thisBodyJoint);
             }
+
+            centerOfMasObj = gameObject;
+            _rbOfCenter = rootRB;
+
 
             // Decelare Center of mass variable
-            foreach (var jointIndex in _phyisicedVertexes)
+            for (int i = 0 ; i < _phyisicedVertexes.Count; i++ )
             {
-                var destinationBodyJoint = jointIndex.AddComponent<SpringJoint>();
+                var jointIndex = _phyisicedVertexes[i];
+                var destinationBodyJoint = jointIndex.AddComponent<ConfigurableJoint>();
 
-                float distanceToCenterOfmass = Vector3.Distance(
-                      centerOfMasObj.transform.localPosition
-                    , destinationBodyJoint.transform.localPosition
-                );
+                destinationBodyJoint.xMotion = ConfigurableJointMotion.Limited;
+                destinationBodyJoint.yMotion = ConfigurableJointMotion.Limited;
+                destinationBodyJoint.zMotion = ConfigurableJointMotion.Limited;
 
-                destinationBodyJoint.connectedBody = centerOfMasObj.GetComponent<Rigidbody>();
-                destinationBodyJoint.spring = Softness;
-                destinationBodyJoint.damper = Damp;
+                destinationBodyJoint.connectedBody = rootRB;
+                destinationBodyJoint.linearLimitSpring = new SoftJointLimitSpring { spring = Softness, damper = Damp};
 
-                //destinationBodyJoint.massScale = 0.001f;
-                //destinationBodyJoint.connectedMassScale = 0.001f;
+                destinationBodyJoint.massScale = 0.001f;
+
+                _jointsDict.Add((i,_rigidbodyList.Count - 1));
+                _oriJointAnchorsList.Add(jointIndex.transform.localPosition - _rbOfCenter.transform.localPosition);
+                _configurableJointList.Add(destinationBodyJoint);
             }
 
+            _oriJointAnchorArray = _oriJointAnchorsList.ToArray();
+            _bufferJointAnchors = new NativeArray<Vector3>(_oriJointAnchorArray.Length, Allocator.Persistent);
 
+            _configurableJointsArray = _configurableJointList.ToArray();
+
+            _jointsDictNa = new NativeArray<(int, int)>(_jointsDict.ToArray(), Allocator.Persistent);
         }
+
+        public void FixJoint()
+        {
+            for (int i = 0; i < _configurableJointsArray.Length; i++)
+            {
+                var joint = _configurableJointsArray[i];
+                joint.xMotion = ConfigurableJointMotion.Locked;
+                joint.yMotion = ConfigurableJointMotion.Locked;
+                joint.zMotion = ConfigurableJointMotion.Locked;
+
+                joint.angularXMotion = ConfigurableJointMotion.Free;
+                joint.angularYMotion = ConfigurableJointMotion.Free;
+                joint.angularZMotion = ConfigurableJointMotion.Free;
+
+                // joint.connectedAnchor = _bufferJointAnchors[i];
+            }
+        }
+
+        public void FreeJoint()
+        {
+            for (int i = 0; i < _configurableJointsArray.Length; i++)
+            {
+                var joint = _configurableJointsArray[i];
+                joint.xMotion = ConfigurableJointMotion.Limited;
+                joint.yMotion = ConfigurableJointMotion.Limited;
+                joint.zMotion = ConfigurableJointMotion.Limited;
+
+                joint.angularXMotion = ConfigurableJointMotion.Free;
+                joint.angularYMotion = ConfigurableJointMotion.Free;
+                joint.angularZMotion = ConfigurableJointMotion.Free;
+
+                // joint.connectedAnchor = _oriJointAnchorArray[i];
+            }
+        }
+
         List<Vector2Int> noDupesListOfSprings = new List<Vector2Int>();
 
-        // public void SetSlime()
-        // {
-        //     _physicsMaterial.bounciness = 0f;
-        //     _physicsMaterial.dynamicFriction = 0f;
-        //     _physicsMaterial.staticFriction = 0f;
-        //     _physicsMaterial.bounceCombine = PhysicMaterialCombine.Maximum;
-        //
-        //     IsSlime = true;
-        // }
-        //
-        // public void SetMetal()
-        // {
-        //     _physicsMaterial.bounciness = 0f;
-        //     _physicsMaterial.dynamicFriction = 0f;
-        //     _physicsMaterial.staticFriction = 0f;
-        //     _physicsMaterial.bounceCombine = PhysicMaterialCombine.Maximum;
-        //     IsSlime = false;
-        // }
-        //
-        // public void SetRubberNonJump()
-        // {
-        //     _physicsMaterial.bounciness = 0.5f;
-        //     _physicsMaterial.dynamicFriction = 0f;
-        //     _physicsMaterial.staticFriction = 0f;
-        //     _physicsMaterial.bounceCombine = PhysicMaterialCombine.Maximum;
-        //     IsSlime = false;
-        // }
-        //
-        // public void SetRubberJump()
-        // {
-        //     _physicsMaterial.bounciness = 1f;
-        //     _physicsMaterial.dynamicFriction = 0f;
-        //     _physicsMaterial.staticFriction = 0f;
-        //     _physicsMaterial.bounceCombine = PhysicMaterialCombine.Maximum;
-        //     IsSlime = false;
-        // }
+        public void SetSlime()
+        {
+            _physicsMaterial.bounciness = 0f;
+            _physicsMaterial.dynamicFriction = 0f;
+            _physicsMaterial.staticFriction = 0f;
+            _physicsMaterial.bounceCombine = PhysicMaterialCombine.Maximum;
 
-        // public void SoftbodyJump(float jumpForce)
-        // {
-        //     _isJumping = true;
-        //     foreach (var rb in _rigidbodyArray)
-        //     {
-        //         rb.AddForce(Vector3.up * (jumpForce * rb.mass));
-        //     }
-        //     Debug.Log($"{_rigidbodyArray.Length} Rigidbodies added");
-        // }
+            IsSlime = true;
 
-        // private Vector3 GetMoveDirection()
-        // {
-        //     Vector3 direction = Vector3.zero;
-        //
-        //     if (Input.GetKey(KeyCode.W))
-        //         direction += Vector3.forward;
-        //     if (Input.GetKey(KeyCode.S))
-        //         direction += Vector3.back;
-        //     if (Input.GetKey(KeyCode.A))
-        //         direction += Vector3.left;
-        //     if (Input.GetKey(KeyCode.D))
-        //         direction += Vector3.right;
-        //
-        //     if (direction != Vector3.zero)
-        //         direction = direction.normalized;
-        //
-        //     return direction;
-        // }
+            FreeJoint();
+        }
+
+        public void SetMetal()
+        {
+            _physicsMaterial.bounciness = 0f;
+            _physicsMaterial.dynamicFriction = 0f;
+            _physicsMaterial.staticFriction = 0f;
+            _physicsMaterial.bounceCombine = PhysicMaterialCombine.Maximum;
+            if (IsSlime)
+            {
+                FixJoint();
+            }
+            IsSlime = false;
+        }
+
+        public void SetRubberNonJump()
+        {
+            _physicsMaterial.bounciness = 0.5f;
+            _physicsMaterial.dynamicFriction = 0f;
+            _physicsMaterial.staticFriction = 0f;
+            _physicsMaterial.bounceCombine = PhysicMaterialCombine.Maximum;
+            if (IsSlime)
+            {
+                FixJoint();
+            }
+            IsSlime = false;
+        }
+
+        public void SetRubberJump()
+        {
+            _physicsMaterial.bounciness = 1f;
+            _physicsMaterial.dynamicFriction = 0.1f;
+            _physicsMaterial.staticFriction = 0.1f;
+            _physicsMaterial.bounceCombine = PhysicMaterialCombine.Maximum;
+            if (IsSlime)
+            {
+                FixJoint();
+            }
+            IsSlime = false;
+        }
+
+        public void SoftbodyJump(float jumpForce)
+        {
+            // _isJumping = true;
+            foreach (var rb in _rigidbodyArray)
+            {
+                rb.AddForce(Vector3.up * (jumpForce * rb.mass));
+            }
+        }
+
+        public void move(Vector3 force)
+        {
+            foreach (var rb in _rigidbodyArray)
+            {
+                rb.MovePosition(rb.position + force);
+            }
+        }
 
 
         public void Update()
         {
-            // i++;
-            // if (i % 1000 == 0)
-            // {
-            //     _isSlime = !_isSlime;
-            //     Debug.Log($"change to {_isSlime}");
-            // }
-            //
-            // if (i % 500 == 0)
-            // {
-            //     SoftbodyJump(500.0f);
-            //     // SetRubberJump();
-            //     Debug.Log("Softbody Jumped");
-            // }
-
-            // Vector3 moveDirection = GetMoveDirection();
-            // Debug.Log($"moveDirection: {moveDirection}");
-            // Vector3 force = moveDirection * 0.01f;
-
-            // foreach (var rb in _rigidbodyArray)
-            // {
-            //     rb.MovePosition(rb.position + force);
-            // }
-            //
-            // if (Input.GetKeyDown(KeyCode.Space) && !_isJumping)
-            // {
-            //     SoftbodyJump(500f);
-            // }
+            if (IsSlime)
+            {
+                Softness = _script.Softness;
+                Mass = _script.Mass;
+                PhysicsRoughness = _script.PhysicsRoughness;
+                Damp = _script.Damp;
+            }
 
            if (DebugMode)
            {
@@ -576,25 +586,23 @@ namespace SWPPT3.SoftbodyPhysics
 
         public void FixedUpdate()
         {
-            // if (IsSlime)
-            // {
+            if (IsSlime)
+            {
                 var getVertexLocalPositionJob = new GetVertexLocalPositionJob
                 {
                     Buffer = _optVerticesBuffer,
                 };
                 var getVertexLocalPositionHandle = getVertexLocalPositionJob.Schedule(_optVerticesTransform);
-                getVertexLocalPositionHandle.Complete();
-            // }
-            // else
-            // {
-            //     var setVertexLocalPositionJob = new SetVertexLocalPositionJob
-            //     {
-            //         LocalPositions = Buffer,
-            //     };
-            //     var getVertexLocalPositionHandle = setVertexLocalPositionJob.Schedule(_optVerticesTransform);
-            //     getVertexLocalPositionHandle.Complete();
-            // }
 
+                var getConnectedAnchorJob = new GetConnectedAnchorJob
+                {
+                    AnchorBuffer = _bufferJointAnchors,
+                    JointDict = _jointsDictNa,
+                    LocalPositions = _optVerticesBuffer
+                };
+                var getConnectedAnchorHandle = getConnectedAnchorJob.Schedule(_jointsDictNa.Length,16, getVertexLocalPositionHandle);
+                getConnectedAnchorHandle.Complete();
+            }
         }
 
         public void OnDestroy()
@@ -603,6 +611,8 @@ namespace SWPPT3.SoftbodyPhysics
             if(_optVerticesTransform.isCreated) _optVerticesTransform.Dispose();
             if(_optToOriDic.IsCreated) _optToOriDic.Dispose();
             if(_oriPositions.IsCreated) _oriPositions.Dispose();
+            if(_jointsDictNa.IsCreated) _jointsDictNa.Dispose();
+            if(_bufferJointAnchors.IsCreated) _bufferJointAnchors.Dispose();
         }
     }
 
@@ -620,17 +630,21 @@ namespace SWPPT3.SoftbodyPhysics
             Buffer[index] = transform.localPosition;
         }
     }
-    /// <summary>
-    /// GetVertexLocalPostionJob과는 반대로 LocalPosition에 있는 값을 transformaccess에 대입
-    /// </summary>
     [BurstCompile]
-    public struct SetVertexLocalPositionJob : IJobParallelForTransform
+    public struct GetConnectedAnchorJob : IJobParallelFor
     {
-        public NativeArray<Vector3> Buffer;
+        [ReadOnly] public NativeArray<Vector3> LocalPositions;
+        [ReadOnly] public NativeArray<(int, int)> JointDict;
+        public NativeArray<Vector3> AnchorBuffer;
 
-        public void Execute(int index, TransformAccess transform)
+
+        public void Execute(int index)
         {
-            transform.localPosition = Buffer[index];
+            var du = JointDict[index];
+            var idx1 = du.Item1;
+            var idx2 = du.Item2;
+
+            AnchorBuffer[index] = LocalPositions[idx1] - LocalPositions[idx2];
         }
     }
 
@@ -651,9 +665,6 @@ namespace SWPPT3.SoftbodyPhysics
         }
 
     }
-
-
-
     public class DebugColorGameObject : MonoBehaviour
     {
         public Color Color { get; set; }
@@ -667,18 +678,6 @@ namespace SWPPT3.SoftbodyPhysics
             SoftbodyGenerator softbody = target as SoftbodyGenerator;
 
             softbody.DebugMode = EditorGUILayout.Toggle("#Debug mod", softbody.DebugMode);
-            EditorGUILayout.Space();
-
-            string[] options = new string[] { "  version 1", "  version 2" };
-
-
-            softbody.Gravity = EditorGUILayout.Toggle("Gravity", softbody.Gravity);
-            softbody.mass = EditorGUILayout.FloatField("Mass(KG)", softbody.mass);
-            softbody.PhysicsRoughness = EditorGUILayout.FloatField("Drag (roughness)", softbody.PhysicsRoughness);
-            softbody.Softness = EditorGUILayout.FloatField("Softbody hardness", softbody.Softness);
-            softbody.Damp = EditorGUILayout.FloatField("Softbody damper", softbody.Damp);
-            softbody.CollissionSurfaceOffset = EditorGUILayout.FloatField("Softbody Offset", softbody.CollissionSurfaceOffset);
-
         }
     }
 }
