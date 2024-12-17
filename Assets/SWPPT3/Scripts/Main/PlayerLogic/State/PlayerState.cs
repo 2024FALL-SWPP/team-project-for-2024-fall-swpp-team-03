@@ -50,9 +50,6 @@ namespace SWPPT3.Main.PlayerLogic.State
             obstacle.StopInteractWithPlayer(player.CurrentState);
 
         }
-
-        public abstract void ChangeRigidbody(Rigidbody rb);
-        public abstract void ChangePhysics(Collider collider, PhysicMaterial physicMaterial);
     }
 
 }

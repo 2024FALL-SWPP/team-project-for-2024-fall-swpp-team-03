@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using SWPPT3.Main.Manager;
 using SWPPT3.Main.PlayerLogic.State;
 using SWPPT3.Main.Prop;
+using SWPPT3.SoftbodyPhysics;
 using Unity.Collections;
 using UnityEngine;
 
@@ -11,8 +12,8 @@ namespace SWPPT3.Main.PlayerLogic
     public class PlayerMover : MonoBehaviour
     {
         [SerializeField] private PlayerScript _playerScript;
-        [SerializeField] private Player _player;
-        [SerializeField] private Rigidbody _rb;
+        private Player _player;
+        private SoftbodyGenerator _softbody;
 
         private float _moveSpeed;
         private float _jumpForce;
@@ -31,9 +32,12 @@ namespace SWPPT3.Main.PlayerLogic
 
         private void Start()
         {
+            _player = GetComponent<Player>();
+            _softbody = GetComponent<SoftbodyGenerator>();
+
             _moveSpeed = _playerScript.MoveSpeed;
             _rotationSpeed = _playerScript.RotationSpeed;
-            _jumpForce = _playerScript.JumpForce * _rb.mass;
+            _jumpForce = _playerScript.JumpForce;
             _isHoldingJump = false;
             _playerTransform = transform;
             if (InputManager.Instance != null)
@@ -54,7 +58,7 @@ namespace SWPPT3.Main.PlayerLogic
         {
             Vector3 moveDirection = GetMoveDirection();
             Vector3 force = moveDirection * _moveSpeed;
-            _rb.AddForce(force, ForceMode.VelocityChange);
+            _softbody.move(force);
 
             if (isRightButton && _lookInput != Vector2.zero)
             {
@@ -62,7 +66,7 @@ namespace SWPPT3.Main.PlayerLogic
             }
             if (_player.CurrentState == PlayerStates.Rubber && _groundedObjects.Count == 0  && _isHoldingJump)
             {
-                _player.SetBounciness(1.0f);
+                // _player.SetBounciness(1.0f);
             }
         }
 
@@ -126,12 +130,12 @@ namespace SWPPT3.Main.PlayerLogic
         {
             if (_groundedObjects.Count > 0 && GameManager.Instance.GameState == GameState.Playing)
             {
-                _rb.AddForce(Vector3.up * _jumpForce, ForceMode.Impulse);
+                _softbody.SoftbodyJump(_jumpForce);
             }
             _isHoldingJump = true;
             if (_player.CurrentState == PlayerStates.Rubber)
             {
-                _player.SetBounciness(1.0f);
+                // _player.SetBounciness(1.0f);
             }
         }
 
@@ -140,7 +144,7 @@ namespace SWPPT3.Main.PlayerLogic
             _isHoldingJump = false;
             if (_player.CurrentState == PlayerStates.Rubber)
             {
-                _player.SetBounciness(0.5f);
+                // _player.SetBounciness(0.5f);
             }
         }
 
