@@ -17,7 +17,8 @@ namespace SWPPT3.Main.Manager
         OnChoice,
         GameOver,
         Exit,
-        StageCleared
+        StageCleared,
+        OnOption
     }
 
     public class GameManager : MonoSingleton<GameManager>
@@ -32,8 +33,8 @@ namespace SWPPT3.Main.Manager
             {
                 if (gameState != value)
                 {
-                    gameState = value;
                     Debug.Log($"{gameState} {value}");
+                    gameState = value;
                     HandleGameStateChanged(gameState);
                 }
             }
@@ -82,6 +83,8 @@ namespace SWPPT3.Main.Manager
                     _stageManager?.ClearStage();
                     ProceedToNextStage();
                     UIManager.Instance.ShowClear();
+                    break;
+                case GameState.OnOption:
                     break;
             }
         }

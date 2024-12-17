@@ -1,5 +1,6 @@
 using SWPPT3.Main.PlayerLogic;
 using SWPPT3.Main.PlayerLogic.State;
+using SWPPT3.Main.Utility;
 using UnityEngine;
 using UnityEngine.UI;
 using SWPPT3.Main.Utility.Singleton;
@@ -21,10 +22,12 @@ namespace SWPPT3.Main.Manager
         public GameObject _stage5Button;
         public GameObject _tutorial1Button;
         public GameObject _tutorial2Button;
+        public GameObject _optionButton;
 
         [Header("Image for start")]
         public GameObject _logo;
         public GameObject _exitGame;
+        public GameObject _optionScene;
 
         [Header("Button for stage")]
         public GameObject _pauseButton;
@@ -47,10 +50,27 @@ namespace SWPPT3.Main.Manager
         private TextMeshProUGUI _metalNumTmp;
         private TextMeshProUGUI _rubberNumTmp;
 
-        private Player _playerScript;
+        private Player _player;
+
+        private Slider _bgmSlider;
+        private Slider _sfxSlider;
+        private Slider _cameraSensitivitySlider;
+        private Slider _rotationSensitivitySlider;
+
+        [SerializeField] CameraScript _cameraScript;
+        [SerializeField] PlayerScript _playerScript;
+
+        private bool setOption;
 
         private void Awake()
         {
+            setOption = false;
+            var parentSlider = _optionScene.transform.Find("VerticalAlign");
+            _bgmSlider = parentSlider.Find("BGMSlider").GetComponent<Slider>();
+            _sfxSlider = parentSlider.Find("SoundEffectSlider").GetComponent<Slider>();
+            _cameraSensitivitySlider = parentSlider.Find("CameraSensitivitySlider").GetComponent<Slider>();
+            _rotationSensitivitySlider = parentSlider.Find("RotationSensitivitySlider").GetComponent<Slider>();
+
             _playTimeTmp = _playTime.transform.Find("PlaytimeText").GetComponent<TextMeshProUGUI>();
             _metalNumTmp = _metalNum.GetComponent<TextMeshProUGUI>();
             _rubberNumTmp = _rubberNum.GetComponent<TextMeshProUGUI>();
@@ -72,12 +92,29 @@ namespace SWPPT3.Main.Manager
             // InitializeButtons();
         }
 
+        public void Update()
+        {
+            // Debug.Log("update");
+            if (setOption)
+            {
+                _cameraScript.MouseSensitivity = _cameraSensitivitySlider.value;
+                _playerScript.RotationSpeed = _rotationSensitivitySlider.value;
+                // Debug.Log($"{_playerScript.RotationSpeed} {_rotationSensitivitySlider.value}");
+            }
+        }
+
         private void HandleEsc()
         {
             if (GameManager.Instance.GameState == GameState.BeforeStart)
             {
                 GameManager.Instance.GameState = GameState.Exit;
                 ShowExitGame();
+            }
+            else if (GameManager.Instance.GameState == GameState.Playing)
+            {
+                GameManager.Instance.GameState = GameState.Paused;
+                UIManager.Instance._pauseScreen.SetActive(true);
+                Debug.Log($"{_pauseScreen == null}");
             }
         }
 
@@ -102,6 +139,9 @@ namespace SWPPT3.Main.Manager
             HideExitGame();
             HideStartStage();
             HidePlayingScreen();
+            HideOption();
+            HideRadialUI();
+            HidePlaying();
         }
 
         public void ShowStartStage()
@@ -113,10 +153,11 @@ namespace SWPPT3.Main.Manager
             _stage5Button.SetActive(true);
             _tutorial1Button.SetActive(true);
             _tutorial2Button.SetActive(true);
+            _optionButton.SetActive(true);
             _logo.SetActive(true);
         }
 
-        public void HideStartStage()
+        private void HideStartStage()
         {
             _stage1Button.SetActive(false);
             _stage2Button.SetActive(false);
@@ -125,6 +166,7 @@ namespace SWPPT3.Main.Manager
             _stage5Button.SetActive(false);
             _tutorial1Button.SetActive(false);
             _tutorial2Button.SetActive(false);
+            _optionButton.SetActive(false);
             _logo.SetActive(false);
         }
 
@@ -134,10 +176,15 @@ namespace SWPPT3.Main.Manager
             _loadingScreen.SetActive(true);
         }
 
-        public void ShowPlayingScreen()
+        public void HidePlaying()
         {
             _startScreen.SetActive(false);
             _loadingScreen.SetActive(false);
+        }
+
+        public void ShowPlayingScreen()
+        {
+            HidePlaying();
             _pauseButton.SetActive(true);
             _itemState.SetActive(true);
             _metalText.SetActive(true);
@@ -150,8 +197,8 @@ namespace SWPPT3.Main.Manager
 
         public void IntializePlayer(Player player)
         {
-            _playerScript = player;
-            _playerScript.OnItemChanged += NumUpdate;
+            _player = player;
+            _player.OnItemChanged += NumUpdate;
         }
 
         public void HidePlayingScreen()
@@ -163,15 +210,6 @@ namespace SWPPT3.Main.Manager
             _rubberNum.SetActive(false);
             _pauseButton.SetActive(false);
             _playTime .SetActive(false);
-        }
-
-        public void ClickPause()
-        {
-            if (GameManager.Instance.GameState == GameState.Playing)
-            {
-                _pauseScreen.SetActive(true);
-                GameManager.Instance.GameState = GameState.Paused;
-            }
         }
 
         public void ShowClear()
@@ -193,9 +231,18 @@ namespace SWPPT3.Main.Manager
             _clearScreen.SetActive(false);
         }
 
+        public void ClickPause()
+        {
+            if (GameManager.Instance.GameState == GameState.Playing)
+            {
+                _pauseScreen.SetActive(true);
+                GameManager.Instance.GameState = GameState.Paused;
+            }
+        }
+
         public void ClickNext()
         {
-            HideScreen();
+            HideAllUI();
             GameManager.Instance.StageNumber++;
             GameManager.Instance.GameState = GameState.Playing;
             GameManager.Instance.LoadScene();
@@ -209,17 +256,28 @@ namespace SWPPT3.Main.Manager
 
         public void ClickReStart()
         {
-            HideScreen();
+            HideAllUI();
             GameManager.Instance.LoadScene();
             GameManager.Instance.GameState = GameState.Playing;
         }
 
         public void ClickStartScene()
         {
-            HideScreen();
+            HideAllUI();
             GameManager.Instance.GameState = GameState.BeforeStart;
             GameManager.Instance.StageNumber = 0;
+            ShowStartStage();
             SceneManager.LoadScene("Start");
+        }
+
+        public void ClickOption()
+        {
+            if (GameManager.Instance.GameState == GameState.BeforeStart)
+            {
+                setOption = true;
+                _optionScene.SetActive(true);
+                GameManager.Instance.GameState = GameState.OnOption;
+            }
         }
 
         //input 에 의해 바뀌는 method
@@ -233,10 +291,15 @@ namespace SWPPT3.Main.Manager
             _exitGame.SetActive(false);
         }
 
+        public void HideOption()
+        {
+            _optionScene.SetActive(false);
+        }
+
         public void ShowRadialUI()
         {
             _radialUI.SetActive(true);
-            if (_playerScript.Item[PlayerStates.Rubber] == 0)
+            if (_player.Item[PlayerStates.Rubber] == 0)
             {
                 _radialUI.transform.Find("RightButton/RightActive").gameObject.SetActive(false);
             }
@@ -245,7 +308,7 @@ namespace SWPPT3.Main.Manager
                 _radialUI.transform.Find("RightButton/RightActive").gameObject.SetActive(true);
             }
 
-            if (_playerScript.Item[PlayerStates.Metal] == 0)
+            if (_player.Item[PlayerStates.Metal] == 0)
             {
                 _radialUI.transform.Find("LeftButton/LeftActive").gameObject.SetActive(false);
             }
@@ -263,6 +326,8 @@ namespace SWPPT3.Main.Manager
         public void ReturnStart()
         {
             GameManager.Instance.GameState = GameState.BeforeStart;
+            setOption = false;
+            _optionScene.SetActive(false);
             _exitGame.SetActive(false);
         }
 
@@ -275,24 +340,24 @@ namespace SWPPT3.Main.Manager
         {
             if (GameManager.Instance.GameState == GameState.BeforeStart)
             {
-                // HideStartStage();
+                HideStartStage();
                 GameManager.Instance.StageSelect(stageNum);
             }
         }
 
         public void ChangeSlime()
         {
-            _playerScript.TryChangeState(PlayerStates.Slime);
+            _player.TryChangeState(PlayerStates.Slime);
         }
 
         public void ChangeMetal()
         {
-            _playerScript.TryChangeState(PlayerStates.Metal);
+            _player.TryChangeState(PlayerStates.Metal);
         }
 
         public void ChangeRubber()
         {
-            _playerScript.TryChangeState(PlayerStates.Rubber);
+            _player.TryChangeState(PlayerStates.Rubber);
         }
 
         public void PlayTimeUpdate(int time){
@@ -303,8 +368,8 @@ namespace SWPPT3.Main.Manager
 
         private void NumUpdate()
         {
-            _metalNumTmp.text = $"{_playerScript.Item[PlayerStates.Metal]}";
-            _rubberNumTmp.text = $"{_playerScript.Item[PlayerStates.Rubber]}";
+            _metalNumTmp.text = $"{_player.Item[PlayerStates.Metal]}";
+            _rubberNumTmp.text = $"{_player.Item[PlayerStates.Rubber]}";
         }
 
     }
