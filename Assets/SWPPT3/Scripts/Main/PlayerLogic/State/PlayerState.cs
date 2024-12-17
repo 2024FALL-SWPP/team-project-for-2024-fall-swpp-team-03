@@ -37,7 +37,7 @@ namespace SWPPT3.Main.PlayerLogic.State
             }
             else if (obstacle is MagicCircle)
             {
-                GameManager.Instance.GameState = Gamestate.StageCleared;
+                GameManager.Instance.GameState = GameState.StageCleared;
             }
             else
             {

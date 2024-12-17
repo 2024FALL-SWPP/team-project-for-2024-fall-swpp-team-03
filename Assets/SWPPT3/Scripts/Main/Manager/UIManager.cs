@@ -1,3 +1,5 @@
+using SWPPT3.Main.PlayerLogic;
+using SWPPT3.Main.PlayerLogic.State;
 using UnityEngine;
 using UnityEngine.UI;
 using SWPPT3.Main.Utility.Singleton;
@@ -63,6 +65,8 @@ namespace SWPPT3.Main.Manager
         private TextMeshProUGUI _metalNumTmp;
         private TextMeshProUGUI _rubberNumTmp;
 
+        private Player _playerScript;
+
         private void Awake()
         {
             _stage1Button = mainCanvas.transform.Find("stage1Button")?.gameObject;
@@ -109,6 +113,7 @@ namespace SWPPT3.Main.Manager
             _rubberNumTmp = _rubberNum.transform.Find("PlayTimeText").GetComponent<TextMeshProUGUI>();
 
             InitializeButtons();
+            _playerScript = FindObjectOfType<Player>();
         }
 
         private void InitializeButtons()
@@ -182,6 +187,8 @@ namespace SWPPT3.Main.Manager
             _metalNum.SetActive(true);
             _rubberNum.SetActive(true);
             _playTime.SetActive(true);
+            MetalNumUpdate(_playerScript.Item[PlayerStates.Metal]);
+            RubberNumUpdate(_playerScript.Item[PlayerStates.Rubber]);
         }
 
         public void HidePlayingScreen()
@@ -266,6 +273,15 @@ namespace SWPPT3.Main.Manager
         public void ShowRadialUI()
         {
             _radialUI.SetActive(true);
+            if (_playerScript.Item[PlayerStates.Rubber] == 0)
+            {
+                _radialUI.transform.Find("RightButton").gameObject.SetActive(false);
+            }
+
+            if (_playerScript.Item[PlayerStates.Metal] == 0)
+            {
+                _radialUI.transform.Find("LeftButton").gameObject.SetActive(false);
+            }
         }
 
         public void HideRadialUI()
