@@ -74,12 +74,14 @@ namespace SWPPT3.Main.Manager
 
         private void InitializeStage()
         {
+            //loadingscene을 켜고
             LoadScene(stageNumber);
             StageManager stageManager = StageManager.Instance;
             if (stageManager != null)
             {
                 stageManager.InitializeStage();
             }
+            //loadingscene 끄기
         }
 
         public void ProceedToNextStage()
@@ -110,6 +112,8 @@ namespace SWPPT3.Main.Manager
                     break;
                 case "Finish":
                     GameState = GameState.GameOver;
+                    break;
+                case "GameFinish":
                     break;
                 default:
                     break;
