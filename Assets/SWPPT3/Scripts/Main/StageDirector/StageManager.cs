@@ -1,41 +1,52 @@
+using SWPPT3.Main.Manager;
 using SWPPT3.Main.PlayerLogic;
 using SWPPT3.Main.Utility.Singleton;
 using UnityEngine;
 
 namespace SWPPT3.Main.StageDirector
 {
-    public class StageManager : MonoWeakSingleton<StageManager>
+    public abstract class StageManager : MonoWeakSingleton<StageManager>
     {
         [SerializeField] protected Player player;
+        protected int Time;
 
         public virtual void InitializeStage() { }
 
         public void StartStage()
         {
-            Time.timeScale = 1f;
+            UnityEngine.Time.timeScale = 1f;
+            Time = 0;
+            InvokeRepeating("UpdateTime", 1.0f, 1.0f);
             //Debug.Log("Starting Stage");
         }
 
         public void PauseStage()
         {
-            Time.timeScale = 0f;
+            UnityEngine.Time.timeScale = 0f;
         }
 
         public void ResumeStage()
         {
-            Time.timeScale = 1f;
+            UnityEngine.Time.timeScale = 1f;
         }
 
         public void FailStage()
         {
-            Time.timeScale = 0f;
+            UnityEngine.Time.timeScale = 0f;
             //Debug.Log("FailStage");
         }
 
         public void ClearStage()
         {
-            Time.timeScale = 0f;
+            UnityEngine.Time.timeScale = 0f;
             //Debug.Log("Cleared Stage");
         }
+
+        public void UpdateTime()
+        {
+            Time++;
+            UIManager.Instance.PlayTimeUpdate(Time);
+        }
+
     }
 }
