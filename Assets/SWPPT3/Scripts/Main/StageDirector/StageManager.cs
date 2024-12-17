@@ -1,41 +1,68 @@
+using SWPPT3.Main.Manager;
 using SWPPT3.Main.PlayerLogic;
+using SWPPT3.Main.UI;
 using SWPPT3.Main.Utility.Singleton;
+using UnityEditor.SceneManagement;
 using UnityEngine;
 
 namespace SWPPT3.Main.StageDirector
 {
-    public class StageManager : MonoWeakSingleton<StageManager>
+    public abstract class StageManager : MonoWeakSingleton<StageManager>
     {
         [SerializeField] protected Player player;
+        [SerializeField] protected InGameScreenBehaviour inGameScreen;
 
-        public virtual void InitializeStage() { Debug.Log("not stageNdirector");}
+        public Player Player{ get => player;}
+        public int Time;
+
+        public abstract void InitializeStage();
+
+        public void Awake()
+        {
+            Debug.Log("Stage Manager initialized");
+            InitializeStage();
+            StartStage();
+            GameManager.Instance._stageManager = this;
+            GameManager.Instance.GameState = GameState.Playing;
+        }
 
         public void StartStage()
         {
-            Time.timeScale = 1f;
+            UnityEngine.Time.timeScale = 1f;
+            Time = 0;
+            InvokeRepeating("UpdateTime", 1.0f, 1.0f);
             //Debug.Log("Starting Stage");
         }
 
         public void PauseStage()
         {
-            Time.timeScale = 0f;
+            UnityEngine.Time.timeScale = 0f;
         }
 
         public void ResumeStage()
         {
-            Time.timeScale = 1f;
+            UnityEngine.Time.timeScale = 1f;
         }
 
         public void FailStage()
         {
-            Time.timeScale = 0f;
+            UnityEngine.Time.timeScale = 0f;
+            inGameScreen.ShowFail();
             //Debug.Log("FailStage");
         }
 
         public void ClearStage()
         {
-            Time.timeScale = 0f;
+            UnityEngine.Time.timeScale = 0f;
+            inGameScreen.ShowSuccess();
             //Debug.Log("Cleared Stage");
         }
+
+        public void UpdateTime()
+        {
+            Time++;
+            inGameScreen.PlayTimeUpdate(Time);
+        }
+
     }
 }

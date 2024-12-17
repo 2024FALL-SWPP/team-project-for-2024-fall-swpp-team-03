@@ -32,6 +32,27 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/SWPPT3/Scenes/Tutorial1Test.unity
     guid: 9e371724b3866b14185add9df7ce1a0f
+  - enabled: 1
+    path: Assets/SWPPT3/Scenes/Stage 1.unity
+    guid: 386a2c8220b66432ebf8b0f40d895479
+  - enabled: 1
+    path: Assets/SWPPT3/Scenes/Stage 2.unity
+    guid: 9fef89060edb5495cb455bba558fe684
+  - enabled: 1
+    path: Assets/SWPPT3/Scenes/Stage 3.unity
+    guid: ca873f3c46a00428fab9ca03904853aa
+  - enabled: 1
+    path: Assets/SWPPT3/Scenes/Stage 4.unity
+    guid: f9df1150d67cd4d109034664fc6e9a74
+  - enabled: 1
+    path: Assets/SWPPT3/Scenes/Stage 5.unity
+    guid: 02b0542fd3c85e74b9c747231e01486c
+  - enabled: 1
+    path: Assets/SWPPT3/Scenes/Tutorial 1.unity
+    guid: 873050d45f3a54338b3062477b16dd50
+  - enabled: 1
+    path: Assets/SWPPT3/Scenes/Tutorial 2.unity
+    guid: 33231c6b6c797485aa4354fb05c1fc4e
   m_configObjects:
     com.unity.addressableassets: {fileID: 11400000, guid: b01f91319d8c9ba4db8bea7be7272105,
       type: 2}

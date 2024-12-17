@@ -120,47 +120,38 @@ namespace SWPPT3.Main.PlayerLogic
         private void HandleMove(Vector2 moveVector)
         {
             _moveVector = moveVector;
-            // Debug.Log($"PlayerMover - Move: {_moveVector}");
         }
 
         private void HandleJump()
         {
-            //Debug.Log(_player.CurrentState);
-
-            if (_groundedObjects.Count > 0)
+            if (_groundedObjects.Count > 0 && GameManager.Instance.GameState == GameState.Playing)
             {
                 _rb.AddForce(Vector3.up * _jumpForce, ForceMode.Impulse);
-                // Debug.Log(player._physicMaterial.bounciness);
             }
             _isHoldingJump = true;
             if (_player.CurrentState == PlayerStates.Rubber)
             {
                 _player.SetBounciness(1.0f);
-                // Debug.Log(player._physicMaterial.bounciness);
             }
         }
 
         private void HandleJumpCancel()
         {
-            //Debug.Log("PlayerMover - JumpCancel");
             _isHoldingJump = false;
             if (_player.CurrentState == PlayerStates.Rubber)
             {
                 _player.SetBounciness(0.5f);
-                // Debug.Log(player._physicMaterial.bounciness);
             }
         }
 
         private void HandleStartRotation(bool isRightButtonPressed)
         {
             isRightButton = isRightButtonPressed;
-            // Debug.Log($"PlayerMover - StartRotation: {isRightButton}");
         }
 
         private void HandleLook(Vector2 lookInput)
         {
             _lookInput = lookInput;
-            // Debug.Log($"PlayerMover - Look Input: {_lookInput}");
         }
 
 

@@ -1,5 +1,6 @@
 using SWPPT3.Main.Utility.Singleton;
 using System;
+using System.Collections.Generic;
 using SWPPT3.Main.StageDirector;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -10,10 +11,14 @@ namespace SWPPT3.Main.Manager
     public enum GameState
     {
         BeforeStart,
+        Ready,
         Playing,
         Paused,
+        OnChoice,
         GameOver,
-        StageCleared
+        Exit,
+        StageCleared,
+        OnOption
     }
 
     public class GameManager : MonoSingleton<GameManager>
@@ -24,10 +29,11 @@ namespace SWPPT3.Main.Manager
         public GameState GameState
         {
             get => gameState;
-            private set
+            set
             {
                 if (gameState != value)
                 {
+                    Debug.Log($"{gameState} {value}");
                     gameState = value;
                     HandleGameStateChanged(gameState);
                 }
@@ -35,104 +41,62 @@ namespace SWPPT3.Main.Manager
         }
         private int stageNumber;
 
-        public int StageNumber
-        {
-            get => stageNumber;
-            set { stageNumber = value; }
-        }
+        public int StageNumber { get => stageNumber; set => stageNumber = value; }
+
+        public StageManager _stageManager;
 
 
         public void Awake()
         {
-            //UIManager.Instance.Initialize(this);
-            //UIManager.Instance.ShowCanvas("BeforeStart");
-            //InitializeStage(1);
+
         }
 
 
         private void HandleGameStateChanged(GameState newState)
         {
             OnGameStateChanged?.Invoke(newState);
-            StageManager stageManager = getStageManager();
 
             switch (newState)
             {
                 case GameState.BeforeStart:
+                    // UIManager.Instance.ShowStartStage();
+                    break;
+                case GameState.Ready:
+                    LoadScene();
                     break;
                 case GameState.Playing:
-                    LoadScene(stageNumber);
+                    _stageManager.ResumeStage();
                     break;
                 case GameState.Paused:
-                    stageManager?.PauseStage();
+                    _stageManager?.PauseStage();
                     break;
                 case GameState.GameOver:
-                    stageManager?.FailStage();
+                    _stageManager?.FailStage();
+                    // UIManager.Instance.ShowFail();
+                    break;
+                case GameState.OnChoice:
+                    _stageManager?.PauseStage();
+                    break;
+                case GameState.Exit:
                     break;
                 case GameState.StageCleared:
-                    stageManager?.ClearStage();
-                    ProceedToNextStage();
-                    SetGameState(GameState.Playing);
+                    _stageManager?.ClearStage();
+                    // UIManager.Instance.ShowClear();
+                    break;
+                case GameState.OnOption:
                     break;
             }
         }
 
         private void InitializeStage()
         {
-            LoadScene(stageNumber);
-            StageManager stageManager = getStageManager();
-            if (stageManager != null)
+            //loadingscene을 켜고
+            LoadScene();
+            if (_stageManager != null)
             {
-                stageManager.InitializeStage();
+                _stageManager.InitializeStage();
             }
-            else
-            {
-                Debug.Log("Stage Manager is null");
-            }
-        }
-
-        private StageManager getStageManager()
-        {
-            StageManager stageManager = null;
-
-            switch (stageNumber)
-            {
-                case 1:
-                    stageManager = Tutorial1Director.Instance;
-                    break;
-                case 2:
-                    stageManager = Tutorial2Director.Instance;
-                    break;
-                case 3:
-                    stageManager = Stage1Director.Instance;
-                    break;
-                case 4:
-                    stageManager = Stage2Director.Instance;
-                    break;
-                case 5:
-                    stageManager = Stage4Director.Instance;
-                    break;
-                case 6:
-                    stageManager = Stage5Director.Instance;
-                    break;
-                case 7:
-                    stageManager = Stage3Director.Instance;
-                    break;
-                default:
-                    break;
-            }
-
-            return stageManager;
-        }
-
-
-        public void SetGameState(GameState newState)
-        {
-            GameState = newState;
-        }
-
-        public void ProceedToNextStage()
-        {
-            stageNumber++;
+            //loadingscene 끄기
         }
 
         public void ResetStage()
@@ -140,129 +104,46 @@ namespace SWPPT3.Main.Manager
             InitializeStage();
         }
 
-        public void OnUIButtonClicked(string buttonName)
-        {
-            switch (buttonName)
-            {
-                case "Pause":
-                    SetGameState(GameState.Paused);
-                    break;
-                case "Resume":
-                    SetGameState(GameState.Playing);
-                    break;
-                case "Reset":
-                    ResetStage();
-                    break;
-                case "NextStage":
-                    ProceedToNextStage();
-                    break;
-                case "Finish":
-                    SetGameState(GameState.GameOver);
-                    break;
-                default:
-                    break;
-            }
-        }
-        public void OnUIButtonClicked(int stageNum)
+        public void StageSelect(int stageNum)
         {
             stageNumber = stageNum;
-            SetGameState(GameState.Playing);
+            GameState = GameState.Ready;
         }
 
-        public void LoadScene(int stageNum)
+        public void LoadScene()
         {
             string sceneName;
-            // if (stageNum > 2)
-            // {
-            //      sceneName = $"Stage{stageNum-2}";
-            // }
-            // else
-            // {
-            //     sceneName = $"Tutorial{stageNum}";
-            // }
-            switch (stageNum)
+
+            switch (stageNumber)
             {
+                case 0:
+                    sceneName = "Tutorial 1";
+                    break;
                 case 1:
-                    sceneName = "Tutorial1test";
+                    sceneName = "Tutorial 2";
                     break;
                 case 2:
-                    sceneName = "Tutorial2test";
+                    sceneName = "Stage 1";
                     break;
                 case 3:
-                    sceneName = "Stage1test";
+                    sceneName = "Stage 2";
                     break;
                 case 4:
-                    sceneName = "Stage2test";
+                    sceneName = "Stage 4";
                     break;
                 case 5:
-                    sceneName = "Stage4test";
+                    sceneName = "Stage 5";
                     break;
                 case 6:
-                    sceneName = "Stage5test";
-                    break;
-                case 7:
-                    sceneName = "Stage3test";
+                    sceneName = "Stage 3";
                     break;
                 default:
-                    Debug.LogError($"Invalid stage number: {stageNum}");
+                    Debug.LogError($"Invalid stage number: {stageNumber}");
                     return;
             }
             SceneManager.LoadScene(sceneName);
         }
 
-        public void OnPlayerStateChanged(string state)
-        {
-            switch (state)
-            {
-                case "GameOver":
-                    SetGameState(GameState.GameOver);
-                    break;
-                case "StageCleared":
-                    SetGameState(GameState.StageCleared);
-                    break;
-                default:
-                    break;
-            }
-        }
-        private void OnEnable()
-        {
-            SceneManager.sceneLoaded += OnSceneLoaded;
-        }
 
-        private void OnDisable()
-        {
-            SceneManager.sceneLoaded -= OnSceneLoaded;
-        }
-        private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
-        {
-            if (GameState == GameState.Playing)
-            {
-                StageManager stageManager = getStageManager();
-                if (stageManager != null)
-                {
-                    stageManager.InitializeStage();
-                    stageManager.StartStage();
-                }
-                else
-                {
-                    Debug.LogError("Stage Manager is null after loading scene");
-                }
-            }
-        }
-        // [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
-        // private static void EnsureInitialized()
-        // {
-        //     if (Instance == null)
-        //     {
-        //         var obj = new GameObject(nameof(GameManager));
-        //         var manager = obj.AddComponent<GameManager>();
-        //
-        //         var uiObj = new GameObject(nameof(UIManager));
-        //         uiObj.AddComponent<UIManager>();
-        //
-        //         var inputObj = new GameObject(nameof(InputManager));
-        //         inputObj.AddComponent<InputManager>();
-        //     }
-        // }
     }
 }

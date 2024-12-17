@@ -15,6 +15,8 @@ namespace SWPPT3.Main.PlayerLogic
         private int slimeCount , metalCount, rubberCount;
         public Dictionary<PlayerStates, int> Item;
 
+        public event Action OnItemChanged;
+
         [SerializeField]
         private Rigidbody _rb;
         // [SerializeField]
@@ -52,25 +54,10 @@ namespace SWPPT3.Main.PlayerLogic
                     { PlayerStates.Metal, 0 },
                     { PlayerStates.Rubber, 0 },
                 };
+                OnItemChanged?.Invoke();
             }
             TryChangeState(PlayerStates.Slime);
-            InputManager.Instance.OnChangeState += HandleChangeState;
-        }
 
-        public void HandleChangeState(InputAction.CallbackContext context)
-        {
-            string keyPressed = context.control.displayName;
-            //Debug.Log(keyPressed);
-
-            PlayerStates newState = keyPressed switch
-            {
-                "1" => PlayerStates.Slime,
-                "2" => PlayerStates.Metal,
-                "3" => PlayerStates.Rubber,
-                _ => _currentState
-            };
-
-            TryChangeState(newState);
         }
 
         public void TryChangeState(PlayerStates newState)
@@ -78,6 +65,7 @@ namespace SWPPT3.Main.PlayerLogic
             if (newState == PlayerStates.Slime || Item[newState] > 0)
             {
                 if (newState != PlayerStates.Slime) Item[newState]--;
+                OnItemChanged?.Invoke();
                 _currentState = newState;
                 PlayerState.ChangeRigidbody(_rb);
                 PlayerState.ChangePhysics(_collider, _physicMaterial);
@@ -99,10 +87,19 @@ namespace SWPPT3.Main.PlayerLogic
 
         private void OnDestroy()
         {
-            InputManager.Instance.OnChangeState -= HandleChangeState;
         }
         public void SetItemCounts(int newSlimeCount, int newMetalCount, int newRubberCount)
         {
+            if (Item == null)
+            {
+                Item = new Dictionary<PlayerStates, int>
+                {
+                    { PlayerStates.Slime, 0 },
+                    { PlayerStates.Metal, 0 },
+                    { PlayerStates.Rubber, 0 },
+                };
+                OnItemChanged?.Invoke();
+            }
             Item[PlayerStates.Slime] = newSlimeCount;
             Item[PlayerStates.Metal] = newMetalCount;
             Item[PlayerStates.Rubber] = newRubberCount;
