@@ -6,6 +6,7 @@ using SWPPT3.Main.PlayerLogic.State;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
 namespace SWPPT3.Main.UI
@@ -28,6 +29,8 @@ namespace SWPPT3.Main.UI
 
         public void ClickResume()
         {
+            Cursor.visible = false;
+            Debug.Log("click reusme");
             GameManager.Instance.GameState = GameState.Playing;
             _onTryingPauseStatusChanged.Invoke(false);
         }
@@ -104,10 +107,23 @@ namespace SWPPT3.Main.UI
             _rubberNumTmp.text = $"{_player.Item[PlayerStates.Rubber]}";
         }
 
+        public void ShowFail()
+        {
+            _onTryingFailStatusChanged.Invoke(true);
+            Cursor.visible = true;
+        }
+
+        public void ShowSuccess()
+        {
+            _onTryingClearStatusChanged.Invoke(true);
+            Cursor.visible = true;
+        }
+
 
         // Start is called before the first frame update
         void Start()
         {
+            Cursor.visible = false;
             if (InputManager.Instance != null)
             {
                 InputManager.Instance.OnEsc += HandleEsc;
@@ -141,6 +157,7 @@ namespace SWPPT3.Main.UI
         {
             if (GameManager.Instance.GameState == GameState.Playing)
             {
+                Cursor.visible = true;
                 GameManager.Instance.GameState = GameState.Paused;
                 _onTryingPauseStatusChanged.Invoke(true);
             }
@@ -150,15 +167,55 @@ namespace SWPPT3.Main.UI
         {
             if (GameManager.Instance.GameState == GameState.Playing && isClick)
             {
+                Debug.Log(GameManager.Instance.GameState+"hi");
+                Cursor.visible = true;
+                // Cursor.lockState = CursorLockMode.None;
+
+                // 커서를 화면 중앙으로 이동
+                Vector2 screenCenter = new Vector2(Screen.width / 2f, Screen.height / 2f);
+
+                Mouse.current.WarpCursorPosition(screenCenter);
+
                 GameManager.Instance.GameState = GameState.OnChoice;
                 ShowRadialUI();
             }
             else if (GameManager.Instance.GameState == GameState.OnChoice && !isClick)
             {
+                Debug.Log(GameManager.Instance.GameState+"bi");
+                CheckRadial();
+                Cursor.visible = false;
+                // Cursor.lockState = CursorLockMode.Locked;
                 GameManager.Instance.GameState = GameState.Playing;
                 _onTryingChoiceStatusChanged.Invoke(false);
             }
         }
+
+        private void CheckRadial()
+        {
+            Vector2 cursorPos = Mouse.current.position.ReadValue();
+            Vector2 screenCenter = new Vector2(Screen.width / 2f, Screen.height / 2f);
+            Vector2 relativePos = cursorPos - screenCenter;
+            float angle = Mathf.Atan2(relativePos.y, relativePos.x) * Mathf.Rad2Deg;
+            if (angle < 0)
+            {
+                angle += 360f;
+            }
+
+            if (angle >= 0 && angle < 120)
+            {
+                _player.TryChangeState(PlayerStates.Rubber);
+            }
+            else if (angle >= 120 && angle < 240)
+            {
+                _player.TryChangeState(PlayerStates.Metal);
+            }
+            else
+            {
+                _player.TryChangeState(PlayerStates.Slime);
+            }
+        }
+
+
 
         private void OnDestroy()
         {
@@ -172,6 +229,7 @@ namespace SWPPT3.Main.UI
             {
                 _player.OnItemChanged -= NumUpdate;
             }
+            Cursor.visible = true;
         }
 
     }

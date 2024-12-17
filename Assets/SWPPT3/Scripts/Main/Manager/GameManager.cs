@@ -103,35 +103,7 @@ namespace SWPPT3.Main.Manager
         {
             InitializeStage();
         }
-        //
-        // public void OnUIButtonClicked(string buttonName)
-        // {
-        //     switch (buttonName)
-        //     {
-        //         case "Pause":
-        //             GameState = GameState.Paused;
-        //             break;
-        //         case "Resume":
-        //             GameState = GameState.Playing;
-        //             break;
-        //         case "Restart":
-        //             ResetStage();
-        //             break;
-        //         case "NextStage":
-        //             ProceedToNextStage();
-        //             break;
-        //         case "StartMenu":
-        //             break;
-        //         case "GameFinish":
-        //             Application.Quit();
-        //             break;
-        //         case "ReturnStart":
-        //             UIManager.Instance.ReturnStart();
-        //             break;
-        //         default:
-        //             break;
-        //     }
-        // }
+
         public void StageSelect(int stageNum)
         {
             stageNumber = stageNum;
@@ -145,25 +117,25 @@ namespace SWPPT3.Main.Manager
             switch (stageNumber)
             {
                 case 0:
-                    sceneName = "Tutorial1test";
+                    sceneName = "Tutorial 1";
                     break;
                 case 1:
-                    sceneName = "Tutorial2test";
+                    sceneName = "Tutorial 2";
                     break;
                 case 2:
-                    sceneName = "Stage1test";
+                    sceneName = "Stage 1";
                     break;
                 case 3:
-                    sceneName = "Stage2test";
+                    sceneName = "Stage 2";
                     break;
                 case 4:
-                    sceneName = "Stage4test";
+                    sceneName = "Stage 4";
                     break;
                 case 5:
-                    sceneName = "Stage5test";
+                    sceneName = "Stage 5";
                     break;
                 case 6:
-                    sceneName = "Stage3test";
+                    sceneName = "Stage 3";
                     break;
                 default:
                     Debug.LogError($"Invalid stage number: {stageNumber}");

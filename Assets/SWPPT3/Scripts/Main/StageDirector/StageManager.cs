@@ -47,12 +47,14 @@ namespace SWPPT3.Main.StageDirector
         public void FailStage()
         {
             UnityEngine.Time.timeScale = 0f;
+            inGameScreen.ShowFail();
             //Debug.Log("FailStage");
         }
 
         public void ClearStage()
         {
             UnityEngine.Time.timeScale = 0f;
+            inGameScreen.ShowSuccess();
             //Debug.Log("Cleared Stage");
         }
 

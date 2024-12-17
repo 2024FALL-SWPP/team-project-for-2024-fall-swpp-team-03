@@ -107,6 +107,16 @@ namespace SWPPT3.Main.PlayerLogic
         }
         public void SetItemCounts(int newSlimeCount, int newMetalCount, int newRubberCount)
         {
+            if (Item == null)
+            {
+                Item = new Dictionary<PlayerStates, int>
+                {
+                    { PlayerStates.Slime, 0 },
+                    { PlayerStates.Metal, 0 },
+                    { PlayerStates.Rubber, 0 },
+                };
+                OnItemChanged?.Invoke();
+            }
             Item[PlayerStates.Slime] = newSlimeCount;
             Item[PlayerStates.Metal] = newMetalCount;
             Item[PlayerStates.Rubber] = newRubberCount;
