@@ -57,23 +57,7 @@ namespace SWPPT3.Main.PlayerLogic
                 OnItemChanged?.Invoke();
             }
             TryChangeState(PlayerStates.Slime);
-            InputManager.Instance.OnChangeState += HandleChangeState;
-        }
 
-        public void HandleChangeState(InputAction.CallbackContext context)
-        {
-            string keyPressed = context.control.displayName;
-            //Debug.Log(keyPressed);
-
-            PlayerStates newState = keyPressed switch
-            {
-                "1" => PlayerStates.Slime,
-                "2" => PlayerStates.Metal,
-                "3" => PlayerStates.Rubber,
-                _ => _currentState
-            };
-
-            TryChangeState(newState);
         }
 
         public void TryChangeState(PlayerStates newState)
@@ -103,7 +87,6 @@ namespace SWPPT3.Main.PlayerLogic
 
         private void OnDestroy()
         {
-            InputManager.Instance.OnChangeState -= HandleChangeState;
         }
         public void SetItemCounts(int newSlimeCount, int newMetalCount, int newRubberCount)
         {

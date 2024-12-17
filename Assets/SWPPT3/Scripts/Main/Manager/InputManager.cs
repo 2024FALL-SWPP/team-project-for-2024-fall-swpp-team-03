@@ -26,10 +26,6 @@ namespace SWPPT3.Main.Manager
         public delegate void StartTransformAction(bool isLeftButton);
         public event StartTransformAction OnStartTransform;
 
-        // 나중에 제거될 함수
-        public delegate void ChangeStateAction(InputAction.CallbackContext context);
-        public event ChangeStateAction OnChangeState;
-
         public delegate void EscAction();
         public event EscAction OnEsc;
 
@@ -54,8 +50,6 @@ namespace SWPPT3.Main.Manager
 
             inGame.EscMenu.performed += ctx => OnEsc?.Invoke();
 
-            // 나중에 제거
-            inGame.ChangeState.performed += ctx => OnChangeState?.Invoke(ctx);
         }
 
         private void OnDestroy()

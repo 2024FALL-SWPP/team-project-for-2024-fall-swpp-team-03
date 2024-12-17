@@ -51,15 +51,6 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "ChangeState",
-                    "type": "Button",
-                    "id": "29ece330-81c9-4e89-ac30-5f6f846d8c3a",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
                     "name": "EscMenu",
                     "type": "Button",
                     "id": "390dca62-fc42-47a1-9c60-10e85edf63f8",
@@ -265,39 +256,6 @@
                     "processors": "",
                     "groups": "Keyboard&Mouse",
                     "action": "StartRotation",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "df266fdf-9b8d-4a82-9105-3bf79e3d1469",
-                    "path": "<Keyboard>/#(1)",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Keyboard&Mouse",
-                    "action": "ChangeState",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "22307426-fefa-4c11-9352-9d576dfb3a78",
-                    "path": "<Keyboard>/#(2)",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Keyboard&Mouse",
-                    "action": "ChangeState",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "6a896f8d-02de-4fc6-bf4d-be2b9b55f1b8",
-                    "path": "<Keyboard>/#(3)",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Keyboard&Mouse",
-                    "action": "ChangeState",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
