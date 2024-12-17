@@ -12,6 +12,7 @@ namespace SWPPT3.Main.Manager
         BeforeStart,
         Playing,
         Paused,
+        OnChoice,
         GameOver,
         StageCleared
     }
@@ -24,10 +25,11 @@ namespace SWPPT3.Main.Manager
         public GameState GameState
         {
             get => gameState;
-            private set
+            set
             {
                 if (gameState != value)
                 {
+
                     gameState = value;
                     HandleGameStateChanged(gameState);
                 }
@@ -64,6 +66,9 @@ namespace SWPPT3.Main.Manager
                 case GameState.GameOver:
                     stageManager?.FailStage();
                     break;
+                case GameState.OnChoice:
+
+                    break;
                 case GameState.StageCleared:
                     stageManager?.ClearStage();
                     ProceedToNextStage();
@@ -93,33 +98,36 @@ namespace SWPPT3.Main.Manager
         {
             InitializeStage();
         }
-
-        public void OnUIButtonClicked(string buttonName)
-        {
-            switch (buttonName)
-            {
-                case "Pause":
-                    GameState = GameState.Paused;
-                    break;
-                case "Resume":
-                    GameState = GameState.Playing;
-                    break;
-                case "Reset":
-                    ResetStage();
-                    break;
-                case "NextStage":
-                    ProceedToNextStage();
-                    break;
-                case "Finish":
-                    GameState = GameState.GameOver;
-                    break;
-                case "GameFinish":
-                    break;
-                default:
-                    break;
-            }
-        }
-        public void OnUIButtonClicked(int stageNum)
+        //
+        // public void OnUIButtonClicked(string buttonName)
+        // {
+        //     switch (buttonName)
+        //     {
+        //         case "Pause":
+        //             GameState = GameState.Paused;
+        //             break;
+        //         case "Resume":
+        //             GameState = GameState.Playing;
+        //             break;
+        //         case "Restart":
+        //             ResetStage();
+        //             break;
+        //         case "NextStage":
+        //             ProceedToNextStage();
+        //             break;
+        //         case "StartMenu":
+        //             break;
+        //         case "GameFinish":
+        //             Application.Quit();
+        //             break;
+        //         case "ReturnStart":
+        //             UIManager.Instance.ReturnStart();
+        //             break;
+        //         default:
+        //             break;
+        //     }
+        // }
+        public void StageSelect(int stageNum)
         {
             stageNumber = stageNum;
             GameState = GameState.Playing;
@@ -166,18 +174,6 @@ namespace SWPPT3.Main.Manager
             SceneManager.LoadScene(sceneName);
         }
 
-        public void OnPlayerStateChanged(string state)
-        {
-            switch (state)
-            {
-                case "GameOver":
-                    GameState = GameState.GameOver;
-                    break;
-                case "StageCleared":
-                    GameState = GameState.StageCleared;
-                    break;
-            }
-        }
         private void OnEnable()
         {
             SceneManager.sceneLoaded += OnSceneLoaded;
