@@ -26,12 +26,12 @@ namespace SWPPT3.Main.Manager
         private GameObject _tutorial1Button;
         private GameObject _tutorial2Button;
 
-        [Header("Button for stage")]
-        private GameObject _pauseButton;
-
         [Header("Image for start")]
         private GameObject _logo;
         private GameObject _exitGame;
+
+        [Header("Button for stage")]
+        private GameObject _pauseButton;
 
         [Header("Image for stage")]
         private GameObject _itemState;
@@ -45,6 +45,7 @@ namespace SWPPT3.Main.Manager
         private GameObject _clearScreen;
         private GameObject _loadingScreen;
         private GameObject _startScreen;
+        private GameObject _radialUI;
 
         [Header("stage Button")]
         private Button _resumeButton_PauseMenu;
@@ -74,14 +75,31 @@ namespace SWPPT3.Main.Manager
 
         private void Awake()
         {
-            _pauseButton = transform.Find("pauseButton")?.gameObject;
-            _stage1Button = transform.Find("stage1Button")?.gameObject;
-            _stage2Button = transform.Find("stage2Button")?.gameObject;
-            _stage3Button = transform.Find("stage3Button")?.gameObject;
-            _stage4Button = transform.Find("stage4Button")?.gameObject;
-            _stage5Button = transform.Find("stage5Button")?.gameObject;
-            _tutorial1Button = transform.Find("tutorial1Button")?.gameObject;
-            _tutorial2Button = transform.Find("tutorial2Button")?.gameObject;
+            _stage1Button = mainCanvas.transform.Find("stage1Button")?.gameObject;
+            _stage2Button = mainCanvas.transform.Find("stage2Button")?.gameObject;
+            _stage3Button = mainCanvas.transform.Find("stage3Button")?.gameObject;
+            _stage4Button = mainCanvas.transform.Find("stage4Button")?.gameObject;
+            _stage5Button = mainCanvas.transform.Find("stage5Button")?.gameObject;
+            _tutorial1Button = mainCanvas.transform.Find("tutorial1Button")?.gameObject;
+            _tutorial2Button = mainCanvas.transform.Find("tutorial2Button")?.gameObject;
+
+            _logo           = mainCanvas.transform.Find("Logo")?.gameObject;
+            _exitGame       = mainCanvas.transform.Find("ExitGame")?.gameObject;
+
+            _pauseButton = mainCanvas.transform.Find("pauseButton")?.gameObject;
+
+            _itemState      = mainCanvas.transform.Find("ItemState")?.gameObject;
+            _metalText      = mainCanvas.transform.Find("MetalText")?.gameObject;
+            _rubberText     = mainCanvas.transform.Find("RubberText")?.gameObject;
+            _metalNum       = mainCanvas.transform.Find("MetalNum")?.gameObject;
+            _rubberNum      = mainCanvas.transform.Find("RubberNum")?.gameObject;
+            _playTime       = mainCanvas.transform.Find("PlayTime")?.gameObject;
+            _pauseScreen    = mainCanvas.transform.Find("PauseScreen")?.gameObject;
+            _failScreen     = mainCanvas.transform.Find("FailScreen")?.gameObject;
+            _clearScreen    = mainCanvas.transform.Find("ClearScreen")?.gameObject;
+            _loadingScreen  = mainCanvas.transform.Find("LoadingSreen")?.gameObject;
+            _startScreen    = mainCanvas.transform.Find("StartScreen")?.gameObject;
+            _radialUI       = mainCanvas.transform.Find("RadialUI")?.gameObject;
 
             _resumeButton_PauseMenu = _pauseScreen.transform.Find("PausedMenu/ResumeButton").GetComponent<Button>();
             _restartButton_PauseMenu = _pauseScreen.transform.Find("PausedMenu/RestartButton").GetComponent<Button>();
@@ -125,41 +143,16 @@ namespace SWPPT3.Main.Manager
             _returnButton_StartMenu.onClick.AddListener(() => OnButtonClicked("ReturnStart"));
         }
 
-        private void SetAllUIInactive()
+        private void HideAllUI()
         {
-            _stage1Button.SetActive(false);
-            _stage2Button.SetActive(false);
-            _stage3Button.SetActive(false);
-            _stage4Button.SetActive(false);
-            _stage5Button.SetActive(false);
-            _tutorial1Button.SetActive(false);
-            _tutorial2Button.SetActive(false);
-            _pauseButton.SetActive(false);
-            _logo.SetActive(false);
-            _exitGame.SetActive(false);
-            _itemState.SetActive(false);
-            _metalText.SetActive(false);
-            _rubberText.SetActive(false);
-            _metalNum.SetActive(false);
-            _rubberNum.SetActive(false);
-            _playTime.SetActive(false);
-            _pauseScreen.SetActive(false);
-            _failScreen.SetActive(false);
-            _clearScreen.SetActive(false);
-            _loadingScreen.SetActive(false);
-            _startScreen.SetActive(false);
-            _resumeButton_PauseMenu.gameObject.SetActive(false);
-            _restartButton_PauseMenu.gameObject.SetActive(false);
-            _outButton_PauseMenu.gameObject.SetActive(false);
-            _restartButton_FailedMenu.gameObject.SetActive(false);
-            _outButton_FailedMenu.gameObject.SetActive(false);
-            _nextButton_ClearedMenu.gameObject.SetActive(false);
-            _outButton_ClearedMenu.gameObject.SetActive(false);
+            HideScreen();
+            HideExitGame();
+            HideStartStage();
+            HidePlayingScreen();
         }
 
         public void ShowStartStage()
         {
-            _pauseButton.SetActive(true);
             _stage1Button.SetActive(true);
             _stage2Button.SetActive(true);
             _stage3Button.SetActive(true);
@@ -170,26 +163,47 @@ namespace SWPPT3.Main.Manager
             _logo.SetActive(true);
         }
 
+        public void HideStartStage()
+        {
+            _stage1Button.SetActive(false);
+            _stage2Button.SetActive(false);
+            _stage3Button.SetActive(false);
+            _stage4Button.SetActive(false);
+            _stage5Button.SetActive(false);
+            _tutorial1Button.SetActive(false);
+            _tutorial2Button.SetActive(false);
+            _logo.SetActive(false);
+        }
+
         public void ShowPlaying()
         {
             _startScreen.SetActive(true);
+            _loadingScreen.SetActive(true);
             Invoke("ShowPlayingScreen", 2);
             _startScreen.SetActive(false);
+            _loadingScreen.SetActive(false);
         }
 
         public void ShowPlayingScreen()
         {
+            _pauseButton.SetActive(true);
             _itemState.SetActive(true);
             _metalText.SetActive(true);
             _rubberText.SetActive(true);
             _metalNum.SetActive(true);
             _rubberNum.SetActive(true);
+            _playTime.SetActive(true);
         }
 
-        public void ShowLoading()
+        public void HidePlayingScreen()
         {
-            HideScreen();
-            _loadingScreen.SetActive(true);
+            _itemState.SetActive(false);
+            _metalText.SetActive(false);
+            _rubberText.SetActive(false);
+            _metalNum.SetActive(false);
+            _rubberNum.SetActive(false);
+            _pauseButton.SetActive(false);
+            _playTime .SetActive(false);
         }
 
         public void ShowPause()
@@ -216,7 +230,26 @@ namespace SWPPT3.Main.Manager
             _pauseScreen.SetActive(false);
             _failScreen.SetActive(false);
             _clearScreen.SetActive(false);
-            _loadingScreen.SetActive(false);
+        }
+
+        public void ShowExitGame()
+        {
+            _exitGame.SetActive(true);
+        }
+
+        public void HideExitGame()
+        {
+            _exitGame.SetActive(false);
+        }
+
+        public void ShowRadialUI()
+        {
+            _radialUI.SetActive(true);
+        }
+
+        public void HideRadialUI()
+        {
+            _radialUI.SetActive(false);
         }
 
         public void ReturnStart()
