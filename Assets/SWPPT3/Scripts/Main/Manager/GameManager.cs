@@ -11,6 +11,7 @@ namespace SWPPT3.Main.Manager
     public enum GameState
     {
         BeforeStart,
+        Ready,
         Playing,
         Paused,
         OnChoice,
@@ -59,8 +60,11 @@ namespace SWPPT3.Main.Manager
                 case GameState.BeforeStart:
                     UIManager.Instance.ShowStartStage();
                     break;
+                case GameState.Ready:
+                    LoadScene();
+                    break;
                 case GameState.Playing:
-                    _stageManager?.StartStage();
+                    _stageManager.ResumeStage();
                     break;
                 case GameState.Paused:
                     _stageManager?.PauseStage();
@@ -134,7 +138,7 @@ namespace SWPPT3.Main.Manager
         public void StageSelect(int stageNum)
         {
             stageNumber = stageNum;
-            GameState = GameState.Playing;
+            GameState = GameState.Ready;
         }
 
         public void LoadScene()
@@ -190,13 +194,16 @@ namespace SWPPT3.Main.Manager
         }
         private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
         {
-            if (GameState == GameState.Playing)
+            if (GameState == GameState.Ready)
             {
                 _stageManager = StageManager.Instance;
+                GameState = GameState.Playing;
                 if (_stageManager != null)
                 {
                     _stageManager.InitializeStage();
                     _stageManager.StartStage();
+                    UIManager.Instance.IntializePlayer(_stageManager.Player);
+                    UIManager.Instance.showPlayingScreen();
                 }
                 else
                 {

@@ -8,6 +8,8 @@ namespace SWPPT3.Main.StageDirector
     public abstract class StageManager : MonoWeakSingleton<StageManager>
     {
         [SerializeField] protected Player player;
+
+        public Player Player{ get => player;}
         protected int Time;
 
         public virtual void InitializeStage()

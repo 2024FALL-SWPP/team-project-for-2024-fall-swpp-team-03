@@ -8,7 +8,7 @@ namespace SWPPT3.Main.StageDirector
     {
         public override void InitializeStage()
         {
-            StartStage();
+            // StartStage();
             player.SetItemCounts(0,1,1);
         }
 
