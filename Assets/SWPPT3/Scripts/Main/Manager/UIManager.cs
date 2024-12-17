@@ -43,24 +43,6 @@ namespace SWPPT3.Main.Manager
         public GameObject _startScreen;
         public GameObject _radialUI;
 
-        // [Header("stage Button")]
-        // private Button _resumeButton_PauseMenu;
-        // private Button _restartButton_PauseMenu;
-        //
-        // private Button _outButton_PauseMenu;
-        //
-        // // FailScreen Buttons
-        // private Button _restartButton_FailedMenu;
-        //
-        // private Button _outButton_FailedMenu;
-        //
-        // // ClearScreen Buttons
-        // private Button _nextButton_ClearedMenu;
-        // private Button _outButton_ClearedMenu;
-        //
-        // private Button _exitButton_StartMenu;
-        // private Button _returnButton_StartMenu;
-
         private TextMeshProUGUI _playTimeTmp;
         private TextMeshProUGUI _metalNumTmp;
         private TextMeshProUGUI _rubberNumTmp;
@@ -69,78 +51,50 @@ namespace SWPPT3.Main.Manager
 
         private void Awake()
         {
-            // Debug.Log("awake");
-            // _stage1Button = mainCanvas.transform.Find("Stage1Button")?.gameObject;
-            // _stage2Button = mainCanvas.transform.Find("Stage2Button")?.gameObject;
-            // _stage3Button = mainCanvas.transform.Find("Stage3Button")?.gameObject;
-            // _stage4Button = mainCanvas.transform.Find("Stage4Button")?.gameObject;
-            // _stage5Button = mainCanvas.transform.Find("Stage5Button")?.gameObject;
-            // _tutorial1Button = mainCanvas.transform.Find("Tutorial1Button")?.gameObject;
-            // _tutorial2Button = mainCanvas.transform.Find("Tutorial2Button")?.gameObject;
-            //
-            // _logo           = mainCanvas.transform.Find("Logo")?.gameObject;
-            // _exitGame       = mainCanvas.transform.Find("ExitGame")?.gameObject;
-            //
-            // _pauseButton = mainCanvas.transform.Find("PauseButton")?.gameObject;
-            //
-            // _itemState      = mainCanvas.transform.Find("ItemState")?.gameObject;
-            // _metalText      = mainCanvas.transform.Find("MetalText")?.gameObject;
-            // _rubberText     = mainCanvas.transform.Find("RubberText")?.gameObject;
-            // _metalNum       = mainCanvas.transform.Find("MetalNum")?.gameObject;
-            // _rubberNum      = mainCanvas.transform.Find("RubberNum")?.gameObject;
-            // _playTime       = mainCanvas.transform.Find("Playtime")?.gameObject;
-            // _pauseScreen    = mainCanvas.transform.Find("PauseScreen")?.gameObject;
-            // _failScreen     = mainCanvas.transform.Find("FailScreen")?.gameObject;
-            // _clearScreen    = mainCanvas.transform.Find("ClearScreen")?.gameObject;
-            // _loadingScreen  = mainCanvas.transform.Find("LoadingScreen")?.gameObject;
-            // _startScreen    = mainCanvas.transform.Find("StartScreen")?.gameObject;
-            // _radialUI       = mainCanvas.transform.Find("RadialUI")?.gameObject;
-
-            // _resumeButton_PauseMenu = _pauseScreen.transform.Find("PausedMenu/ResumeButton").GetComponent<Button>();
-            // _restartButton_PauseMenu = _pauseScreen.transform.Find("PausedMenu/RestartButton").GetComponent<Button>();
-            // _outButton_PauseMenu = _pauseScreen.transform.Find("PausedMenu/OutButton").GetComponent<Button>();
-            // // Fail Screen
-            // _restartButton_FailedMenu = _failScreen.transform.Find("FailedMenu/RestartButton").GetComponent<Button>();
-            // _outButton_FailedMenu = _failScreen.transform.Find("FailedMenu/OutButton").GetComponent<Button>();
-            // // Clear Screen
-            // _nextButton_ClearedMenu = _clearScreen.transform.Find("ClearedMenu/NextButton").GetComponent<Button>();
-            // _outButton_ClearedMenu = _clearScreen.transform.Find("ClearedMenu/OutButton").GetComponent<Button>();
-            // // Start Screen
-            // _exitButton_StartMenu = _exitGame.transform.Find("StartMenu/ExitButton").GetComponent<Button>();
-            // _returnButton_StartMenu = _exitGame.transform.Find("StartMenu/ReturnButton").GetComponent<Button>();
-
             _playTimeTmp = _playTime.transform.Find("PlaytimeText").GetComponent<TextMeshProUGUI>();
             _metalNumTmp = _metalNum.GetComponent<TextMeshProUGUI>();
             _rubberNumTmp = _rubberNum.GetComponent<TextMeshProUGUI>();
 
-            // _playerScript = FindObjectOfType<Player>();
             HideAllUI();
             ShowStartStage();
             Debug.Log("initinalize ");
 
+            if (InputManager.Instance != null)
+            {
+                InputManager.Instance.OnEsc += HandleEsc;
+                InputManager.Instance.OnStartTransform += HandleTransform;
+            }
+            else
+            {
+                Debug.LogError("InputManager is null");
+            }
+
             // InitializeButtons();
         }
 
-        // private void InitializeButtons()
-        // {
-        //     _pauseButton.GetComponent<Button>().onClick.AddListener(clickPause);
-        //     _tutorial1Button.GetComponent<Button>().onClick.AddListener(() => StageSelect(1));
-        //     _tutorial2Button.GetComponent<Button>().onClick.AddListener(() => StageSelect(2));
-        //     _stage1Button.GetComponent<Button>().onClick.AddListener(() => StageSelect(3));
-        //     _stage2Button.GetComponent<Button>().onClick.AddListener(() => StageSelect(4));
-        //     _stage3Button.GetComponent<Button>().onClick.AddListener(() => StageSelect(7));
-        //     _stage4Button.GetComponent<Button>().onClick.AddListener(() => StageSelect(5));
-        //     _stage5Button.GetComponent<Button>().onClick.AddListener(() => StageSelect(6));
-        //     _resumeButton_PauseMenu.onClick.AddListener(clickResume);
-        //     _restartButton_PauseMenu.onClick.AddListener(clickReStart);
-        //     _outButton_PauseMenu.onClick.AddListener(clickStartScene);
-        //     _restartButton_FailedMenu.onClick.AddListener(clickReStart);
-        //     _outButton_FailedMenu.onClick.AddListener(clickStartScene);
-        //     _nextButton_ClearedMenu.onClick.AddListener(clickNext);
-        //     _outButton_ClearedMenu.onClick.AddListener(clickStartScene);
-        //     _exitButton_StartMenu.onClick.AddListener(exitGame);
-        //     _returnButton_StartMenu.onClick.AddListener(returnStart);
-        // }
+        private void HandleEsc()
+        {
+            if (GameManager.Instance.GameState == GameState.BeforeStart)
+            {
+                GameManager.Instance.GameState = GameState.Exit;
+                ShowExitGame();
+            }
+        }
+
+        private void HandleTransform(bool isClick)
+        {
+            if (GameManager.Instance.GameState == GameState.Playing && isClick)
+            {
+                GameManager.Instance.GameState = GameState.OnChoice;
+                ShowRadialUI();
+            }
+            else if (GameManager.Instance.GameState == GameState.OnChoice && !isClick)
+            {
+                GameManager.Instance.GameState = GameState.Playing;
+                HideRadialUI();
+            }
+        }
+
 
         private void HideAllUI()
         {
@@ -178,10 +132,9 @@ namespace SWPPT3.Main.Manager
         {
             _startScreen.SetActive(true);
             _loadingScreen.SetActive(true);
-            // Invoke("showPlayingScreen", 2);
         }
 
-        public void showPlayingScreen()
+        public void ShowPlayingScreen()
         {
             _startScreen.SetActive(false);
             _loadingScreen.SetActive(false);
@@ -192,13 +145,13 @@ namespace SWPPT3.Main.Manager
             _metalNum.SetActive(true);
             _rubberNum.SetActive(true);
             _playTime.SetActive(true);
-            MetalNumUpdate(_playerScript.Item[PlayerStates.Metal]);
-            RubberNumUpdate(_playerScript.Item[PlayerStates.Rubber]);
+            NumUpdate();
         }
 
         public void IntializePlayer(Player player)
         {
             _playerScript = player;
+            _playerScript.OnItemChanged += NumUpdate;
         }
 
         public void HidePlayingScreen()
@@ -212,7 +165,7 @@ namespace SWPPT3.Main.Manager
             _playTime .SetActive(false);
         }
 
-        public void clickPause()
+        public void ClickPause()
         {
             if (GameManager.Instance.GameState == GameState.Playing)
             {
@@ -240,7 +193,7 @@ namespace SWPPT3.Main.Manager
             _clearScreen.SetActive(false);
         }
 
-        public void clickNext()
+        public void ClickNext()
         {
             HideScreen();
             GameManager.Instance.StageNumber++;
@@ -248,20 +201,20 @@ namespace SWPPT3.Main.Manager
             GameManager.Instance.LoadScene();
         }
 
-        public void clickResume()
+        public void ClickResume()
         {
             HideScreen();
             GameManager.Instance.GameState = GameState.Playing;
         }
 
-        public void clickReStart()
+        public void ClickReStart()
         {
             HideScreen();
             GameManager.Instance.LoadScene();
             GameManager.Instance.GameState = GameState.Playing;
         }
 
-        public void clickStartScene()
+        public void ClickStartScene()
         {
             HideScreen();
             GameManager.Instance.GameState = GameState.BeforeStart;
@@ -285,12 +238,20 @@ namespace SWPPT3.Main.Manager
             _radialUI.SetActive(true);
             if (_playerScript.Item[PlayerStates.Rubber] == 0)
             {
-                _radialUI.transform.Find("RightButton").gameObject.SetActive(false);
+                _radialUI.transform.Find("RightButton/RightActive").gameObject.SetActive(false);
+            }
+            else
+            {
+                _radialUI.transform.Find("RightButton/RightActive").gameObject.SetActive(true);
             }
 
             if (_playerScript.Item[PlayerStates.Metal] == 0)
             {
-                _radialUI.transform.Find("LeftButton").gameObject.SetActive(false);
+                _radialUI.transform.Find("LeftButton/LeftActive").gameObject.SetActive(false);
+            }
+            else
+            {
+                _radialUI.transform.Find("LeftButton/LeftActive").gameObject.SetActive(true);
             }
         }
 
@@ -299,13 +260,13 @@ namespace SWPPT3.Main.Manager
             _radialUI.SetActive(false);
         }
 
-        public void returnStart()
+        public void ReturnStart()
         {
             GameManager.Instance.GameState = GameState.BeforeStart;
             _exitGame.SetActive(false);
         }
 
-        public void exitGame()
+        public void ExitGame()
         {
             Application.Quit();
         }
@@ -318,16 +279,32 @@ namespace SWPPT3.Main.Manager
                 GameManager.Instance.StageSelect(stageNum);
             }
         }
+
+        public void ChangeSlime()
+        {
+            _playerScript.TryChangeState(PlayerStates.Slime);
+        }
+
+        public void ChangeMetal()
+        {
+            _playerScript.TryChangeState(PlayerStates.Metal);
+        }
+
+        public void ChangeRubber()
+        {
+            _playerScript.TryChangeState(PlayerStates.Rubber);
+        }
+
         public void PlayTimeUpdate(int time){
             int min = time/60;
             int sec = time%60;
-            _playTimeTmp.text = min+":"+sec;
+            _playTimeTmp.text = $"{min:D2}:{sec:D2}";
         }
-        public void MetalNumUpdate(int num){
-            _metalNumTmp.text = num.ToString();
-        }
-        public void RubberNumUpdate(int num){
-            _rubberNumTmp.text = num.ToString();
+
+        private void NumUpdate()
+        {
+            _metalNumTmp.text = $"{_playerScript.Item[PlayerStates.Metal]}";
+            _rubberNumTmp.text = $"{_playerScript.Item[PlayerStates.Rubber]}";
         }
 
     }

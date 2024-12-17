@@ -15,6 +15,8 @@ namespace SWPPT3.Main.PlayerLogic
         private int slimeCount , metalCount, rubberCount;
         public Dictionary<PlayerStates, int> Item;
 
+        public event Action OnItemChanged;
+
         [SerializeField]
         private Rigidbody _rb;
         // [SerializeField]
@@ -52,6 +54,7 @@ namespace SWPPT3.Main.PlayerLogic
                     { PlayerStates.Metal, 0 },
                     { PlayerStates.Rubber, 0 },
                 };
+                OnItemChanged?.Invoke();
             }
             TryChangeState(PlayerStates.Slime);
             InputManager.Instance.OnChangeState += HandleChangeState;
@@ -78,6 +81,7 @@ namespace SWPPT3.Main.PlayerLogic
             if (newState == PlayerStates.Slime || Item[newState] > 0)
             {
                 if (newState != PlayerStates.Slime) Item[newState]--;
+                OnItemChanged?.Invoke();
                 _currentState = newState;
                 PlayerState.ChangeRigidbody(_rb);
                 PlayerState.ChangePhysics(_collider, _physicMaterial);
