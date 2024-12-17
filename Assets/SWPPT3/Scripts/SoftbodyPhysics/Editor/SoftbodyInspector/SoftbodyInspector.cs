@@ -21,13 +21,24 @@ namespace SWPPT3.SoftbodyPhysics.Editor.SoftbodyInspector
 
             var initializeButton = tree.Q<Button>(name = "InitializeButton");
 
-            initializeButton.clicked += () => OnClickInitialize().Forget();
+            initializeButton.clicked += OnClickInitialize;
 
 
             return tree;
         }
 
-        private async UniTaskVoid OnClickInitialize()
+        private void OnClickInitialize()
+        {
+            ClearSimpleSoftbodyData();
+            InitializeSimpleSoftbody();
+        }
+
+        private void ClearSimpleSoftbodyData()
+        {
+
+        }
+
+        private void InitializeSimpleSoftbody()
         {
             Debug.Log("[Softbody] Initialize called.");
 
