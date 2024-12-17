@@ -1,5 +1,6 @@
 using SWPPT3.Main.Utility.Singleton;
 using System;
+using System.Collections.Generic;
 using SWPPT3.Main.StageDirector;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -30,8 +31,8 @@ namespace SWPPT3.Main.Manager
             {
                 if (gameState != value)
                 {
-
                     gameState = value;
+                    Debug.Log($"{gameState} {value}");
                     HandleGameStateChanged(gameState);
                 }
             }
@@ -40,19 +41,18 @@ namespace SWPPT3.Main.Manager
 
         public int StageNumber { get => stageNumber; set => stageNumber = value; }
 
+        private StageManager _stageManager;
+
 
         public void Awake()
         {
-            //UIManager.Instance.Initialize(this);
-            //UIManager.Instance.ShowCanvas("BeforeStart");
-            //InitializeStage(1);
+
         }
 
 
         private void HandleGameStateChanged(GameState newState)
         {
             OnGameStateChanged?.Invoke(newState);
-            StageManager stageManager = StageManager.Instance;
 
             switch (newState)
             {
@@ -60,13 +60,13 @@ namespace SWPPT3.Main.Manager
                     UIManager.Instance.ShowStartStage();
                     break;
                 case GameState.Playing:
-                    stageManager?.StartStage();
+                    _stageManager?.StartStage();
                     break;
                 case GameState.Paused:
-                    stageManager?.PauseStage();
+                    _stageManager?.PauseStage();
                     break;
                 case GameState.GameOver:
-                    stageManager?.FailStage();
+                    _stageManager?.FailStage();
                     UIManager.Instance.ShowFail();
                     break;
                 case GameState.OnChoice:
@@ -75,7 +75,7 @@ namespace SWPPT3.Main.Manager
                 case GameState.Exit:
                     break;
                 case GameState.StageCleared:
-                    stageManager?.ClearStage();
+                    _stageManager?.ClearStage();
                     ProceedToNextStage();
                     UIManager.Instance.ShowClear();
                     break;
@@ -86,10 +86,9 @@ namespace SWPPT3.Main.Manager
         {
             //loadingscene을 켜고
             LoadScene();
-            StageManager stageManager = StageManager.Instance;
-            if (stageManager != null)
+            if (_stageManager != null)
             {
-                stageManager.InitializeStage();
+                _stageManager.InitializeStage();
             }
             //loadingscene 끄기
         }
@@ -193,11 +192,11 @@ namespace SWPPT3.Main.Manager
         {
             if (GameState == GameState.Playing)
             {
-                StageManager stageManager = StageManager.Instance;
-                if (stageManager != null)
+                _stageManager = StageManager.Instance;
+                if (_stageManager != null)
                 {
-                    stageManager.InitializeStage();
-                    stageManager.StartStage();
+                    _stageManager.InitializeStage();
+                    _stageManager.StartStage();
                 }
                 else
                 {
