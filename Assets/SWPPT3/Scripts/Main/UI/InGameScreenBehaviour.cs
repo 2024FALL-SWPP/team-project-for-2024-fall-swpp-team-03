@@ -109,31 +109,39 @@ namespace SWPPT3.Main.UI
         {
             Vector2 screenCenter = new Vector2(Screen.width / 2f, Screen.height / 2f);
             Vector2 relativePos = Mouse.current.position.ReadValue() - screenCenter;
-            if (relativePos.magnitude < 70f) return;
 
-            float angle = Mathf.Atan2(relativePos.y, relativePos.x) * Mathf.Rad2Deg;
-            if (angle < 0) angle += 360f;
-
-            float scaleFactor = Mathf.Lerp(3.0f, 1.0f, relativePos.magnitude / _maxDistance);
-            scaleFactor = Mathf.Clamp(scaleFactor, 1.0f, 3.0f);
-
-            if (angle >= 0 && angle < 120)
+            if (relativePos.magnitude < 50f)
             {
-                SetButtonScale(_slimeButton, scaleFactor);
+                SetButtonScale(_slimeButton, 1.0f);
                 SetButtonScale(_metalButton, 1.0f);
                 SetButtonScale(_rubberButton, 1.0f);
-            }
-            else if (angle >= 120 && angle < 240)
-            {
-                SetButtonScale(_metalButton, scaleFactor);
-                SetButtonScale(_rubberButton, 1.0f);
-                SetButtonScale(_slimeButton, 1.0f);
             }
             else
             {
-                SetButtonScale(_rubberButton, scaleFactor);
-                SetButtonScale(_metalButton, 1.0f);
-                SetButtonScale(_slimeButton, 1.0f);
+                float angle = Mathf.Atan2(relativePos.y, relativePos.x) * Mathf.Rad2Deg;
+                if (angle < 0) angle += 360f;
+
+                float scaleFactor = Mathf.Lerp(1.5f, 1.0f, relativePos.magnitude / _maxDistance);
+                scaleFactor = Mathf.Clamp(scaleFactor, 1.0f, 2.0f);
+
+                if (angle >= 0 && angle < 120)
+                {
+                    SetButtonScale(_slimeButton, scaleFactor);
+                    SetButtonScale(_metalButton, 1.0f);
+                    SetButtonScale(_rubberButton, 1.0f);
+                }
+                else if (angle >= 120 && angle < 240)
+                {
+                    SetButtonScale(_metalButton, scaleFactor);
+                    SetButtonScale(_rubberButton, 1.0f);
+                    SetButtonScale(_slimeButton, 1.0f);
+                }
+                else
+                {
+                    SetButtonScale(_rubberButton, scaleFactor);
+                    SetButtonScale(_metalButton, 1.0f);
+                    SetButtonScale(_slimeButton, 1.0f);
+                }
             }
         }
 
@@ -222,7 +230,6 @@ namespace SWPPT3.Main.UI
         {
             if (GameManager.Instance.GameState == GameState.Playing && isClick)
             {
-                Debug.Log(GameManager.Instance.GameState+"hi");
                 Cursor.visible = true;
                 // Cursor.lockState = CursorLockMode.None;
 
@@ -236,10 +243,8 @@ namespace SWPPT3.Main.UI
             }
             else if (GameManager.Instance.GameState == GameState.OnChoice && !isClick)
             {
-                Debug.Log(GameManager.Instance.GameState+"bi");
                 CheckRadial();
                 Cursor.visible = false;
-                // Cursor.lockState = CursorLockMode.Locked;
                 GameManager.Instance.GameState = GameState.Playing;
                 _onTryingChoiceStatusChanged.Invoke(false);
             }

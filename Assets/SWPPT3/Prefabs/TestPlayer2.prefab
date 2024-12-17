@@ -132,6 +132,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c834ef87520fa146a131b8e2e184ab9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _meshRenderer: {fileID: 5865617930821872791}
+  _slimeMaterial: {fileID: 2100000, guid: 7ea5cfe07ca064031985a22bef0fec2b, type: 2}
+  _rubberMaterial: {fileID: 2100000, guid: 21165d66baa9949edbc4302d0636e546, type: 2}
+  _metalMaterial: {fileID: 2100000, guid: 264f74bf3bd1b48c199dabcbaf507a00, type: 2}
   _rb: {fileID: 5865617930821872789}
   _physicMaterial: {fileID: 13400000, guid: 006a6404c0e8f45bc8b514672d2031d2, type: 2}
   _collider: {fileID: 5865617930821872787}
