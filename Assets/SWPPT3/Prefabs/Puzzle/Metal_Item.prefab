@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 2461484443679804652}
   - component: {fileID: 5851077864653134273}
   - component: {fileID: -7532322944882961999}
+  - component: {fileID: -6971163492276819087}
   m_Layer: 0
   m_Name: Metal_Item
   m_TagString: Untagged
@@ -82,6 +83,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ItemState: 1
+--- !u!1818360608 &-6971163492276819087
+PositionConstraint:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1310564158333579539}
+  m_Enabled: 1
+  m_Weight: 1
+  m_TranslationAtRest: {x: 0, y: 0, z: 0}
+  m_TranslationOffset: {x: 0, y: 0, z: 0}
+  m_AffectTranslationX: 0
+  m_AffectTranslationY: 0
+  m_AffectTranslationZ: 0
+  m_IsContraintActive: 0
+  m_IsLocked: 0
+  m_Sources: []
 --- !u!1 &2096777167183615498
 GameObject:
   m_ObjectHideFlags: 0
