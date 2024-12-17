@@ -54,7 +54,7 @@ namespace SWPPT3.Main.PlayerLogic
         {
             Vector3 moveDirection = GetMoveDirection();
             Vector3 force = moveDirection * _moveSpeed;
-            _rb.AddForce(force, ForceMode.VelocityChange);
+            _rb.MovePosition(_rb.position + force);
 
             if (isRightButton && _lookInput != Vector2.zero)
             {
