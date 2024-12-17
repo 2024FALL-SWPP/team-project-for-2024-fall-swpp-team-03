@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using SWPPT3.Main.Manager;
 using SWPPT3.Main.PlayerLogic.State;
 using SWPPT3.Main.Prop;
-using SWPPT3.SoftbodyPhysics;
 using Unity.Collections;
 using UnityEngine;
 
@@ -13,7 +12,6 @@ namespace SWPPT3.Main.PlayerLogic
     {
         [SerializeField] private PlayerScript _playerScript;
         private Player _player;
-        private SoftbodyGenerator _softbody;
 
         private float _moveSpeed;
         private float _jumpForce;
@@ -30,11 +28,11 @@ namespace SWPPT3.Main.PlayerLogic
         private bool isRightButton = false;
         private bool _isHoldingJump;
 
+        private int _rigidBodyId;
+
         private void Start()
         {
-            _player = GetComponent<Player>();
-            _softbody = GetComponent<SoftbodyGenerator>();
-
+            _rigidBodyId = _rb.GetInstanceID();
             _moveSpeed = _playerScript.MoveSpeed;
             _rotationSpeed = _playerScript.RotationSpeed;
             _jumpForce = _playerScript.JumpForce;
@@ -85,13 +83,18 @@ namespace SWPPT3.Main.PlayerLogic
             for (int i = 0; i < pairs.Length; i++)
             {
                 var pair = pairs[i];
-
                 var properties = pair.massProperties;
 
-                properties.inverseMassScale = 1f;
-                properties.inverseInertiaScale = 1f;
-                properties.otherInverseMassScale = 0;
-                properties.otherInverseInertiaScale = 0;
+                if(_rigidBodyId == pair.bodyInstanceID)
+                {
+                    properties.otherInverseMassScale = 0f;
+                    properties.otherInverseInertiaScale = 0f;
+                }
+                if(_rigidBodyId == pair.otherBodyInstanceID)
+                {
+                    properties.inverseMassScale = 0f;
+                    properties.inverseInertiaScale = 0f;
+                }
 
                 pair.massProperties = properties;
 
