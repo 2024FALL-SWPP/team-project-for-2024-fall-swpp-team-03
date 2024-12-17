@@ -9,7 +9,7 @@ using UnityEngine.UIElements;
 
 namespace SWPPT3.SoftbodyPhysics.Editor.SoftbodyInspector
 {
-    [CustomEditor(typeof(Softbody))]
+    [CustomEditor(typeof(SimpleSoftbody))]
     public class SoftbodyInspector : UnityEditor.Editor
     {
         public override VisualElement CreateInspectorGUI()
@@ -31,7 +31,7 @@ namespace SWPPT3.SoftbodyPhysics.Editor.SoftbodyInspector
         {
             Debug.Log("[Softbody] Initialize called.");
 
-            var targetObject = target as Softbody;
+            var targetObject = target as SimpleSoftbody;
             var meshFilter = serializedObject.FindProperty("_meshFilter").objectReferenceValue as MeshFilter;
             // var collidersRoot = serializedObject.FindProperty("_collidersRoot").objectReferenceValue as Transform;
             // var colliders = serializedObject.FindProperty("_colliders");
