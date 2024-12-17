@@ -61,6 +61,9 @@ namespace SWPPT3.Main.Manager
         private Button _nextButton_ClearedMenu;
         private Button _outButton_ClearedMenu;
 
+        private Button _exitButton_StartMenu;
+        private Button _returnButton_StartMenu;
+
         private TextMeshProUGUI _playTimeTmp;
         private TextMeshProUGUI _metalNumTmp;
         private TextMeshProUGUI _rubberNumTmp;
@@ -89,6 +92,9 @@ namespace SWPPT3.Main.Manager
             // Clear Screen
             _nextButton_ClearedMenu = _clearScreen.transform.Find("ClearedMenu/NextButton").GetComponent<Button>();
             _outButton_ClearedMenu = _clearScreen.transform.Find("ClearedMenu/OutButton").GetComponent<Button>();
+            // Start Screen
+            _exitButton_StartMenu = _exitGame.transform.Find("StartMenu/ExitButton").GetComponent<Button>();
+            _returnButton_StartMenu = _exitGame.transform.Find("StartMenu/ReturnButton").GetComponent<Button>();
 
             _playTimeTmp = _playTime.transform.Find("PlayTimeText").GetComponent<TextMeshProUGUI>();
             _metalNumTmp = _metalNum.GetComponent<TextMeshProUGUI>();
@@ -101,13 +107,22 @@ namespace SWPPT3.Main.Manager
         {
 
             _pauseButton.GetComponent<Button>().onClick.AddListener(() => OnButtonClicked("Pause"));
-            _tutorial1Button.GetComponent<Button>().onClick.AddListener(() => OnButtonClicked(1));
-            _tutorial2Button.GetComponent<Button>().onClick.AddListener(() => OnButtonClicked(2));
-            _stage1Button.GetComponent<Button>().onClick.AddListener(() => OnButtonClicked(3));
-            _stage2Button.GetComponent<Button>().onClick.AddListener(() => OnButtonClicked(4));
-            _stage3Button.GetComponent<Button>().onClick.AddListener(() => OnButtonClicked(7));
-            _stage4Button.GetComponent<Button>().onClick.AddListener(() => OnButtonClicked(5));
-            _stage5Button.GetComponent<Button>().onClick.AddListener(() => OnButtonClicked(6));
+            _tutorial1Button.GetComponent<Button>().onClick.AddListener(() => StageSelect(1));
+            _tutorial2Button.GetComponent<Button>().onClick.AddListener(() => StageSelect(2));
+            _stage1Button.GetComponent<Button>().onClick.AddListener(() => StageSelect(3));
+            _stage2Button.GetComponent<Button>().onClick.AddListener(() => StageSelect(4));
+            _stage3Button.GetComponent<Button>().onClick.AddListener(() => StageSelect(7));
+            _stage4Button.GetComponent<Button>().onClick.AddListener(() => StageSelect(5));
+            _stage5Button.GetComponent<Button>().onClick.AddListener(() => StageSelect(6));
+            _resumeButton_PauseMenu.onClick.AddListener(() => OnButtonClicked("Resume"));
+            _restartButton_PauseMenu.onClick.AddListener(() => OnButtonClicked("Restart"));
+            _outButton_PauseMenu.onClick.AddListener(() => OnButtonClicked("StartMenu"));
+            _restartButton_FailedMenu.onClick.AddListener(() => OnButtonClicked("Restart"));
+            _outButton_FailedMenu.onClick.AddListener(() => OnButtonClicked("StartMenu"));
+            _nextButton_ClearedMenu.onClick.AddListener(() => OnButtonClicked("NextStage"));
+            _outButton_ClearedMenu.onClick.AddListener(() => OnButtonClicked("StartMenu"));
+            _exitButton_StartMenu.onClick.AddListener(()=> OnButtonClicked("GameFinish"));
+            _returnButton_StartMenu.onClick.AddListener(() => OnButtonClicked("ReturnStart"));
         }
 
         private void SetAllUIInactive()
@@ -181,6 +196,7 @@ namespace SWPPT3.Main.Manager
         {
             HideScreen();
             _pauseScreen.SetActive(true);
+
         }
 
         public void ShowClear()
@@ -203,16 +219,21 @@ namespace SWPPT3.Main.Manager
             _loadingScreen.SetActive(false);
         }
 
+        public void ReturnStart()
+        {
+            _exitGame.SetActive(false);
+        }
+        public void
+
 
 
         private void OnButtonClicked(string buttonName)
         {
-            GameManager.Instance.OnUIButtonClicked(buttonName);
         }
 
-        public void OnButtonClicked(int stageNum)
+        public void StageSelect(int stageNum)
         {
-            GameManager.Instance.OnUIButtonClicked(stageNum);
+            GameManager.Instance.StageSelect(stageNum);
         }
         public void PlayTimeUpdate(int time){
             int min = time/60;
