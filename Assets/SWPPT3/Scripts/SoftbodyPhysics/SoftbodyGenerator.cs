@@ -718,14 +718,14 @@ namespace SWPPT3.SoftbodyPhysics
         public Color Color { get; set; }
     }
 
-    [CustomEditor(typeof(SoftbodyGenerator))]
-    public class LookAtPointEditor : Editor
-    {
-        public override void OnInspectorGUI()
-        {
-            SoftbodyGenerator softbody = target as SoftbodyGenerator;
+    // [CustomEditor(typeof(SoftbodyGenerator))]
+    // public class LookAtPointEditor : Editor
+    // {
+    //     public override void OnInspectorGUI()
+    //     {
+    //         SoftbodyGenerator softbody = target as SoftbodyGenerator;
 
-            softbody.DebugMode = EditorGUILayout.Toggle("#Debug mod", softbody.DebugMode);
-        }
-    }
+    //         softbody.DebugMode = EditorGUILayout.Toggle("#Debug mod", softbody.DebugMode);
+    //     }
+    // }
 }

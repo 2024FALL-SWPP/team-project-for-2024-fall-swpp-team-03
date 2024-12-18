@@ -14,4 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mouseSensitivity: 0.2
   distanceFromPlayer: 2
-  cameraHeight: 2
+  cameraHeight: 1.1
