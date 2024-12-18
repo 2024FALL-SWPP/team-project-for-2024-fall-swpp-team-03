@@ -10,6 +10,7 @@ namespace SWPPT3.Main.ConductorLogic
     {
         [SerializeField]
         private Player _player;
+        private SoftbodyGenerator _softbodygenerator;
 
         private SoftbodyGenerator _softbody;
 
@@ -36,6 +37,7 @@ namespace SWPPT3.Main.ConductorLogic
 
         private void Awake()
         {
+            _softbodygenerator = gameObject.GetComponent<SoftbodyGenerator>();
             _previousState = _player.CurrentState;
         }
 
@@ -52,6 +54,7 @@ namespace SWPPT3.Main.ConductorLogic
         {
             return _player.CurrentState == PlayerStates.Metal;
         }
+
 
         private void HandleCollisionEnter(Collision other)
         {

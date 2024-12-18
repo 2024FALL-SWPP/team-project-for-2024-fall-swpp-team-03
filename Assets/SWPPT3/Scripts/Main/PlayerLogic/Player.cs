@@ -65,14 +65,17 @@ namespace SWPPT3.Main.PlayerLogic
                 _currentState = newState;
                 if (newState == PlayerStates.Rubber)
                 {
+                    _meshRenderer.material = _rubberMaterial;
                     _softbody.SetRubber();
                 }
                 else if (newState == PlayerStates.Metal)
                 {
+                    _meshRenderer.material = _metalMaterial;
                     _softbody.SetMetal();
                 }
                 else if (newState == PlayerStates.Slime)
                 {
+                    _meshRenderer.material = _slimeMaterial;
                     _softbody.SetSlime();
                 }
             }

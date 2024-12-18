@@ -1,3 +1,4 @@
+
 using SWPPT3.Main.Utility.Singleton;
 using UnityEngine;
 using UnityEngine.Audio; // AudioMixer를 사용하기 위해 필요
@@ -114,7 +115,6 @@ namespace SWPPT3.Main.Manager
             }
 
         }
-
         #region BGM Methods
 
         public void PlayBGM()
