@@ -120,7 +120,7 @@ namespace SWPPT3.Main.UI
                 if (angle < 0) angle += 360f;
 
 
-                if (angle <=90 && angle > 330)
+                if (angle <=90 || angle > 330)
                 {
                     SetButtonScale(_slimeButton, 1.5f);
                     SetButtonScale(_metalButton, 1.0f);
