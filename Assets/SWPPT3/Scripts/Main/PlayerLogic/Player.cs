@@ -52,8 +52,8 @@ namespace SWPPT3.Main.PlayerLogic
                     { PlayerStates.Metal, 0 },
                     { PlayerStates.Rubber, 0 },
                 };
-                OnItemChanged?.Invoke();
             }
+            OnItemChanged?.Invoke();
             TryChangeState(PlayerStates.Slime);
 
         }
@@ -108,8 +108,8 @@ namespace SWPPT3.Main.PlayerLogic
                     { PlayerStates.Metal, 0 },
                     { PlayerStates.Rubber, 0 },
                 };
-                OnItemChanged?.Invoke();
             }
+            OnItemChanged?.Invoke();
             Item[PlayerStates.Slime] = newSlimeCount;
             Item[PlayerStates.Metal] = newMetalCount;
             Item[PlayerStates.Rubber] = newRubberCount;

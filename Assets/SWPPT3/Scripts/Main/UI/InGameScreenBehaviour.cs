@@ -157,8 +157,9 @@ namespace SWPPT3.Main.UI
             _playTimeTmp.text = $"{min:D2}:{sec:D2}";
         }
 
-        private void NumUpdate()
+        public void NumUpdate()
         {
+            Debug.Log("Numupdate");
             _metalNumTmp.text = $"{_player.Item[PlayerStates.Metal]}";
             _rubberNumTmp.text = $"{_player.Item[PlayerStates.Rubber]}";
         }
