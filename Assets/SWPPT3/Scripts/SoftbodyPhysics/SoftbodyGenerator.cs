@@ -620,11 +620,13 @@ namespace SWPPT3.SoftbodyPhysics
             }
         }
 
-        public void move(Vector3 force)
+        public void Move(Vector3 force)
         {
+            rootRB.MovePosition(rootRB.position + force / 2);
+
             foreach (var rb in _rigidbodyArray)
             {
-                rb.MovePosition(rb.position + force);
+                rb.MovePosition(rb.position + force / 2);
             }
         }
 
@@ -691,6 +693,7 @@ namespace SWPPT3.SoftbodyPhysics
                 var getConnectedAnchorHandle = getConnectedAnchorJob.Schedule(_jointsDictNa.Length,16, getVertexLocalPositionHandle);
                 getConnectedAnchorHandle.Complete();
             }
+
             if (PlayerStates == SoftStates.Rubber && _isJumpKey == true)
             {
                 IsRubberJump = true;
