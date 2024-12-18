@@ -1,5 +1,7 @@
 #region
 
+using System.Collections.Generic;
+using System.Linq;
 using SWPPT3.Main.PlayerLogic;
 using SWPPT3.Main.PlayerLogic.State;
 using SWPPT3.SoftbodyPhysics;
@@ -19,6 +21,12 @@ namespace SWPPT3.Main.ConductorLogic
 
         private PlayerStates _previousState;
 
+        public override IEnumerable<GameObject> GetConnections => _connectedObjects.AsEnumerable();
+
+        private readonly HashSet<GameObject> _connectedObjects = new();
+        private readonly Dictionary<int, bool> _stayMap = new();
+        private readonly HashSet<int> _removeSet = new();
+
         public void OnEnable()
         {
             _softbody = GetComponent<SoftbodyGenerator>();
@@ -26,6 +34,7 @@ namespace SWPPT3.Main.ConductorLogic
             {
                 _softbody.HandleCollisionEnterEvent += HandleCollisionEnter;
                 _softbody.HandleCollisionExitEvent += HandleCollisionExit;
+                _softbody.HandleCollisionStayEvent += HandleCollisionStay;
             }
         }
 
@@ -35,6 +44,7 @@ namespace SWPPT3.Main.ConductorLogic
             {
                 _softbody.HandleCollisionEnterEvent -= HandleCollisionEnter;
                 _softbody.HandleCollisionExitEvent -= HandleCollisionExit;
+                _softbody.HandleCollisionStayEvent -= HandleCollisionStay;
             }
         }
 
@@ -51,6 +61,35 @@ namespace SWPPT3.Main.ConductorLogic
                 _previousState = _player.CurrentState;
                 ConductorManager.IsDirty = true;
             }
+
+            _removeSet.Clear();
+
+            foreach (var kvp in _stayMap)
+            {
+                if (!kvp.Value)
+                {
+                    _removeSet.Add(kvp.Key);
+                }
+            }
+
+            _connectedObjects.RemoveWhere(go => _removeSet.Contains(go.GetInstanceID()));
+
+            foreach (var k in _removeSet)
+            {
+                _stayMap.Remove(k);
+            }
+
+            Debug.Log(_connectedObjects.Count);
+
+            if (_removeSet.Count != 0)
+            {
+                ConductorManager.IsDirty = true;
+            }
+
+            foreach (var connectedObject in _connectedObjects)
+            {
+                _stayMap[connectedObject.GetInstanceID()] = false;
+            }
         }
 
         public override bool IsConductive()
@@ -58,23 +97,36 @@ namespace SWPPT3.Main.ConductorLogic
             return _player.CurrentState == PlayerStates.Metal;
         }
 
-
         private void HandleCollisionEnter(Collision other)
         {
             var conductor = other.gameObject.GetComponent<Conductor>();
             if (conductor == null) return;
 
-            Connections.Add(conductor.gameObject);
+            _connectedObjects.Add(conductor.gameObject);
+            _stayMap[conductor.gameObject.GetInstanceID()] = true;
             ConductorManager.IsDirty = true;
             //Debug.Log("Oncollisionenter"+ gameObject.name);
         }
 
-        private void HandleCollisionExit(Collision other)
+        private void HandleCollisionStay(Collision other)
         {
             var conductor = other.gameObject.GetComponent<Conductor>();
             if (conductor == null) return;
-            Connections.Remove(conductor.gameObject);
-            ConductorManager.IsDirty = true;
+
+            _stayMap[conductor.gameObject.GetInstanceID()] = true;
+        }
+
+        private void HandleCollisionExit(Collision other)
+        {
+            // var conductor = other.gameObject.GetComponent<Conductor>();
+            // if (conductor == null) return;
+            //
+            //
+            // conductor.gameObject.id
+            // if (Connections.Contains(conductor.gameObject))
+            //     Connections.Remove(conductor.gameObject);
+            //
+            // ConductorManager.IsDirty = true;
         }
     }
 }

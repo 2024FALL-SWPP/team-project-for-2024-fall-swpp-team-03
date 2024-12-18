@@ -208,6 +208,8 @@ namespace SWPPT3.SoftbodyPhysics
             }
         }
 
+        private bool _shouldNotMoveAnything = true;
+
         public void OnEnable()
         {
             Physics.ContactModifyEvent += ModificationEvent;
@@ -223,6 +225,24 @@ namespace SWPPT3.SoftbodyPhysics
             for (int i = 0; i < pairs.Length; i++)
             {
                 var pair = pairs[i];
+
+                var normal = pair.GetNormal(0);
+
+                if (Mathf.Abs(Vector3.Dot(normal, Vector3.up)) > 0.5f) // Normal is steep enough
+                {
+                    MakeOtherMassInf(ref pair);
+                }
+                else if (_shouldNotMoveAnything)
+                {
+                    MakeOtherMassInf(ref pair);
+                }
+
+
+                pairs[i] = pair;
+            }
+
+            void MakeOtherMassInf(ref ModifiableContactPair pair)
+            {
                 var properties = pair.massProperties;
 
                 if(_rigidbodyIdSet.Contains(pair.bodyInstanceID))
@@ -230,6 +250,7 @@ namespace SWPPT3.SoftbodyPhysics
                     properties.otherInverseMassScale = 0f;
                     properties.otherInverseInertiaScale = 0f;
                 }
+
                 if(_rigidbodyIdSet.Contains(pair.otherBodyInstanceID))
                 {
                     properties.inverseMassScale = 0f;
@@ -237,8 +258,6 @@ namespace SWPPT3.SoftbodyPhysics
                 }
 
                 pair.massProperties = properties;
-
-                pairs[i] = pair;
             }
         }
 
@@ -541,6 +560,12 @@ namespace SWPPT3.SoftbodyPhysics
             _configurableJointsArray = _configurableJointList.ToArray();
 
             _jointsDictNa = new NativeArray<(int, int)>(_jointsDict.ToArray(), Allocator.Persistent);
+
+            foreach (var sc in _sphereColliderArray)
+            {
+                Debug.Log("hasmodifiablaContacts true");
+                sc.hasModifiableContacts = true;
+            }
         }
 
         public void FixJoint()
@@ -575,11 +600,9 @@ namespace SWPPT3.SoftbodyPhysics
             {
                 FreeJoint();
             }
-            foreach (var sc in _sphereColliderArray)
-            {
-                Debug.Log("hasmodifiablaContacts true");
-                sc.hasModifiableContacts = true;
-            }
+
+            _shouldNotMoveAnything = true;
+
             PlayerStates = SoftStates.Slime;
         }
 
@@ -589,10 +612,8 @@ namespace SWPPT3.SoftbodyPhysics
             {
                 FixJoint();
             }
-            foreach (var sc in _sphereColliderArray)
-            {
-                sc.hasModifiableContacts = false;
-            }
+
+            _shouldNotMoveAnything = false;
 
             PlayerStates = SoftStates.Metal;
         }
@@ -603,10 +624,8 @@ namespace SWPPT3.SoftbodyPhysics
             {
                 FixJoint();
             }
-            foreach (var sc in _sphereColliderArray)
-            {
-                sc.hasModifiableContacts = false;
-            }
+
+            _shouldNotMoveAnything = false;
 
             PlayerStates = SoftStates.Rubber;
         }
@@ -614,17 +633,20 @@ namespace SWPPT3.SoftbodyPhysics
         public void SoftbodyJump(float jumpForce)
         {
             // _isJumping = true;
+            transform.Translate(0, 0.01f, 0);
             foreach (var rb in _rigidbodyArray)
             {
                 rb.AddForce(Vector3.up * (jumpForce * rb.mass));
             }
         }
 
-        public void move(Vector3 force)
+        public void Move(Vector3 force)
         {
+            rootRB.MovePosition(rootRB.position + force / 2);
+
             foreach (var rb in _rigidbodyArray)
             {
-                rb.MovePosition(rb.position + force);
+                rb.MovePosition(rb.position + force / 2);
             }
         }
 
@@ -691,6 +713,7 @@ namespace SWPPT3.SoftbodyPhysics
                 var getConnectedAnchorHandle = getConnectedAnchorJob.Schedule(_jointsDictNa.Length,16, getVertexLocalPositionHandle);
                 getConnectedAnchorHandle.Complete();
             }
+
             if (PlayerStates == SoftStates.Rubber && _isJumpKey == true)
             {
                 IsRubberJump = true;
@@ -702,8 +725,20 @@ namespace SWPPT3.SoftbodyPhysics
 
             if (IsRubberJump && SetDirty)
             {
+                YReflect();
                 SoftbodyJump(_script.RubberJump);
-                Invoke("ResetDirty", _script.ResetSec);
+                ResetDirty();
+            }
+        }
+
+        private void YReflect()
+        {
+            foreach (var rb in _rigidbodyArray)
+            {
+                if (rb.velocity.y < 0)
+                {
+                    rb.velocity = Vector3.Reflect(rb.velocity, Vector3.up);
+                }
             }
         }
 

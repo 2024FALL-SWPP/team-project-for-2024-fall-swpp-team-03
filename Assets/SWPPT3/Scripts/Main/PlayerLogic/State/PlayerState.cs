@@ -20,16 +20,19 @@ namespace SWPPT3.Main.PlayerLogic.State
 
     public abstract class PlayerState
     {
-        private bool isDirty= false;
+        private bool isDirty = false;
+
         public virtual void InteractWithProp(Player player, PropBase obstacle)
         {
             isDirty = true;
+
             if (isDirty)
             {
                 isDirty = false;
                 if (obstacle is ItemBox itemBox)
                 {
                     itemBox.InteractWithPlayer();
+
                     player.SetItemCounts(0,
                         itemBox.ItemState == PlayerStates.Metal ? player.Item[PlayerStates.Metal] + 1 : player.Item[PlayerStates.Metal],
                         itemBox.ItemState == PlayerStates.Rubber ? player.Item[PlayerStates.Rubber] + 1 : player.Item[PlayerStates.Rubber]
@@ -37,19 +40,7 @@ namespace SWPPT3.Main.PlayerLogic.State
                 }
                 else if (obstacle is PoisonPool)
                 {
-                //Debug.Log("collide with Poison pool");
-                    GameManager.Instance.GameState = GameState.GameOver;
-                }
-                else if (obstacle is Gas)
-                {
-                    foreach (PlayerStates playerState in Enum.GetValues(typeof(PlayerStates)))
-                    {
-                        player.SetItemCounts(0, 0, 0);
-                    }
-                }
-                else if (obstacle is PoisonPool)
-                {
-                    //Debug.Log("collide with Poison pool");
+                    // Debug.Log("collide with Poison pool");
                     GameManager.Instance.GameState = GameState.GameOver;
                 }
                 else if (obstacle is Gas)
@@ -77,5 +68,4 @@ namespace SWPPT3.Main.PlayerLogic.State
 
         }
     }
-
 }

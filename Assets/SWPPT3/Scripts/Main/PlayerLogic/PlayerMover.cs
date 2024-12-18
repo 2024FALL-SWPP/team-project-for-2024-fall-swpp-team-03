@@ -53,12 +53,15 @@ namespace SWPPT3.Main.PlayerLogic
             }
         }
 
-        private void Update()
+        private void FixedUpdate()
         {
             Vector3 moveDirection = GetMoveDirection();
             Vector3 force = moveDirection * _moveSpeed;
-            _softbody.move(force);
+            _softbody.Move(force);
+        }
 
+        private void Update()
+        {
             if (isRightButton && _lookInput != Vector2.zero)
             {
                 RotatePlayer();
