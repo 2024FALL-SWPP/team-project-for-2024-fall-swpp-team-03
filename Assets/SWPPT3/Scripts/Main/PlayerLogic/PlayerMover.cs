@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using SWPPT3.Main.Manager;
 using SWPPT3.Main.PlayerLogic.State;
 using SWPPT3.Main.Prop;
+using SWPPT3.SoftbodyPhysics;
 using Unity.Collections;
 using SWPPT3.SoftbodyPhysics;
 using UnityEngine;
@@ -12,8 +13,9 @@ namespace SWPPT3.Main.PlayerLogic
     public class PlayerMover : MonoBehaviour
     {
         [SerializeField] private PlayerScript _playerScript;
+        private SoftbodyGenerator _softbody;
         private Player _player;
-        
+
         private SoftbodyGenerator _softbody;
 
         private float _moveSpeed;
@@ -34,9 +36,6 @@ namespace SWPPT3.Main.PlayerLogic
 
         private void Start()
         {
-            _player = GetComponent<Player>();
-            _softbody = GetComponent<SoftbodyGenerator>();
-
             _rigidBodyId = GetComponent<Rigidbody>().GetInstanceID();
             _moveSpeed = _playerScript.MoveSpeed;
             _rotationSpeed = _playerScript.RotationSpeed;
@@ -70,6 +69,8 @@ namespace SWPPT3.Main.PlayerLogic
 
         public void OnEnable()
         {
+            _player = GetComponent<Player>();
+            _softbody = GetComponent<SoftbodyGenerator>();
             Physics.ContactModifyEvent += ModificationEvent;
             if(_softbody != null)
             {
@@ -78,6 +79,10 @@ namespace SWPPT3.Main.PlayerLogic
                 _softbody.HandleCollisionExitEvent += HandleCollisionExit;
                 _softbody.HandleTriggerEnterEvent += HandleTriggerEnter;
                 _softbody.HandleTriggerExitEvent += HandleTriggerExit;
+            }
+            else
+            {
+                Debug.Log("null");
             }
         }
 

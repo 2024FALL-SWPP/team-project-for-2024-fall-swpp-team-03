@@ -57,9 +57,9 @@ namespace SWPPT3.SoftbodyPhysics
             _softbody.TriggerEnter(other);
         }
 
-        private void OnTriggerStay(Collider other)
+        private void OnTriggerExit(Collider other)
         {
-            _softbody.TriggerStay(other);
+            _softbody.TriggerExit(other);
         }
     }
 }

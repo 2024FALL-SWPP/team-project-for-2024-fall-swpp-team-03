@@ -260,7 +260,7 @@ namespace SWPPT3.SoftbodyPhysics
             HandleTriggerEnterEvent?.Invoke(other);
         }
 
-        public void TriggerStay(Collider other)
+        public void TriggerExit(Collider other)
         {
             HandleTriggerExitEvent?.Invoke(other);
         }
