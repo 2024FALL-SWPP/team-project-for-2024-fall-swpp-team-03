@@ -114,6 +114,8 @@ namespace SWPPT3.Main.UI
         {
             _cameraScript.MouseSensitivity = _cameraSensitivitySlider.value * 5;
             _playerScript.RotationSpeed = _rotationSensitivitySlider.value * 10;
+            BgmManager.Instance.BGMVolume = _bgmSlider.value;
+            BgmManager.Instance.SFXVolume = _sfxSlider.value;
         }
 
         private void HandleEsc()

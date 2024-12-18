@@ -1,4 +1,5 @@
 using System;
+using SWPPT3.Main.Manager;
 using SWPPT3.Main.Prop;
 using UnityEngine;
 
@@ -9,21 +10,29 @@ namespace SWPPT3.Main.AudioLogic
         public bool BgmState { get; set; }
 
         [SerializeField]
-        private StatefulProp _statefulProp;
-        [SerializeField]
         private AudioLowPassFilter audioLowPassFilter;
 
         void Awake()
         {
-            audioLowPassFilter.cutoffFrequency = 22000f;
+            BgmManager.Instance.AddBgmObject(this);
+            if (audioLowPassFilter == null)
+            {
+                audioLowPassFilter.cutoffFrequency = 22000f;
+            }
+
         }
 
-        public void PlaySound()
+        public void OnDestroy()
+        {
+            BgmManager.Instance.RemoveBgmObject(this);
+        }
+
+        public override void PlaySound()
         {
             audioSource.Play();
         }
 
-        public void StopSound()
+        public override void StopSound()
         {
             audioSource.Stop();
         }

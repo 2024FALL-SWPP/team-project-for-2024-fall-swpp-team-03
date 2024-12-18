@@ -7,7 +7,7 @@ using UnityEngine.Serialization;
 
 namespace SWPPT3.Main.Manager
 {
-    public class BgmManager : MonoBehaviour
+    public class BgmManager : MonoSingleton<BgmManager>
     {
         [Header("Audio Sources")]
         [SerializeField]
@@ -15,8 +15,6 @@ namespace SWPPT3.Main.Manager
 
         [SerializeField] private AudioSource failSound;
         [SerializeField] private AudioSource successSound;
-
-
 
         [SerializeField]
         private AudioLowPassFilter bgmLowPassFilter; // 추가된 필드
@@ -27,14 +25,52 @@ namespace SWPPT3.Main.Manager
         [SerializeField]
         private string bgmMixerGroupName = "BGM";
 
-        [SerializeField]
         private List<BgmObject> bgmObjects;
 
-        [SerializeField]
+        private float _bgmVolume;
+        public float BGMVolume { get => _bgmVolume; set => _bgmVolume = value; }
+        private float _sfxVolume;
+        public float SFXVolume { get => _sfxVolume; set => _sfxVolume = value; }
+
         private List<SfxObject> sfxObjects;
+
+        public void AddBgmObject(BgmObject bgm)
+        {
+            if (bgm != null && !bgmObjects.Contains(bgm))
+            {
+                bgmObjects.Add(bgm);
+            }
+        }
+
+        public void RemoveBgmObject(BgmObject bgm)
+        {
+            if (bgm != null && bgmObjects.Contains(bgm))
+            {
+                bgmObjects.Remove(bgm);
+            }
+        }
+
+        public void AddSfxObject(SfxObject sfx)
+        {
+            if (sfx != null && !sfxObjects.Contains(sfx))
+            {
+                sfxObjects.Add(sfx);
+            }
+        }
+
+        public void RemoveSfxObject(SfxObject sfx)
+        {
+            if (sfx != null && sfxObjects.Contains(sfx))
+            {
+                sfxObjects.Remove(sfx);
+            }
+        }
+
 
         private void Awake()
         {
+            bgmObjects = new List<BgmObject>();
+            sfxObjects = new List<SfxObject>();
             DontDestroyOnLoad(gameObject);
 
             if (masterMixer != null)
@@ -51,6 +87,34 @@ namespace SWPPT3.Main.Manager
             }
         }
 
+        public void Update()
+        {
+            SetBGMVolume(BGMVolume);
+            SetSFXVolume(SFXVolume);
+            var state = GameManager.Instance.GameState;
+            switch (state)
+            {
+                case GameState.Playing:
+                case GameState.Ready:
+                case GameState.BeforeStart:
+                case GameState.Exit:
+                case GameState.OnOption:
+                    ApplyLowPassFilter(false);
+                    PlayBGM();
+                    break;
+                case GameState.Paused:
+                    ApplyLowPassFilter(true);
+                    break;
+                case GameState.GameOver:
+                    PlayFailSound();
+                    break;
+                case GameState.StageCleared:
+                    PlaySuccessSound();
+                    break;
+            }
+
+        }
+
         #region BGM Methods
 
         public void PlayBGM()
@@ -63,24 +127,40 @@ namespace SWPPT3.Main.Manager
             bgmSource.Stop();
         }
 
+        public void BgmSourcesStop()
+        {
+            foreach (var sound in bgmObjects)
+            {
+                sound.StopSound();
+            }
+        }
+
         public void PlayFailSound()
         {
+            BgmSourcesStop();
             failSound.PlayOneShot(failSound.clip);
         }
 
         public void PlaySuccessSound()
         {
+            BgmSourcesStop();
             successSound.PlayOneShot(successSound.clip);
         }
 
-        public void SetVolume(float volume)
+        public void SetBGMVolume(float volume)
         {
             bgmSource.volume = volume;
             foreach (AudioObject audioObject in bgmObjects)
             {
                 audioObject.SetVolume(volume);
             }
-            foreach (AudioObject audioObject in sfxObjects)
+            failSound.volume = volume;
+            successSound.volume = volume;
+        }
+
+        public void SetSFXVolume(float volume)
+        {
+            foreach (var audioObject in sfxObjects)
             {
                 audioObject.SetVolume(volume);
             }
