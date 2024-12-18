@@ -65,7 +65,7 @@ namespace SWPPT3.Main.PlayerLogic
                 _currentState = newState;
                 if (newState == PlayerStates.Rubber)
                 {
-                    _softbody.SetRubberJump();
+                    _softbody.SetRubber();
                 }
                 else if (newState == PlayerStates.Metal)
                 {

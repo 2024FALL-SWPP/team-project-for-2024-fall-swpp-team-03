@@ -112,8 +112,8 @@ namespace SWPPT3.Main.UI
 
         public void Update()
         {
-            _cameraScript.MouseSensitivity = _cameraSensitivitySlider.value * 3;
-            _playerScript.RotationSpeed = _rotationSensitivitySlider.value * 3;
+            _cameraScript.MouseSensitivity = _cameraSensitivitySlider.value * 5;
+            _playerScript.RotationSpeed = _rotationSensitivitySlider.value * 10;
         }
 
         private void HandleEsc()

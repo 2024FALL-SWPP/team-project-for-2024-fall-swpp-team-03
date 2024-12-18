@@ -11,6 +11,12 @@ using Random = UnityEngine.Random;
 
 namespace SWPPT3.SoftbodyPhysics
 {
+    public enum SoftStates
+    {
+        Slime = 0,
+        Metal,
+        Rubber,
+    }
     public class SoftbodyGenerator : MonoBehaviour
     {
         [SerializeField] private SoftbodyScript _script;
@@ -26,6 +32,26 @@ namespace SWPPT3.SoftbodyPhysics
         private Rigidbody[] _rigidbodyArray;
 
         private Rigidbody rootRB;
+
+        public event Action<bool> OnRubberJump;
+
+        private bool _isRubberJump;
+
+        public bool IsRubberJump
+        {
+            get => _isRubberJump;
+            set
+            {
+                if (_isRubberJump != value)
+                {
+                    _isRubberJump = value;
+                    OnRubberJump?.Invoke(_isRubberJump);
+                }
+            }
+        }
+
+
+        public SoftStates PlayerStates { get; set; }
 
 
         // NativeArray for Job system
@@ -169,6 +195,16 @@ namespace SWPPT3.SoftbodyPhysics
             }
         }
 
+        private float _rubberJump = 30;
+        public float RubberJump {
+            get {
+                return _rubberJump;
+            }
+            set {
+                _rubberJump = value;
+            }
+        }
+
         public void OnEnable()
         {
             Physics.ContactModifyEvent += ModificationEvent;
@@ -198,6 +234,37 @@ namespace SWPPT3.SoftbodyPhysics
             }
         }
 
+        public event Action<Collision>HandleCollisionEnterEvent;
+        public event Action<Collision>HandleCollisionStayEvent;
+        public event Action<Collision>HandleCollisionExitEvent;
+        public event Action<Collider> HandleTriggerEnterEvent;
+        public event Action<Collider> HandleTriggerExitEvent;
+
+        public void CollisionEnter(Collision collision)
+        {
+            HandleCollisionEnterEvent?.Invoke(collision);
+        }
+
+        public void CollisionStay(Collision collision)
+        {
+            HandleCollisionStayEvent?.Invoke(collision);
+        }
+
+        public void CollisionExit(Collision collision)
+        {
+            HandleCollisionExitEvent?.Invoke(collision);
+        }
+
+        public void TriggerEnter(Collider other)
+        {
+            HandleTriggerEnterEvent?.Invoke(other);
+        }
+
+        public void TriggerStay(Collider other)
+        {
+            HandleTriggerExitEvent?.Invoke(other);
+        }
+
 
 
         private GameObject centerOfMasObj = null;
@@ -205,7 +272,13 @@ namespace SWPPT3.SoftbodyPhysics
 
         private PhysicMaterial _physicsMaterial = null;
 
-        private bool _isJumping;
+        private bool _isJumpKey;
+
+        public bool IsJumpKey
+        {
+            get => _isJumpKey;
+            set => _isJumpKey = value;
+        }
 
         private void Awake()
         {
@@ -213,13 +286,15 @@ namespace SWPPT3.SoftbodyPhysics
             Mass = _script.Mass;
             PhysicsRoughness = _script.PhysicsRoughness;
             Damp = _script.Damp;
+            RubberJump = _script.RubberJump;
+
             // CollissionSurfaceOffset = _script.CollissionSurfaceOffset;
 
             _oriJointAnchorsList = new List<Vector3>();
             _configurableJointList = new List<ConfigurableJoint>();
             _jointsDict = new List<(int, int)>();
 
-            _isJumping = false;
+            _isJumpKey = false;
 
             _physicsMaterial = new PhysicMaterial();
             _physicsMaterial.bounciness = 0f;
@@ -305,8 +380,12 @@ namespace SWPPT3.SoftbodyPhysics
                 var _tempRigidBody = _tempObj.AddComponent<Rigidbody>();
                 _tempRigidBody.mass = Mass / _optimizedVertex.Count;
                 _tempRigidBody.drag = PhysicsRoughness;
+                _tempRigidBody.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
 
-                _tempObj.AddComponent<RubberJump>();
+                var rubberJump = _tempObj.AddComponent<RubberJump>();
+
+                OnRubberJump += rubberJump.SetActive;
+                rubberJump._softbody = this;
 
                 _rigidbodyList.Add(_tempRigidBody);
 
@@ -327,6 +406,7 @@ namespace SWPPT3.SoftbodyPhysics
             // Add sphere collider and rigidbody to root object
             rootRB = gameObject.GetComponent<Rigidbody>();
             rootRB.mass = 1;
+            rootRB.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
             _rigidbodyList.Add(rootRB);
 
             // var rootSC = gameObject.AddComponent<SphereCollider>();
@@ -471,11 +551,6 @@ namespace SWPPT3.SoftbodyPhysics
                 joint.xMotion = ConfigurableJointMotion.Locked;
                 joint.yMotion = ConfigurableJointMotion.Locked;
                 joint.zMotion = ConfigurableJointMotion.Locked;
-
-                joint.angularXMotion = ConfigurableJointMotion.Free;
-                joint.angularYMotion = ConfigurableJointMotion.Free;
-                joint.angularZMotion = ConfigurableJointMotion.Free;
-
                 // joint.connectedAnchor = _bufferJointAnchors[i];
             }
         }
@@ -488,11 +563,6 @@ namespace SWPPT3.SoftbodyPhysics
                 joint.xMotion = ConfigurableJointMotion.Limited;
                 joint.yMotion = ConfigurableJointMotion.Limited;
                 joint.zMotion = ConfigurableJointMotion.Limited;
-
-                joint.angularXMotion = ConfigurableJointMotion.Free;
-                joint.angularYMotion = ConfigurableJointMotion.Free;
-                joint.angularZMotion = ConfigurableJointMotion.Free;
-
                 // joint.connectedAnchor = _oriJointAnchorArray[i];
             }
         }
@@ -503,12 +573,7 @@ namespace SWPPT3.SoftbodyPhysics
 
         public void SetSlime()
         {
-            if(_physicsMaterial == null) return;
-            _physicsMaterial.bounciness = 0f;
-            _physicsMaterial.dynamicFriction = 0f;
-            _physicsMaterial.staticFriction = 0f;
-            _physicsMaterial.bounceCombine = PhysicMaterialCombine.Maximum;
-            if (!IsSlime)
+            if (PlayerStates != SoftStates.Slime)
             {
                 FreeJoint();
                 foreach (var sc in _sphereColliderArray)
@@ -517,17 +582,13 @@ namespace SWPPT3.SoftbodyPhysics
                 }
             }
 
-            IsSlime = true;
+            PlayerStates = SoftStates.Slime;
 
         }
 
         public void SetMetal()
         {
-            _physicsMaterial.bounciness = 0f;
-            _physicsMaterial.dynamicFriction = 0f;
-            _physicsMaterial.staticFriction = 0f;
-            _physicsMaterial.bounceCombine = PhysicMaterialCombine.Maximum;
-            if (IsSlime)
+            if (PlayerStates == SoftStates.Slime)
             {
                 FixJoint();
                 foreach (var sc in _sphereColliderArray)
@@ -535,16 +596,13 @@ namespace SWPPT3.SoftbodyPhysics
                     sc.hasModifiableContacts = false;
                 }
             }
-            IsSlime = false;
+
+            PlayerStates = SoftStates.Metal;
         }
 
-        public void SetRubberNonJump()
+        public void SetRubber()
         {
-            _physicsMaterial.bounciness = 0.5f;
-            _physicsMaterial.dynamicFriction = 0f;
-            _physicsMaterial.staticFriction = 0f;
-            _physicsMaterial.bounceCombine = PhysicMaterialCombine.Maximum;
-            if (IsSlime)
+            if (PlayerStates == SoftStates.Slime)
             {
                 FixJoint();
                 foreach (var sc in _sphereColliderArray)
@@ -552,24 +610,8 @@ namespace SWPPT3.SoftbodyPhysics
                     sc.hasModifiableContacts = false;
                 }
             }
-            IsSlime = false;
-        }
 
-        public void SetRubberJump()
-        {
-            _physicsMaterial.bounciness = 1f;
-            _physicsMaterial.dynamicFriction = 0.1f;
-            _physicsMaterial.staticFriction = 0.1f;
-            _physicsMaterial.bounceCombine = PhysicMaterialCombine.Maximum;
-            if (IsSlime)
-            {
-                FixJoint();
-                foreach (var sc in _sphereColliderArray)
-                {
-                    sc.hasModifiableContacts = false;
-                }
-            }
-            IsSlime = false;
+            PlayerStates = SoftStates.Rubber;
         }
 
         public void SoftbodyJump(float jumpForce)
@@ -596,6 +638,7 @@ namespace SWPPT3.SoftbodyPhysics
             Mass = _script.Mass;
             PhysicsRoughness = _script.PhysicsRoughness;
             Damp = _script.Damp;
+            // RubberJump = _script.RubberJump;
 
            if (DebugMode)
            {
@@ -617,6 +660,15 @@ namespace SWPPT3.SoftbodyPhysics
                     );
 
                 }
+           }
+
+           if (PlayerStates == SoftStates.Rubber && _isJumpKey == true)
+           {
+               IsRubberJump = true;
+           }
+           else
+           {
+               IsRubberJump = false;
            }
 
            var setVertexUpdateJob = new SetVertexUpdateJob
@@ -718,14 +770,14 @@ namespace SWPPT3.SoftbodyPhysics
         public Color Color { get; set; }
     }
 
-    [CustomEditor(typeof(SoftbodyGenerator))]
-    public class LookAtPointEditor : Editor
-    {
-        public override void OnInspectorGUI()
-        {
-            SoftbodyGenerator softbody = target as SoftbodyGenerator;
+    // [CustomEditor(typeof(SoftbodyGenerator))]
+    // public class LookAtPointEditor : Editor
+    // {
+    //     public override void OnInspectorGUI()
+    //     {
+    //         SoftbodyGenerator softbody = target as SoftbodyGenerator;
 
-            softbody.DebugMode = EditorGUILayout.Toggle("#Debug mod", softbody.DebugMode);
-        }
-    }
+    //         softbody.DebugMode = EditorGUILayout.Toggle("#Debug mod", softbody.DebugMode);
+    //     }
+    // }
 }
