@@ -20,7 +20,7 @@ namespace SWPPT3.Main.ConductorLogic
 
         public static bool IsDirty = false;
 
-        private void Update()
+        private void LateUpdate()
         {
             if (IsDirty)
             {
@@ -45,7 +45,7 @@ namespace SWPPT3.Main.ConductorLogic
             {
                 var current = queue.Dequeue();
 
-                foreach (var connectionObj in current.Connections)
+                foreach (var connectionObj in current.GetConnections)
                 {
                     //Debug.Log(current.ToString()+ connectionObj.ToString());
                     var conductor = connectionObj.GetComponent<Conductor>();

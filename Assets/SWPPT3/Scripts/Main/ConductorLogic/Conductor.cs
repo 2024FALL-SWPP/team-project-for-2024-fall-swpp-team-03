@@ -1,6 +1,7 @@
 #region
 
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 #endregion
@@ -9,8 +10,9 @@ namespace SWPPT3.Main.ConductorLogic
 {
     public class Conductor : MonoBehaviour
     {
+        public virtual IEnumerable<GameObject> GetConnections => Connections.AsEnumerable();
 
-        public List<GameObject> Connections { get ; set; }
+        public List<GameObject> Connections { get ; set; } = new ();
 
 
         public virtual bool IsConductive()
@@ -25,7 +27,7 @@ namespace SWPPT3.Main.ConductorLogic
 
         private void OnCollisionEnter(Collision other)
         {
-            var conductor = other.gameObject.GetComponent<Conductor>();
+            var conductor = other.gameObject.GetComponentInParent<Conductor>();
             if (conductor == null) return;
 
             Connections.Add(conductor.gameObject);
@@ -35,7 +37,7 @@ namespace SWPPT3.Main.ConductorLogic
 
         private void OnCollisionExit(Collision other)
         {
-            var conductor = other.gameObject.GetComponent<Conductor>();
+            var conductor = other.gameObject.GetComponentInParent<Conductor>();
             if (conductor == null) return;
             Connections.Remove(conductor.gameObject);
             ConductorManager.IsDirty = true;
