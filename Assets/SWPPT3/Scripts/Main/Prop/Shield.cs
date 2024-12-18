@@ -1,9 +1,8 @@
+#region
 
-
-using System;
-using Codice.CM.Common;
-using UnityEditor;
 using UnityEngine;
+
+#endregion
 
 namespace SWPPT3.Main.Prop
 {

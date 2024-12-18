@@ -11,27 +11,27 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/SWPPT3/Scenes/Start.unity
     guid: 96f63ad9c1d2a49b6a8416950a10308d
-  - enabled: 1
+  - enabled: 0
     path: Assets/SWPPT3/Scenes/Stage1test.unity
-    guid: 09dbdee0837013540a6e83001be9d5fb
-  - enabled: 1
+    guid: 7b265ab4ffecc974983265f18c0d7654
+  - enabled: 0
     path: Assets/SWPPT3/Scenes/Tutorial2Test.unity
-    guid: 3c92b496b3658e642a920ca20ea11fb5
-  - enabled: 1
+    guid: 731abc9629f6d9940b4a98b1f3e464eb
+  - enabled: 0
     path: Assets/SWPPT3/Scenes/Stage2test.unity
-    guid: 482dd5d9a5366554bab7c1a38e85e239
-  - enabled: 1
+    guid: fab5158fe6f185643b7505335280239e
+  - enabled: 0
     path: Assets/SWPPT3/Scenes/Stage3test.unity
-    guid: de97e6b5dbf48b24a9cb5be3edf4f33a
-  - enabled: 1
+    guid: 75c583fbb15ac4a4aa8ebf8da9c613c5
+  - enabled: 0
     path: Assets/SWPPT3/Scenes/Stage4test.unity
-    guid: 2b905a197df3ded4298661f2b2cd4a52
-  - enabled: 1
+    guid: 498c2d3625ee5a04e825161ae517df27
+  - enabled: 0
     path: Assets/SWPPT3/Scenes/Stage5test.unity
-    guid: dbd5326bbcda648448378db9e9830e28
-  - enabled: 1
+    guid: 449666576ef3622468bb4ce4623d4042
+  - enabled: 0
     path: Assets/SWPPT3/Scenes/Tutorial1Test.unity
-    guid: 9e371724b3866b14185add9df7ce1a0f
+    guid: 675a78c4bd45de94eb36e4871c6c95e2
   - enabled: 1
     path: Assets/SWPPT3/Scenes/Stage 1.unity
     guid: 386a2c8220b66432ebf8b0f40d895479

@@ -1,8 +1,13 @@
+#region
+
+using System;
 using SWPPT3.Main.Manager;
 using SWPPT3.Main.Prop;
 using SWPPT3.Main.PlayerLogic;
 using UnityEngine;
 using SWPPT3.Main.UI;
+
+#endregion
 
 namespace SWPPT3.Main.PlayerLogic.State
 {
@@ -24,6 +29,21 @@ namespace SWPPT3.Main.PlayerLogic.State
                 isDirty = false;
                 if (obstacle is ItemBox itemBox)
                 {
+                    itemBox.InteractWithPlayer();
+                    player.SetItemCounts(0,
+                        itemBox.ItemState == PlayerStates.Metal ? player.Item[PlayerStates.Metal] + 1 : player.Item[PlayerStates.Metal],
+                        itemBox.ItemState == PlayerStates.Rubber ? player.Item[PlayerStates.Rubber] + 1 : player.Item[PlayerStates.Rubber]
+                    );
+                }
+                else if (obstacle is PoisonPool)
+                {
+                //Debug.Log("collide with Poison pool");
+                    GameManager.Instance.GameState = GameState.GameOver;
+                }
+                else if (obstacle is Gas)
+                {
+                    foreach(PlayerStates playerState in Enum.GetValues(typeof(PlayerStates)))
+                    {
 
                     player.SetItemCounts(0,
                         itemBox.ItemState == PlayerStates.Metal ? player.Item[PlayerStates.Metal] + 1 : player.Item[PlayerStates.Metal],
@@ -53,7 +73,6 @@ namespace SWPPT3.Main.PlayerLogic.State
                     obstacle.InteractWithPlayer(player.CurrentState);
                 }
             }
-
         }
 
         public virtual void StopInteractWithProp(Player player, PropBase obstacle)

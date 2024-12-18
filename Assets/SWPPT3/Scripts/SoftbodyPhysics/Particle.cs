@@ -1,6 +1,8 @@
-using System;
-using PlasticGui.WorkspaceWindow.Configuration;
+#region
+
 using UnityEngine;
+
+#endregion
 
 namespace SWPPT3.SoftbodyPhysics
 {

@@ -1,6 +1,10 @@
+#region
+
 using SWPPT3.Main.Utility.Singleton;
 using UnityEngine;
 using UnityEngine.Audio;
+
+#endregion
 
 namespace SWPPT3.Main.Manager
 {

@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 3352200197568612945}
   - component: {fileID: 675996345617792667}
   - component: {fileID: 5307610853661674493}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Dungeon_Custom_Border_Arched_Double_Wall
   m_TagString: Untagged
   m_Icon: {fileID: 0}

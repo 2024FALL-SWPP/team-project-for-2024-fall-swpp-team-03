@@ -1,14 +1,15 @@
-using System.Collections;
-using System.Collections.Generic;
+#region
+
 using SWPPT3.Main.Manager;
 using SWPPT3.Main.PlayerLogic;
 using SWPPT3.Main.PlayerLogic.State;
 using TMPro;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
+
+#endregion
 
 namespace SWPPT3.Main.UI
 {
@@ -36,7 +37,7 @@ namespace SWPPT3.Main.UI
         public void ClickResume()
         {
             Cursor.visible = false;
-            Debug.Log("click reusme");
+            //Debug.Log("click reusme");
             GameManager.Instance.GameState = GameState.Playing;
             _onTryingPauseStatusChanged.Invoke(false);
         }
@@ -263,9 +264,8 @@ namespace SWPPT3.Main.UI
                 {
                     angle += 360f;
                 }
-                Debug.Log(angle);
 
-                if (angle <=90 || angle >330 )
+                if (angle <= 90 || angle >330 )
                 {
                     _player.TryChangeState(PlayerStates.Rubber);
                 }

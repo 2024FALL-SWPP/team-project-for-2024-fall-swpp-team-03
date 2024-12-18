@@ -1,6 +1,3 @@
-using UnityEngine;
-using SWPPT3.Main.Manager;
-
 namespace SWPPT3.Main.StageDirector
 {
     public class Stage4Director : StageManager

@@ -1,5 +1,9 @@
+#region
+
 using SWPPT3.Main.Utility;
 using UnityEngine;
+
+#endregion
 
 namespace SWPPT3.Main.Prop
 {

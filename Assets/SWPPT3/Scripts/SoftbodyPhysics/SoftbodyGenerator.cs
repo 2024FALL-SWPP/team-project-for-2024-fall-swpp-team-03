@@ -1,13 +1,15 @@
+#region
+
 using System;
 using System.Collections.Generic;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Jobs;
-using UnityEditor;
-using UnityEditor.Profiling.Memory.Experimental;
 using UnityEngine;
 using UnityEngine.Jobs;
 using Random = UnityEngine.Random;
+
+#endregion
 
 namespace SWPPT3.SoftbodyPhysics
 {
@@ -30,6 +32,7 @@ namespace SWPPT3.SoftbodyPhysics
 
         private List<Rigidbody> _rigidbodyList = new List<Rigidbody>();
         private Rigidbody[] _rigidbodyArray;
+        private HashSet<int> _rigidbodyIdSet = new HashSet<int>();
 
         private Rigidbody rootRB;
 
@@ -220,13 +223,18 @@ namespace SWPPT3.SoftbodyPhysics
             for (int i = 0; i < pairs.Length; i++)
             {
                 var pair = pairs[i];
-
                 var properties = pair.massProperties;
 
-                properties.inverseMassScale = 1f;
-                properties.inverseInertiaScale = 1f;
-                properties.otherInverseMassScale = 0;
-                properties.otherInverseInertiaScale = 0;
+                if(_rigidbodyIdSet.Contains(pair.bodyInstanceID))
+                {
+                    properties.otherInverseMassScale = 0f;
+                    properties.otherInverseInertiaScale = 0f;
+                }
+                if(_rigidbodyIdSet.Contains(pair.otherBodyInstanceID))
+                {
+                    properties.inverseMassScale = 0f;
+                    properties.inverseInertiaScale = 0f;
+                }
 
                 pair.massProperties = properties;
 
@@ -382,6 +390,8 @@ namespace SWPPT3.SoftbodyPhysics
                 rubberJump.rubberForce = _script.RubberJump;
 
                 _rigidbodyList.Add(_tempRigidBody);
+                _rigidbodyIdSet.Add(_tempRigidBody.GetInstanceID());
+                Debug.Log(_tempRigidBody.GetInstanceID());
 
                 _tempObj.AddComponent<DebugColorGameObject>().Color = Random.ColorHSV();
 
@@ -564,14 +574,13 @@ namespace SWPPT3.SoftbodyPhysics
             if (PlayerStates != SoftStates.Slime)
             {
                 FreeJoint();
-                foreach (var sc in _sphereColliderArray)
-                {
-                    sc.hasModifiableContacts = true;
-                }
             }
-
+            foreach (var sc in _sphereColliderArray)
+            {
+                Debug.Log("hasmodifiablaContacts true");
+                sc.hasModifiableContacts = true;
+            }
             PlayerStates = SoftStates.Slime;
-
         }
 
         public void SetMetal()
@@ -579,10 +588,10 @@ namespace SWPPT3.SoftbodyPhysics
             if (PlayerStates == SoftStates.Slime)
             {
                 FixJoint();
-                foreach (var sc in _sphereColliderArray)
-                {
-                    sc.hasModifiableContacts = false;
-                }
+            }
+            foreach (var sc in _sphereColliderArray)
+            {
+                sc.hasModifiableContacts = false;
             }
 
             PlayerStates = SoftStates.Metal;
@@ -593,10 +602,10 @@ namespace SWPPT3.SoftbodyPhysics
             if (PlayerStates == SoftStates.Slime)
             {
                 FixJoint();
-                foreach (var sc in _sphereColliderArray)
-                {
-                    sc.hasModifiableContacts = false;
-                }
+            }
+            foreach (var sc in _sphereColliderArray)
+            {
+                sc.hasModifiableContacts = false;
             }
 
             PlayerStates = SoftStates.Rubber;

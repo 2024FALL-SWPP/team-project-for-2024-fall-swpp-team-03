@@ -1,6 +1,9 @@
-using UnityEngine;
+#region
+
 using SWPPT3.Main.Manager;
-using SWPPT3.Main.Utility;
+using UnityEngine;
+
+#endregion
 
 namespace SWPPT3.Main.Utility
 {
@@ -63,7 +66,6 @@ namespace SWPPT3.Main.Utility
                 transform.LookAt(player);
 
                 Vector3 rayDir = transform.position - player.position;
-
                 if (Physics.Raycast(player.position, rayDir, out RaycastHit hit, offset.magnitude , cameraCollision))
                 {
                     transform.position = hit.point - rayDir.normalized;
