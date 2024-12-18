@@ -270,6 +270,8 @@ namespace SWPPT3.SoftbodyPhysics
         private GameObject centerOfMasObj = null;
         private Rigidbody _rbOfCenter = null;
 
+        public bool SetDirty;
+
         private bool _isJumpKey;
 
         public bool IsJumpKey
@@ -280,6 +282,7 @@ namespace SWPPT3.SoftbodyPhysics
 
         private void Awake()
         {
+            SetDirty = false;
             Softness = _script.Softness;
             Mass = _script.Mass;
             PhysicsRoughness = _script.PhysicsRoughness;
@@ -538,7 +541,6 @@ namespace SWPPT3.SoftbodyPhysics
                 joint.xMotion = ConfigurableJointMotion.Locked;
                 joint.yMotion = ConfigurableJointMotion.Locked;
                 joint.zMotion = ConfigurableJointMotion.Locked;
-                joint.connectedAnchor = _bufferJointAnchors[i];
             }
         }
 
@@ -550,7 +552,6 @@ namespace SWPPT3.SoftbodyPhysics
                 joint.xMotion = ConfigurableJointMotion.Limited;
                 joint.yMotion = ConfigurableJointMotion.Limited;
                 joint.zMotion = ConfigurableJointMotion.Limited;
-                joint.connectedAnchor = _oriJointAnchorArray[i];
             }
         }
 
@@ -649,15 +650,6 @@ namespace SWPPT3.SoftbodyPhysics
                 }
            }
 
-           if (PlayerStates == SoftStates.Rubber && _isJumpKey == true)
-           {
-               IsRubberJump = true;
-           }
-           else
-           {
-               IsRubberJump = false;
-           }
-
            var setVertexUpdateJob = new SetVertexUpdateJob
            {
                LocalPositions = _optVerticesBuffer,
@@ -690,6 +682,25 @@ namespace SWPPT3.SoftbodyPhysics
                 var getConnectedAnchorHandle = getConnectedAnchorJob.Schedule(_jointsDictNa.Length,16, getVertexLocalPositionHandle);
                 getConnectedAnchorHandle.Complete();
             }
+            if (PlayerStates == SoftStates.Rubber && _isJumpKey == true)
+            {
+                IsRubberJump = true;
+            }
+            else
+            {
+                IsRubberJump = false;
+            }
+
+            if (IsRubberJump && SetDirty)
+            {
+                SoftbodyJump(_script.RubberJump);
+                Invoke("ResetDirty", _script.ResetSec);
+            }
+        }
+
+        public void ResetDirty()
+        {
+            SetDirty = false;
         }
 
         public void OnDestroy()

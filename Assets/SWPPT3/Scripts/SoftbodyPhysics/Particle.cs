@@ -1,4 +1,5 @@
 using System;
+using PlasticGui.WorkspaceWindow.Configuration;
 using UnityEngine;
 
 namespace SWPPT3.SoftbodyPhysics
@@ -32,9 +33,7 @@ namespace SWPPT3.SoftbodyPhysics
                 {
                     if (contact.normal.y >= 0.7f)
                     {
-                        Vector3 force = Vector3.up * (_rb.mass * rubberForce);
-                        _rb.AddForce(force, ForceMode.Impulse);
-
+                        _softbody.SetDirty = true;
                         break; // 하나라도 조건 만족하면 탈출
                     }
                 }

@@ -11,6 +11,8 @@ namespace SWPPT3.SoftbodyPhysics
         [SerializeField] private float damp;
 
         [SerializeField] private float rubberJump;
+
+        [SerializeField] private float resetSec;
         // [SerializeField] private float collissionSurfaceOffset;
 
         public float Mass {get => mass; set => mass = value; }
@@ -18,7 +20,7 @@ namespace SWPPT3.SoftbodyPhysics
         public float Softness => softness;
         public float Damp => damp;
         public float RubberJump => rubberJump;
-        // public float CollissionSurfaceOffset => collissionSurfaceOffset;
+        public float ResetSec => resetSec;
 
 
     }
