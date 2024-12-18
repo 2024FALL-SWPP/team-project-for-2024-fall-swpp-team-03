@@ -62,6 +62,7 @@ namespace SWPPT3.Main.Manager
             switch (newState)
             {
                 case GameState.BeforeStart:
+                    BgmManager.Instance.PlayBGM();
                     // UIManager.Instance.ShowStartStage();
                     break;
                 case GameState.Ready:
@@ -76,6 +77,7 @@ namespace SWPPT3.Main.Manager
                     _stageManager?.PauseStage();
                     break;
                 case GameState.GameOver:
+                    BgmManager.Instance.PlayFailSound();
                     _stageManager?.FailStage();
                     // UIManager.Instance.ShowFail();
                     break;
@@ -85,6 +87,7 @@ namespace SWPPT3.Main.Manager
                 case GameState.Exit:
                     break;
                 case GameState.StageCleared:
+                    BgmManager.Instance.PlaySuccessSound();
                     _stageManager?.ClearStage();
                     // UIManager.Instance.ShowClear();
                     break;
@@ -117,6 +120,8 @@ namespace SWPPT3.Main.Manager
 
         public void LoadScene()
         {
+            BgmManager.Instance.StopFailSound();
+            BgmManager.Instance.StopSuccessSound();
             string sceneName;
 
             switch (stageNumber)
