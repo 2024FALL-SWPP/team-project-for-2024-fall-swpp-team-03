@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 4695195877958930820}
   - component: {fileID: 7407392861316851022}
   - component: {fileID: -2703812316100154863}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Dungeon_Custom_Border_Arched_Corner_Room_Wall
   m_TagString: Untagged
   m_Icon: {fileID: 0}

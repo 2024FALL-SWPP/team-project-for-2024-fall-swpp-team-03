@@ -63,7 +63,6 @@ namespace SWPPT3.Main.Utility
                 transform.LookAt(player);
 
                 Vector3 rayDir = transform.position - player.position;
-
                 if (Physics.Raycast(player.position, rayDir, out RaycastHit hit, offset.magnitude , cameraCollision))
                 {
                     transform.position = hit.point - rayDir.normalized;

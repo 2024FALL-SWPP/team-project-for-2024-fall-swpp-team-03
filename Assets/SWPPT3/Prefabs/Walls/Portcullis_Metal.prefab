@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 4453469649255232316}
   - component: {fileID: 1885055807700568054}
   - component: {fileID: 2453424044304248186}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Portcullis_Metal
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 70710020218451967}
   - component: {fileID: 70710020219548991}
   - component: {fileID: 70710020223632735}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Dungeon_Wall_Window_No_Metal
   m_TagString: Untagged
   m_Icon: {fileID: 0}

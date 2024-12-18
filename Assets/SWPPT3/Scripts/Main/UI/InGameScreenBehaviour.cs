@@ -36,7 +36,7 @@ namespace SWPPT3.Main.UI
         public void ClickResume()
         {
             Cursor.visible = false;
-            Debug.Log("click reusme");
+            //Debug.Log("click reusme");
             GameManager.Instance.GameState = GameState.Playing;
             _onTryingPauseStatusChanged.Invoke(false);
         }
@@ -120,7 +120,7 @@ namespace SWPPT3.Main.UI
                 if (angle < 0) angle += 360f;
 
 
-                if (angle <=90 && angle > 330)
+                if (angle <=90 || angle > 330)
                 {
                     SetButtonScale(_slimeButton, 1.5f);
                     SetButtonScale(_metalButton, 1.0f);
@@ -262,24 +262,19 @@ namespace SWPPT3.Main.UI
                 {
                     angle += 360f;
                 }
-                Debug.Log(angle);
 
-                if (angle <=90 || angle >330 )
+                if (angle <= 90 || angle >330 )
                 {
-                    Debug.Log("atRubber");
                     _player.TryChangeState(PlayerStates.Rubber);
                 }
                 else if (angle >= 90 && angle < 210)
                 {
-                    Debug.Log("atMetal");
                     _player.TryChangeState(PlayerStates.Metal);
                 }
                 else
                 {
-                    Debug.Log("Slime");
                     _player.TryChangeState(PlayerStates.Slime);
                 }
-                Debug.Log("finish!");
             }
 
         }

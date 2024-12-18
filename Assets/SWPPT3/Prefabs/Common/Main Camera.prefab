@@ -133,3 +133,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   player: {fileID: 0}
   camerascript: {fileID: 11400000, guid: 5beda284128254b12adf1cd7dfd8284e, type: 2}
+  cameraCollision:
+    serializedVersion: 2
+    m_Bits: 64

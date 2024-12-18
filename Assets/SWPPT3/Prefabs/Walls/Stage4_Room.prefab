@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 5324405800027649604}
   - component: {fileID: 8098174749123558941}
   - component: {fileID: 2288033384056622417}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: LongRoom2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -108,7 +108,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2165246317288322505}
   - component: {fileID: 8709612742132574615}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Stage4_Room
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -160,7 +160,7 @@ GameObject:
   - component: {fileID: 6765551319346965350}
   - component: {fileID: 3570541012782342496}
   - component: {fileID: 3474830824615080621}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: LongRoom1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -258,7 +258,7 @@ GameObject:
   - component: {fileID: 4172041578443477091}
   - component: {fileID: 8819588477405053028}
   - component: {fileID: 5449455063930506911}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SmallRoom
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -356,7 +356,7 @@ GameObject:
   - component: {fileID: 6452793594189970245}
   - component: {fileID: 2273947036018859878}
   - component: {fileID: 1680623955351461319}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: BigRoom
   m_TagString: Untagged
   m_Icon: {fileID: 0}
