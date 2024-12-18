@@ -28,6 +28,7 @@ namespace SWPPT3.Main.ConductorLogic
 
             Connections.Add(conductor.gameObject);
             ConductorManager.IsDirty = true;
+            //Debug.Log("Oncollisionenter"+ gameObject.name);
         }
 
         private void OnCollisionExit(Collision other)

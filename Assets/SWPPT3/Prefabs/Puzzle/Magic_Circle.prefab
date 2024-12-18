@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 3469707817617977517}
   - component: {fileID: 5212203213713012650}
   - component: {fileID: 4292224605778392407}
+  - component: {fileID: 6610104453504445420}
   m_Layer: 0
   m_Name: Magic_Circle
   m_TagString: Untagged
@@ -74,6 +75,21 @@ CapsuleCollider:
   m_Height: 5
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &6610104453504445420
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1210940401247049791}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0ad512526ed445a6ab5fef5b4534145e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  stateSources: []
+  animator: {fileID: 5212203213713012650}
+  collider: {fileID: 4292224605778392407}
 --- !u!1 &1716672640784942158
 GameObject:
   m_ObjectHideFlags: 0
@@ -521,10 +537,20 @@ PrefabInstance:
       propertyPath: InitialModule.startColor.maxColor.r
       value: 0.66003513
       objectReference: {fileID: 0}
+    - target: {fileID: 3280519133223516631, guid: ffd567757df5948459bc9833b7ceb491,
+        type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3280519133390621005, guid: ffd567757df5948459bc9833b7ceb491,
         type: 3}
       propertyPath: m_Name
       value: Magic_Circle_Effect
+      objectReference: {fileID: 0}
+    - target: {fileID: 3280519133390621005, guid: ffd567757df5948459bc9833b7ceb491,
+        type: 3}
+      propertyPath: m_Layer
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3280519133390621042, guid: ffd567757df5948459bc9833b7ceb491,
         type: 3}
@@ -584,6 +610,11 @@ PrefabInstance:
     - target: {fileID: 3280519133430969737, guid: ffd567757df5948459bc9833b7ceb491,
         type: 3}
       propertyPath: m_Intensity
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3280519133430969738, guid: ffd567757df5948459bc9833b7ceb491,
+        type: 3}
+      propertyPath: m_Layer
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []

@@ -5,6 +5,7 @@ using UnityEngine;
 using SWPPT3.Main.Prop;
 using UnityEngine.InputSystem;
 using SWPPT3.Main.PlayerLogic.State;
+using SWPPT3.SoftbodyPhysics;
 
 namespace SWPPT3.Main.PlayerLogic
 {
@@ -13,27 +14,23 @@ namespace SWPPT3.Main.PlayerLogic
         private PlayerStates _currentState = PlayerStates.Slime;
         private Vector2 _inputMovement;
 
-        private bool _isGameOver = false;
+        public Dictionary<PlayerStates, int> Item;
 
-        [SerializeField]
-        private Rigidbody _rb;
-        // [SerializeField]
-        public PhysicMaterial _physicMaterial;
-        [SerializeField]
-        public Collider _collider;
+        private SoftbodyGenerator _softbody;
 
-        public Dictionary<PlayerStates, int> Item = new()
-        {
-            { PlayerStates.Slime, 0 },
-            { PlayerStates.Metal, 0 },
-            { PlayerStates.Rubber, 0 },
-        };
+        [SerializeField] private MeshRenderer _meshRenderer;
+        [SerializeField] private Material _slimeMaterial;
+        [SerializeField] private Material _rubberMaterial;
+        [SerializeField] private Material _metalMaterial;
+
+
+
+        public event Action OnItemChanged;
 
         private PlayerState PlayerState => _playerStates[_currentState];
 
         public PlayerStates CurrentState => _currentState;
 
-        public Rigidbody Rigidbody => _rb;
 
         private readonly Dictionary<PlayerStates, PlayerState> _playerStates = new()
         {
@@ -41,48 +38,22 @@ namespace SWPPT3.Main.PlayerLogic
             { PlayerStates.Rubber, new RubberState() },
             { PlayerStates.Slime, new SlimeState() },
         };
-        public void SetBounciness(float bounciness, PhysicMaterialCombine bounceCombine = PhysicMaterialCombine.Maximum)
-        {
-            _physicMaterial.bounciness = bounciness;
-            _physicMaterial.bounceCombine = bounceCombine;
-
-            _collider.material = _physicMaterial;
-        }
 
         private void Awake()
         {
+            _softbody = GetComponent<SoftbodyGenerator>();
+            if (Item == null)
+            {
+                Item = new Dictionary<PlayerStates, int>
+                {
+                    { PlayerStates.Slime, 0 },
+                    { PlayerStates.Metal, 0 },
+                    { PlayerStates.Rubber, 0 },
+                };
+                OnItemChanged?.Invoke();
+            }
             TryChangeState(PlayerStates.Slime);
-            InputManager.Instance.OnChangeState += HandleChangeState;
-        }
 
-
-        private void Update()
-        {
-            if (_isGameOver)
-            {
-
-            }
-            else
-            {
-
-            }
-        }
-
-        public void HandleChangeState(InputAction.CallbackContext context)
-        {
-            if (_isGameOver) return;
-            string keyPressed = context.control.displayName;
-            Debug.Log(keyPressed);
-
-            PlayerStates newState = keyPressed switch
-            {
-                "1" => PlayerStates.Slime,
-                "2" => PlayerStates.Metal,
-                "3" => PlayerStates.Rubber,
-                _ => _currentState
-            };
-
-            TryChangeState(newState);
         }
 
         public void TryChangeState(PlayerStates newState)
@@ -90,11 +61,23 @@ namespace SWPPT3.Main.PlayerLogic
             if (newState == PlayerStates.Slime || Item[newState] > 0)
             {
                 if (newState != PlayerStates.Slime) Item[newState]--;
+                OnItemChanged?.Invoke();
                 _currentState = newState;
-                PlayerState.ChangeRigidbody(_rb);
-                PlayerState.ChangePhysics(_collider, _physicMaterial);
-                _collider.hasModifiableContacts = newState == PlayerStates.Slime;
+                if (newState == PlayerStates.Rubber)
+                {
+                    _softbody.SetRubberJump();
+                }
+                else if (newState == PlayerStates.Metal)
+                {
+                    _softbody.SetMetal();
+                }
+                else if (newState == PlayerStates.Slime)
+                {
+                    _softbody.SetSlime();
+                }
             }
+
+            Debug.Log(_currentState);
         }
 
         public void InteractWithProp(PropBase prop)
@@ -107,19 +90,24 @@ namespace SWPPT3.Main.PlayerLogic
             PlayerState.StopInteractWithProp(this, prop);
         }
 
-        public void GameOver()
-        {
-            _isGameOver = true;
-            Debug.Log("Game Over");
-        }
         private void OnDestroy()
         {
-            if (InputManager.Instance != null)
-            {
-                InputManager.Instance.OnChangeState -= HandleChangeState;
-            }
         }
-
-
+        public void SetItemCounts(int newSlimeCount, int newMetalCount, int newRubberCount)
+        {
+            if (Item == null)
+            {
+                Item = new Dictionary<PlayerStates, int>
+                {
+                    { PlayerStates.Slime, 0 },
+                    { PlayerStates.Metal, 0 },
+                    { PlayerStates.Rubber, 0 },
+                };
+                OnItemChanged?.Invoke();
+            }
+            Item[PlayerStates.Slime] = newSlimeCount;
+            Item[PlayerStates.Metal] = newMetalCount;
+            Item[PlayerStates.Rubber] = newRubberCount;
+        }
     }
 }

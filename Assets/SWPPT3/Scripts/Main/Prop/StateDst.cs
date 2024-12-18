@@ -6,8 +6,7 @@ namespace SWPPT3.Main.Prop
 {
     public abstract class StateDst : StatefulProp
     {
-        [SerializeField]
-        protected List<StateSource> stateSources;
+        [SerializeField] protected List<StateSource> stateSources;
         private void OnEnable()
         {
             foreach (StateSource stateSource in stateSources)

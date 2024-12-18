@@ -1,3 +1,6 @@
 {
-	"name": "SoftbodyPhysics"
+	"name": "SoftbodyPhysics",
+    "references": [
+      "Unity.Burst"
+    ]
 }

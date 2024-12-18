@@ -75,9 +75,9 @@ namespace SWPPT3.Main.Generated
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""ChangeState"",
+                    ""name"": ""EscMenu"",
                     ""type"": ""Button"",
-                    ""id"": ""29ece330-81c9-4e89-ac30-5f6f846d8c3a"",
+                    ""id"": ""390dca62-fc42-47a1-9c60-10e85edf63f8"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """",
@@ -285,34 +285,12 @@ namespace SWPPT3.Main.Generated
                 },
                 {
                     ""name"": """",
-                    ""id"": ""df266fdf-9b8d-4a82-9105-3bf79e3d1469"",
-                    ""path"": ""<Keyboard>/#(1)"",
+                    ""id"": ""0c27e8fd-6ec7-41d7-87ca-8f1f8dc40552"",
+                    ""path"": ""<Keyboard>/escape"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": ""Keyboard&Mouse"",
-                    ""action"": ""ChangeState"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""22307426-fefa-4c11-9352-9d576dfb3a78"",
-                    ""path"": ""<Keyboard>/#(2)"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""Keyboard&Mouse"",
-                    ""action"": ""ChangeState"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""6a896f8d-02de-4fc6-bf4d-be2b9b55f1b8"",
-                    ""path"": ""<Keyboard>/#(3)"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""Keyboard&Mouse"",
-                    ""action"": ""ChangeState"",
+                    ""groups"": """",
+                    ""action"": ""EscMenu"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -905,7 +883,7 @@ namespace SWPPT3.Main.Generated
             m_InGame_Jump = m_InGame.FindAction("Jump", throwIfNotFound: true);
             m_InGame_StartTransform = m_InGame.FindAction("StartTransform", throwIfNotFound: true);
             m_InGame_StartRotation = m_InGame.FindAction("StartRotation", throwIfNotFound: true);
-            m_InGame_ChangeState = m_InGame.FindAction("ChangeState", throwIfNotFound: true);
+            m_InGame_EscMenu = m_InGame.FindAction("EscMenu", throwIfNotFound: true);
             // UI
             m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
             m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -984,7 +962,7 @@ namespace SWPPT3.Main.Generated
         private readonly InputAction m_InGame_Jump;
         private readonly InputAction m_InGame_StartTransform;
         private readonly InputAction m_InGame_StartRotation;
-        private readonly InputAction m_InGame_ChangeState;
+        private readonly InputAction m_InGame_EscMenu;
         public struct InGameActions
         {
             private @AlcheslimeInput m_Wrapper;
@@ -994,7 +972,7 @@ namespace SWPPT3.Main.Generated
             public InputAction @Jump => m_Wrapper.m_InGame_Jump;
             public InputAction @StartTransform => m_Wrapper.m_InGame_StartTransform;
             public InputAction @StartRotation => m_Wrapper.m_InGame_StartRotation;
-            public InputAction @ChangeState => m_Wrapper.m_InGame_ChangeState;
+            public InputAction @EscMenu => m_Wrapper.m_InGame_EscMenu;
             public InputActionMap Get() { return m_Wrapper.m_InGame; }
             public void Enable() { Get().Enable(); }
             public void Disable() { Get().Disable(); }
@@ -1019,9 +997,9 @@ namespace SWPPT3.Main.Generated
                 @StartRotation.started += instance.OnStartRotation;
                 @StartRotation.performed += instance.OnStartRotation;
                 @StartRotation.canceled += instance.OnStartRotation;
-                @ChangeState.started += instance.OnChangeState;
-                @ChangeState.performed += instance.OnChangeState;
-                @ChangeState.canceled += instance.OnChangeState;
+                @EscMenu.started += instance.OnEscMenu;
+                @EscMenu.performed += instance.OnEscMenu;
+                @EscMenu.canceled += instance.OnEscMenu;
             }
 
             private void UnregisterCallbacks(IInGameActions instance)
@@ -1041,9 +1019,9 @@ namespace SWPPT3.Main.Generated
                 @StartRotation.started -= instance.OnStartRotation;
                 @StartRotation.performed -= instance.OnStartRotation;
                 @StartRotation.canceled -= instance.OnStartRotation;
-                @ChangeState.started -= instance.OnChangeState;
-                @ChangeState.performed -= instance.OnChangeState;
-                @ChangeState.canceled -= instance.OnChangeState;
+                @EscMenu.started -= instance.OnEscMenu;
+                @EscMenu.performed -= instance.OnEscMenu;
+                @EscMenu.canceled -= instance.OnEscMenu;
             }
 
             public void RemoveCallbacks(IInGameActions instance)
@@ -1231,7 +1209,7 @@ namespace SWPPT3.Main.Generated
             void OnJump(InputAction.CallbackContext context);
             void OnStartTransform(InputAction.CallbackContext context);
             void OnStartRotation(InputAction.CallbackContext context);
-            void OnChangeState(InputAction.CallbackContext context);
+            void OnEscMenu(InputAction.CallbackContext context);
         }
         public interface IUIActions
         {

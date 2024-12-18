@@ -8,6 +8,7 @@ namespace SWPPT3.Main.Prop
     {
         public override void InteractWithPlayer()
         {
+
         }
 
         [SerializeField] private Collider collider;
@@ -70,7 +71,7 @@ namespace SWPPT3.Main.Prop
 
             Vector3 buoyantForce = new Vector3(0f, buoyantForceMagnitude, 0f);
             objRb.AddForce(buoyantForce);
-            Debug.Log($"Buoyant Force: {buoyantForce}, Submerged Height: {submergedHeight}");
+            //Debug.Log($"Buoyant Force: {buoyantForce}, Submerged Height: {submergedHeight}");
 
             Vector3 dampingForce = -objRb.velocity * _propscript.DampingFactor;
             objRb.AddForce(dampingForce);
@@ -109,7 +110,7 @@ namespace SWPPT3.Main.Prop
             if (otherRb != null)
             {
                 objectsInLiquid.Add(new ObjectInLiquid(otherRb, other));
-                Debug.Log(otherRb.gameObject);
+                //Debug.Log(otherRb.gameObject);
             }
         }
 

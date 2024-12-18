@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using SWPPT3.Main.Manager;
 using SWPPT3.Main.PlayerLogic.State;
 using SWPPT3.Main.Prop;
+using SWPPT3.SoftbodyPhysics;
 using Unity.Collections;
 using UnityEngine;
 
@@ -11,8 +12,8 @@ namespace SWPPT3.Main.PlayerLogic
     public class PlayerMover : MonoBehaviour
     {
         [SerializeField] private PlayerScript _playerScript;
-        [SerializeField] private Player _player;
-        [SerializeField] private Rigidbody _rb;
+        private Player _player;
+        private SoftbodyGenerator _softbody;
 
         private float _moveSpeed;
         private float _jumpForce;
@@ -24,7 +25,6 @@ namespace SWPPT3.Main.PlayerLogic
 
         private Vector2 _moveVector;
         private Vector2 _lookInput;
-        private bool _isGrounded;
         private Transform _playerTransform;
 
         private bool isRightButton = false;
@@ -32,8 +32,13 @@ namespace SWPPT3.Main.PlayerLogic
 
         private void Start()
         {
+            _player = GetComponent<Player>();
+            _softbody = GetComponent<SoftbodyGenerator>();
+
+            _moveSpeed = _playerScript.MoveSpeed;
+            _rotationSpeed = _playerScript.RotationSpeed;
+            _jumpForce = _playerScript.JumpForce;
             _isHoldingJump = false;
-            _isGrounded = false;
             _playerTransform = transform;
             if (InputManager.Instance != null)
             {
@@ -42,7 +47,6 @@ namespace SWPPT3.Main.PlayerLogic
                 InputManager.Instance.OnJumpCancel += HandleJumpCancel;
                 InputManager.Instance.OnStartRotation += HandleStartRotation;
                 InputManager.Instance.OnLook += HandleLook;
-
             }
             else
             {
@@ -52,21 +56,17 @@ namespace SWPPT3.Main.PlayerLogic
 
         private void Update()
         {
-            _moveSpeed = _playerScript.MoveSpeed;
-            _rotationSpeed = _playerScript.RotationSpeed;
-            _jumpForce = _playerScript.JumpForce * _rb.mass;
-
             Vector3 moveDirection = GetMoveDirection();
             Vector3 force = moveDirection * _moveSpeed;
-            _rb.AddForce(force, ForceMode.VelocityChange);
+            _softbody.move(force);
 
             if (isRightButton && _lookInput != Vector2.zero)
             {
                 RotatePlayer();
             }
-            if (_player.CurrentState == PlayerStates.Rubber && !_isGrounded  && _isHoldingJump)
+            if (_player.CurrentState == PlayerStates.Rubber && _groundedObjects.Count == 0  && _isHoldingJump)
             {
-                _player.SetBounciness(1.0f);
+                // _player.SetBounciness(1.0f);
             }
         }
 
@@ -124,70 +124,90 @@ namespace SWPPT3.Main.PlayerLogic
         private void HandleMove(Vector2 moveVector)
         {
             _moveVector = moveVector;
-            // Debug.Log($"PlayerMover - Move: {_moveVector}");
         }
 
         private void HandleJump()
         {
-            Debug.Log(_player.CurrentState);
-
-            if (_isGrounded)
+            if (_groundedObjects.Count > 0 && GameManager.Instance.GameState == GameState.Playing)
             {
-                _rb.AddForce(Vector3.up * _jumpForce, ForceMode.Impulse);
-                // Debug.Log(player._physicMaterial.bounciness);
+                _softbody.SoftbodyJump(_jumpForce);
             }
             _isHoldingJump = true;
             if (_player.CurrentState == PlayerStates.Rubber)
             {
-                _player.SetBounciness(1.0f);
-                // Debug.Log(player._physicMaterial.bounciness);
+                // _player.SetBounciness(1.0f);
             }
         }
 
         private void HandleJumpCancel()
         {
-            Debug.Log("PlayerMover - JumpCancel");
             _isHoldingJump = false;
             if (_player.CurrentState == PlayerStates.Rubber)
             {
-                _player.SetBounciness(0.5f);
-                // Debug.Log(player._physicMaterial.bounciness);
+                // _player.SetBounciness(0.5f);
             }
         }
 
         private void HandleStartRotation(bool isRightButtonPressed)
         {
             isRightButton = isRightButtonPressed;
-            // Debug.Log($"PlayerMover - StartRotation: {isRightButton}");
         }
 
         private void HandleLook(Vector2 lookInput)
         {
             _lookInput = lookInput;
-            // Debug.Log($"PlayerMover - Look Input: {_lookInput}");
         }
 
 
         private void OnCollisionEnter(Collision collision)
         {
-
-            var contactPoint = collision.contacts[0];
-            if (contactPoint.normal.y > _playerScript.Normalcriteria)
-            {
-                _groundedObjects.Add(collision.gameObject);
-                _isGrounded = true;
-            }
             var obstacle = collision.gameObject.GetComponent<PropBase>();
             if (obstacle != null)
             {
                 _player.InteractWithProp(obstacle);
             }
         }
+        private void OnCollisionStay(Collision collision)
+        {
+            var isGroundedObject = false;
+            foreach(var contactPoint in collision.contacts)
+            {
+                if (contactPoint.normal.y > _playerScript.Normalcriteria)
+                {
+                    isGroundedObject = true;
+                }
+            }
+            if(isGroundedObject)
+            {
+                _groundedObjects.Add(collision.gameObject);
+            }
+            else
+            {
+                _groundedObjects.Remove(collision.gameObject);
+            }
+        }
         private void OnCollisionExit(Collision collision)
         {
             _groundedObjects.Remove(collision.gameObject);
-            _isGrounded = _groundedObjects.Count > 0;
             var obstacle = collision.gameObject.GetComponent<PropBase>();
+            if (obstacle != null)
+            {
+                _player.StopInteractWithProp(obstacle);
+            }
+        }
+
+        private void OnTriggerEnter(Collider other)
+        {
+            var obstacle = other.gameObject.GetComponent<PropBase>();
+            if (obstacle != null)
+            {
+                _player.InteractWithProp(obstacle);
+            }
+        }
+
+        private void OnTriggerExit(Collider other)
+        {
+            var obstacle = other.gameObject.GetComponent<PropBase>();
             if (obstacle != null)
             {
                 _player.StopInteractWithProp(obstacle);

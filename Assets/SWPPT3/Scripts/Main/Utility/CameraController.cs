@@ -18,23 +18,26 @@ namespace SWPPT3.Main.Utility
 
         private Vector2 _lookInput;
 
-        private bool _isLeftButton = false;
         private bool _isRightButton = false;
+
+        [SerializeField] private LayerMask cameraCollision;
 
         private void Start()
         {
-            Vector3 initialPosition = player.position - player.forward * camerascript.DistanceFromPlayer + Vector3.up * camerascript.CameraHeight;
-            transform.position = initialPosition;
+            if (player != null)
+            {
+                Vector3 initialPosition = player.position - player.forward * camerascript.DistanceFromPlayer + Vector3.up * camerascript.CameraHeight;
+                transform.position = initialPosition;
 
-            transform.LookAt(player);
+                transform.LookAt(player);
 
-            _currentRotation = transform.eulerAngles;
+                _currentRotation = transform.eulerAngles;
+            }
 
             if (InputManager.Instance != null)
             {
                 InputManager.Instance.OnLook += HandleLook;
                 InputManager.Instance.OnStartRotation += HandleStartRotation;
-                InputManager.Instance.OnStartTransform += HandleStartTransform;
             }
             else
             {
@@ -44,7 +47,8 @@ namespace SWPPT3.Main.Utility
 
         private void Update()
         {
-            if (!_isLeftButton && !_isRightButton)
+            if (player == null) return;
+            if (!_isRightButton && GameManager.Instance.GameState == GameState.Playing)
             {
                 float mouseX = _lookInput.x * _mouseSensitivity;
                 float mouseY = _lookInput.y * _mouseSensitivity;
@@ -57,23 +61,28 @@ namespace SWPPT3.Main.Utility
 
                 transform.position = player.position + offset;
                 transform.LookAt(player);
+
+                Vector3 rayDir = transform.position - player.position;
+
+                if (Physics.Raycast(player.position, rayDir, out RaycastHit hit, offset.magnitude , cameraCollision))
+                {
+                    transform.position = hit.point - rayDir.normalized;
+                }
             }
             _mouseSensitivity = camerascript.MouseSensitivity;
         }
 
         private void HandleLook(Vector2 lookInput)
         {
-            _lookInput = lookInput;
+            if (GameManager.Instance.GameState == GameState.Playing)
+            {
+                _lookInput = lookInput;
+            }
         }
 
         private void HandleStartRotation(bool isRightButtonPressed)
         {
             _isRightButton = isRightButtonPressed;
-        }
-
-        private void HandleStartTransform(bool isLeftButtonPressed)
-        {
-            _isLeftButton = isLeftButtonPressed;
         }
 
         private void OnDestroy()
@@ -82,8 +91,8 @@ namespace SWPPT3.Main.Utility
             {
                 InputManager.Instance.OnLook -= HandleLook;
                 InputManager.Instance.OnStartRotation -= HandleStartRotation;
-                InputManager.Instance.OnStartTransform -= HandleStartTransform;
             }
+
         }
     }
 }
