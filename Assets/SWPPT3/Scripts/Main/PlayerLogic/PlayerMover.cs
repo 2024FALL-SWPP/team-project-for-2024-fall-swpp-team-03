@@ -16,8 +16,6 @@ namespace SWPPT3.Main.PlayerLogic
         private SoftbodyGenerator _softbody;
         private Player _player;
 
-        private SoftbodyGenerator _softbody;
-
         private float _moveSpeed;
         private float _jumpForce;
         private float _rotationSpeed;

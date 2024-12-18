@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace SWPPT3.SoftbodyPhysics
 {
-    public class RubberJump : MonoBehaviour
+    public class Particle : MonoBehaviour
     {
         private Rigidbody _rb;
 

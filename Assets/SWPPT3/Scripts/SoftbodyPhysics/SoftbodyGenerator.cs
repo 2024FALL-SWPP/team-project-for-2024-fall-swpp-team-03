@@ -60,15 +60,15 @@ namespace SWPPT3.SoftbodyPhysics
         private NativeArray<int> _optToOriDic;              // opt -> ori 를 위한 dictionary
         private NativeArray<Vector3> _oriPositions;
 
-        private List<Vector3> _oriJointAnchorsList;
-        private Vector3[] _oriJointAnchorArray;
-        private NativeArray<Vector3> _bufferJointAnchors;
+        // private List<Vector3> _oriJointAnchorsList;
+        // private Vector3[] _oriJointAnchorArray;
+        // private NativeArray<Vector3> _bufferJointAnchors;
 
         private List<ConfigurableJoint> _configurableJointList;
         private ConfigurableJoint[] _configurableJointsArray;
 
-        private List<(int, int)> _jointsDict;
-        private NativeArray<(int,int)> _jointsDictNa;
+        // private List<(int, int)> _jointsDict;
+        // private NativeArray<(int,int)> _jointsDictNa;
 
         // NativeArray for Job system
 
@@ -270,8 +270,6 @@ namespace SWPPT3.SoftbodyPhysics
         private GameObject centerOfMasObj = null;
         private Rigidbody _rbOfCenter = null;
 
-        private PhysicMaterial _physicsMaterial = null;
-
         private bool _isJumpKey;
 
         public bool IsJumpKey
@@ -288,20 +286,9 @@ namespace SWPPT3.SoftbodyPhysics
             Damp = _script.Damp;
             RubberJump = _script.RubberJump;
 
-            // CollissionSurfaceOffset = _script.CollissionSurfaceOffset;
-
-            _oriJointAnchorsList = new List<Vector3>();
             _configurableJointList = new List<ConfigurableJoint>();
-            _jointsDict = new List<(int, int)>();
 
             _isJumpKey = false;
-
-            _physicsMaterial = new PhysicMaterial();
-            _physicsMaterial.bounciness = 0f;
-            _physicsMaterial.dynamicFriction = 0f;
-            _physicsMaterial.staticFriction = 0f;
-
-            _physicsMaterial.bounceCombine = PhysicMaterialCombine.Maximum;
 
             WritableVertices = new List<Vector3>();
             WritableNormals = new List<Vector3>();
@@ -370,7 +357,6 @@ namespace SWPPT3.SoftbodyPhysics
                 // add collider to each of vertex ( sphere collider )
                 var sphereColider = _tempObj.AddComponent<SphereCollider>() as SphereCollider;
                 sphereColider.radius = CollissionSurfaceOffset;
-                sphereColider.material = _physicsMaterial;
 
                 // add current collider to Collider list ;
                 _sphereColliderList.Add(sphereColider);
@@ -382,10 +368,11 @@ namespace SWPPT3.SoftbodyPhysics
                 _tempRigidBody.drag = PhysicsRoughness;
                 _tempRigidBody.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
 
-                var rubberJump = _tempObj.AddComponent<RubberJump>();
+                var rubberJump = _tempObj.AddComponent<Particle>();
 
                 OnRubberJump += rubberJump.SetActive;
                 rubberJump._softbody = this;
+                rubberJump.jumpForce = _script.RubberJump;
 
                 _rigidbodyList.Add(_tempRigidBody);
 
@@ -408,10 +395,6 @@ namespace SWPPT3.SoftbodyPhysics
             rootRB.mass = 1;
             rootRB.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
             _rigidbodyList.Add(rootRB);
-
-            // var rootSC = gameObject.AddComponent<SphereCollider>();
-            // rootSC.radius = CollissionSurfaceOffset;
-            // _sphereColliderList.Add(rootSC);
 
             _sphereColliderArray = _sphereColliderList.ToArray();
             _rigidbodyArray  = _rigidbodyList.ToArray();
@@ -489,10 +472,6 @@ namespace SWPPT3.SoftbodyPhysics
                 var destinationBody = _phyisicedVertexes[jointIndex.y].GetComponent<Rigidbody>();
                 float distanceBetween = Vector3.Distance(thisGameObject.transform.position, destinationBody.transform.position);
 
-                _jointsDict.Add((jointIndex.x, jointIndex.y));
-
-
-
                 // configure current spring joint
                 thisBodyJoint.connectedBody = destinationBody;
 
@@ -507,7 +486,6 @@ namespace SWPPT3.SoftbodyPhysics
 
                 thisBodyJoint.linearLimitSpring = Springlimit;
 
-                _oriJointAnchorsList.Add(thisBodyJoint.connectedAnchor);
                 _configurableJointList.Add(thisBodyJoint);
             }
 
@@ -530,17 +508,10 @@ namespace SWPPT3.SoftbodyPhysics
 
                 destinationBodyJoint.massScale = 0.001f;
 
-                _jointsDict.Add((i,_rigidbodyList.Count - 1));
-                _oriJointAnchorsList.Add(jointIndex.transform.localPosition - _rbOfCenter.transform.localPosition);
                 _configurableJointList.Add(destinationBodyJoint);
             }
 
-            _oriJointAnchorArray = _oriJointAnchorsList.ToArray();
-            _bufferJointAnchors = new NativeArray<Vector3>(_oriJointAnchorArray.Length, Allocator.Persistent);
-
             _configurableJointsArray = _configurableJointList.ToArray();
-
-            _jointsDictNa = new NativeArray<(int, int)>(_jointsDict.ToArray(), Allocator.Persistent);
         }
 
         public void FixJoint()
@@ -686,23 +657,7 @@ namespace SWPPT3.SoftbodyPhysics
 
         public void FixedUpdate()
         {
-            if (IsSlime)
-            {
-                var getVertexLocalPositionJob = new GetVertexLocalPositionJob
-                {
-                    Buffer = _optVerticesBuffer,
-                };
-                var getVertexLocalPositionHandle = getVertexLocalPositionJob.Schedule(_optVerticesTransform);
 
-                var getConnectedAnchorJob = new GetConnectedAnchorJob
-                {
-                    AnchorBuffer = _bufferJointAnchors,
-                    JointDict = _jointsDictNa,
-                    LocalPositions = _optVerticesBuffer
-                };
-                var getConnectedAnchorHandle = getConnectedAnchorJob.Schedule(_jointsDictNa.Length,16, getVertexLocalPositionHandle);
-                getConnectedAnchorHandle.Complete();
-            }
         }
 
         public void OnDestroy()
@@ -711,42 +666,10 @@ namespace SWPPT3.SoftbodyPhysics
             if(_optVerticesTransform.isCreated) _optVerticesTransform.Dispose();
             if(_optToOriDic.IsCreated) _optToOriDic.Dispose();
             if(_oriPositions.IsCreated) _oriPositions.Dispose();
-            if(_jointsDictNa.IsCreated) _jointsDictNa.Dispose();
-            if(_bufferJointAnchors.IsCreated) _bufferJointAnchors.Dispose();
         }
     }
 
-    /// <summary>
-    ///
-    /// LocalPosition buffer에 transformacess에 있는 local position을 대입
-    /// </summary>
-    [BurstCompile]
-    public struct GetVertexLocalPositionJob : IJobParallelForTransform
-    {
-        public NativeArray<Vector3> Buffer;
 
-        public void Execute(int index, TransformAccess transform)
-        {
-            Buffer[index] = transform.localPosition;
-        }
-    }
-    [BurstCompile]
-    public struct GetConnectedAnchorJob : IJobParallelFor
-    {
-        [ReadOnly] public NativeArray<Vector3> LocalPositions;
-        [ReadOnly] public NativeArray<(int, int)> JointDict;
-        public NativeArray<Vector3> AnchorBuffer;
-
-
-        public void Execute(int index)
-        {
-            var du = JointDict[index];
-            var idx1 = du.Item1;
-            var idx2 = du.Item2;
-
-            AnchorBuffer[index] = LocalPositions[idx1] - LocalPositions[idx2];
-        }
-    }
 
     /// <summary>
     /// vertex를 optimize하면서 optimize된 vertex를 Original vertex에 대응하기 위한 job
@@ -770,14 +693,4 @@ namespace SWPPT3.SoftbodyPhysics
         public Color Color { get; set; }
     }
 
-    // [CustomEditor(typeof(SoftbodyGenerator))]
-    // public class LookAtPointEditor : Editor
-    // {
-    //     public override void OnInspectorGUI()
-    //     {
-    //         SoftbodyGenerator softbody = target as SoftbodyGenerator;
-
-    //         softbody.DebugMode = EditorGUILayout.Toggle("#Debug mod", softbody.DebugMode);
-    //     }
-    // }
 }
