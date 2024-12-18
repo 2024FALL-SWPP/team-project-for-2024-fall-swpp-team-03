@@ -28,7 +28,6 @@ namespace SWPPT3.Main.PlayerLogic
         private Transform _playerTransform;
 
         private bool isRightButton = false;
-        private bool _isHoldingJump;
 
         private void Start()
         {
@@ -38,7 +37,6 @@ namespace SWPPT3.Main.PlayerLogic
             _moveSpeed = _playerScript.MoveSpeed;
             _rotationSpeed = _playerScript.RotationSpeed;
             _jumpForce = _playerScript.JumpForce;
-            _isHoldingJump = false;
             _playerTransform = transform;
             if (InputManager.Instance != null)
             {
@@ -64,20 +62,32 @@ namespace SWPPT3.Main.PlayerLogic
             {
                 RotatePlayer();
             }
-            if (_player.CurrentState == PlayerStates.Rubber && _groundedObjects.Count == 0  && _isHoldingJump)
-            {
-                // _player.SetBounciness(1.0f);
-            }
         }
 
         public void OnEnable()
         {
             Physics.ContactModifyEvent += ModificationEvent;
+            if(_softbody != null)
+            {
+                _softbody.HandleCollisionEnterEvent += HandleCollisionEnter;
+                _softbody.HandleCollisionStayEvent += HandleCollisionStay;
+                _softbody.HandleCollisionExitEvent += HandleCollisionExit;
+                _softbody.HandleTriggerEnterEvent += HandleTriggerEnter;
+                _softbody.HandleTriggerExitEvent += HandleTriggerExit;
+            }
         }
 
         public void OnDisable()
         {
             Physics.ContactModifyEvent -= ModificationEvent;
+            if (_softbody != null)
+            {
+                _softbody.HandleCollisionEnterEvent -= HandleCollisionEnter;
+                _softbody.HandleCollisionStayEvent -= HandleCollisionStay;
+                _softbody.HandleCollisionExitEvent -= HandleCollisionExit;
+                _softbody.HandleTriggerEnterEvent -= HandleTriggerEnter;
+                _softbody.HandleTriggerExitEvent -= HandleTriggerExit;
+            }
         }
 
         public void ModificationEvent(PhysicsScene scene, NativeArray<ModifiableContactPair> pairs)
@@ -132,20 +142,12 @@ namespace SWPPT3.Main.PlayerLogic
             {
                 _softbody.SoftbodyJump(_jumpForce);
             }
-            _isHoldingJump = true;
-            if (_player.CurrentState == PlayerStates.Rubber)
-            {
-                // _player.SetBounciness(1.0f);
-            }
+            _softbody.IsJumpKey = true;
         }
 
         private void HandleJumpCancel()
         {
-            _isHoldingJump = false;
-            if (_player.CurrentState == PlayerStates.Rubber)
-            {
-                // _player.SetBounciness(0.5f);
-            }
+            _softbody.IsJumpKey = false;
         }
 
         private void HandleStartRotation(bool isRightButtonPressed)
@@ -158,8 +160,7 @@ namespace SWPPT3.Main.PlayerLogic
             _lookInput = lookInput;
         }
 
-
-        private void OnCollisionEnter(Collision collision)
+        private void HandleCollisionEnter(Collision collision)
         {
             var obstacle = collision.gameObject.GetComponent<PropBase>();
             if (obstacle != null)
@@ -167,7 +168,7 @@ namespace SWPPT3.Main.PlayerLogic
                 _player.InteractWithProp(obstacle);
             }
         }
-        private void OnCollisionStay(Collision collision)
+        private void HandleCollisionStay(Collision collision)
         {
             var isGroundedObject = false;
             foreach(var contactPoint in collision.contacts)
@@ -186,7 +187,7 @@ namespace SWPPT3.Main.PlayerLogic
                 _groundedObjects.Remove(collision.gameObject);
             }
         }
-        private void OnCollisionExit(Collision collision)
+        private void HandleCollisionExit(Collision collision)
         {
             _groundedObjects.Remove(collision.gameObject);
             var obstacle = collision.gameObject.GetComponent<PropBase>();
@@ -196,7 +197,7 @@ namespace SWPPT3.Main.PlayerLogic
             }
         }
 
-        private void OnTriggerEnter(Collider other)
+        private void HandleTriggerEnter(Collider other)
         {
             var obstacle = other.gameObject.GetComponent<PropBase>();
             if (obstacle != null)
@@ -205,7 +206,7 @@ namespace SWPPT3.Main.PlayerLogic
             }
         }
 
-        private void OnTriggerExit(Collider other)
+        private void HandleTriggerExit(Collider other)
         {
             var obstacle = other.gameObject.GetComponent<PropBase>();
             if (obstacle != null)
