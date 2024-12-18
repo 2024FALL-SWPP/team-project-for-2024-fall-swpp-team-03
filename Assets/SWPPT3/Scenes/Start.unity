@@ -137,7 +137,7 @@ PrefabInstance:
     - target: {fileID: 4594056758955674281, guid: d79180819b10a49f88d89a3e3c2f6d2c,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4594056758955674282, guid: d79180819b10a49f88d89a3e3c2f6d2c,
         type: 3}
@@ -1690,6 +1690,11 @@ PrefabInstance:
       propertyPath: _onTryingOptionStatusChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
+    - target: {fileID: 2777941070604438708, guid: d75084c0538324141925deab3531a83d,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3373383851121577288, guid: d75084c0538324141925deab3531a83d,
         type: 3}
       propertyPath: m_AnchorMax.x
@@ -1734,6 +1739,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_IsActive
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4744774116367588981, guid: d75084c0538324141925deab3531a83d,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4924722160105393931, guid: d75084c0538324141925deab3531a83d,
         type: 3}

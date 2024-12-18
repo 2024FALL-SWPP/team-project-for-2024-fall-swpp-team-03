@@ -34,7 +34,6 @@ namespace SWPPT3.Main.Manager
             {
                 if (gameState != value)
                 {
-                    Debug.Log($"{gameState} {value}");
                     gameState = value;
                     HandleGameStateChanged(gameState);
                 }

@@ -7,14 +7,7 @@ namespace SWPPT3.Main.PlayerLogic.State
     {
         public override void InteractWithProp(Player player, PropBase obstacle)
         {
-            if (false)
-            {
-                obstacle.InteractWithPlayer();
-            }
-            else
-            {
-                base.InteractWithProp(player, obstacle);
-            }
+            base.InteractWithProp(player, obstacle);
         }
     }
 }
