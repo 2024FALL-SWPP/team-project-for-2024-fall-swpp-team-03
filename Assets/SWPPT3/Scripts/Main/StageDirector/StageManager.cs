@@ -4,6 +4,7 @@ using SWPPT3.Main.UI;
 using SWPPT3.Main.Utility.Singleton;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace SWPPT3.Main.StageDirector
 {
@@ -30,7 +31,7 @@ namespace SWPPT3.Main.StageDirector
         {
             UnityEngine.Time.timeScale = 1f;
             Time = 0;
-            InvokeRepeating("UpdateTime", 1.0f, 1.0f);
+            InvokeRepeating("UpdateTime", 0.0f, 1.0f);
             //Debug.Log("Starting Stage");
         }
 
@@ -60,8 +61,8 @@ namespace SWPPT3.Main.StageDirector
 
         public void UpdateTime()
         {
-            Time++;
             inGameScreen.PlayTimeUpdate(Time);
+            Time++;
         }
 
     }

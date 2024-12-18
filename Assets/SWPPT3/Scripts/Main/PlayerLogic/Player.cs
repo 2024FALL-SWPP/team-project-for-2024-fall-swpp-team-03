@@ -5,6 +5,7 @@ using UnityEngine;
 using SWPPT3.Main.Prop;
 using UnityEngine.InputSystem;
 using SWPPT3.Main.PlayerLogic.State;
+using SWPPT3.SoftbodyPhysics;
 
 namespace SWPPT3.Main.PlayerLogic
 {
@@ -12,23 +13,24 @@ namespace SWPPT3.Main.PlayerLogic
     {
         private PlayerStates _currentState = PlayerStates.Slime;
         private Vector2 _inputMovement;
-        private int slimeCount , metalCount, rubberCount;
+
         public Dictionary<PlayerStates, int> Item;
 
-        public event Action OnItemChanged;
+        private SoftbodyGenerator _softbody;
 
-        [SerializeField]
-        private Rigidbody _rb;
-        // [SerializeField]
-        public PhysicMaterial _physicMaterial;
-        [SerializeField]
-        public Collider _collider;
+        [SerializeField] private MeshRenderer _meshRenderer;
+        [SerializeField] private Material _slimeMaterial;
+        [SerializeField] private Material _rubberMaterial;
+        [SerializeField] private Material _metalMaterial;
+
+
+
+        public event Action OnItemChanged;
 
         private PlayerState PlayerState => _playerStates[_currentState];
 
         public PlayerStates CurrentState => _currentState;
 
-        public Rigidbody Rigidbody => _rb;
 
         private readonly Dictionary<PlayerStates, PlayerState> _playerStates = new()
         {
@@ -36,16 +38,10 @@ namespace SWPPT3.Main.PlayerLogic
             { PlayerStates.Rubber, new RubberState() },
             { PlayerStates.Slime, new SlimeState() },
         };
-        public void SetBounciness(float bounciness, PhysicMaterialCombine bounceCombine = PhysicMaterialCombine.Maximum)
-        {
-            _physicMaterial.bounciness = bounciness;
-            _physicMaterial.bounceCombine = bounceCombine;
-
-            _collider.material = _physicMaterial;
-        }
 
         private void Awake()
         {
+            _softbody = GetComponent<SoftbodyGenerator>();
             if (Item == null)
             {
                 Item = new Dictionary<PlayerStates, int>
@@ -67,9 +63,18 @@ namespace SWPPT3.Main.PlayerLogic
                 if (newState != PlayerStates.Slime) Item[newState]--;
                 OnItemChanged?.Invoke();
                 _currentState = newState;
-                PlayerState.ChangeRigidbody(_rb);
-                PlayerState.ChangePhysics(_collider, _physicMaterial);
-                _collider.hasModifiableContacts = newState == PlayerStates.Slime;
+                if (newState == PlayerStates.Rubber)
+                {
+                    _softbody.SetRubberJump();
+                }
+                else if (newState == PlayerStates.Metal)
+                {
+                    _softbody.SetMetal();
+                }
+                else if (newState == PlayerStates.Slime)
+                {
+                    _softbody.SetSlime();
+                }
             }
 
             Debug.Log(_currentState);
