@@ -153,6 +153,7 @@ namespace SWPPT3.Main.PlayerLogic
             if (_groundedObjects.Count > 0 && GameManager.Instance.GameState == GameState.Playing)
             {
                 _softbody.SoftbodyJump(_jumpForce);
+                _softbody.ResetDirty();
             }
             _softbody.IsJumpKey = true;
         }
