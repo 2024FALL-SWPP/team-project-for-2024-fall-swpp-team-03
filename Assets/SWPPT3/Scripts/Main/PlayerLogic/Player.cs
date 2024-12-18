@@ -63,8 +63,10 @@ namespace SWPPT3.Main.PlayerLogic
             if (newState == PlayerStates.Slime || Item[newState] > 0)
             {
                 if (newState != PlayerStates.Slime) Item[newState]--;
+
                 OnItemChanged?.Invoke();
                 _currentState = newState;
+
                 if (newState == PlayerStates.Rubber)
                 {
                     _meshRenderer.material = _rubberMaterial;
