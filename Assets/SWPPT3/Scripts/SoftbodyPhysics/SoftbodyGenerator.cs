@@ -372,7 +372,7 @@ namespace SWPPT3.SoftbodyPhysics
 
                 OnRubberJump += rubberJump.SetActive;
                 rubberJump._softbody = this;
-                rubberJump.jumpForce = _script.RubberJump;
+                rubberJump.rubberForce = _script.RubberJump;
 
                 _rigidbodyList.Add(_tempRigidBody);
 

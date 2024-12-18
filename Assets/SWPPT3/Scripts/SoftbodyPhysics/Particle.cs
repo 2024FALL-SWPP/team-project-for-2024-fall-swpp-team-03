@@ -9,7 +9,7 @@ namespace SWPPT3.SoftbodyPhysics
 
         public SoftbodyGenerator _softbody;
 
-        public float jumpForce;
+        public float rubberForce;
 
         private void Awake()
         {
@@ -32,7 +32,7 @@ namespace SWPPT3.SoftbodyPhysics
                 {
                     if (contact.normal.y >= 0.7f)
                     {
-                        Vector3 force = Vector3.up * (_rb.mass * jumpForce);
+                        Vector3 force = Vector3.up * (_rb.mass * rubberForce);
                         _rb.AddForce(force, ForceMode.Impulse);
 
                         break; // 하나라도 조건 만족하면 탈출
