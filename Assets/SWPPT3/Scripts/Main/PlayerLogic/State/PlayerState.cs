@@ -42,14 +42,10 @@ namespace SWPPT3.Main.PlayerLogic.State
                 }
                 else if (obstacle is Gas)
                 {
-                    foreach(PlayerStates playerState in Enum.GetValues(typeof(PlayerStates)))
+                    foreach (PlayerStates playerState in Enum.GetValues(typeof(PlayerStates)))
                     {
-
-                    player.SetItemCounts(0,
-                        itemBox.ItemState == PlayerStates.Metal ? player.Item[PlayerStates.Metal] + 1 : player.Item[PlayerStates.Metal],
-                        itemBox.ItemState == PlayerStates.Rubber ? player.Item[PlayerStates.Rubber] + 1 : player.Item[PlayerStates.Rubber]
-                    );
-                    itemBox.InteractWithPlayer();
+                        player.SetItemCounts(0, 0, 0);
+                    }
                 }
                 else if (obstacle is PoisonPool)
                 {
