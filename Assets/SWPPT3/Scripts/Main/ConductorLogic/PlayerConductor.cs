@@ -1,3 +1,4 @@
+using System;
 using SWPPT3.Main.PlayerLogic;
 using SWPPT3.Main.PlayerLogic.State;
 using SWPPT3.SoftbodyPhysics;
@@ -11,7 +12,28 @@ namespace SWPPT3.Main.ConductorLogic
         private Player _player;
         private SoftbodyGenerator _softbodygenerator;
 
+        private SoftbodyGenerator _softbody;
+
         private PlayerStates _previousState;
+
+        public void OnEnable()
+        {
+            _softbody = GetComponent<SoftbodyGenerator>();
+            if (_softbody != null)
+            {
+                _softbody.HandleCollisionEnterEvent += HandleCollisionEnter;
+                _softbody.HandleCollisionExitEvent += HandleCollisionExit;
+            }
+        }
+
+        public void OnDisable()
+        {
+            if (_softbody != null)
+            {
+                _softbody.HandleCollisionEnterEvent -= HandleCollisionEnter;
+                _softbody.HandleCollisionExitEvent -= HandleCollisionExit;
+            }
+        }
 
         private void Awake()
         {
@@ -33,8 +55,23 @@ namespace SWPPT3.Main.ConductorLogic
             return _player.CurrentState == PlayerStates.Metal;
         }
 
-        public void OncollisionEnter(Collision collision)
+
+        private void HandleCollisionEnter(Collision other)
         {
+            var conductor = other.gameObject.GetComponent<Conductor>();
+            if (conductor == null) return;
+
+            Connections.Add(conductor.gameObject);
+            ConductorManager.IsDirty = true;
+            //Debug.Log("Oncollisionenter"+ gameObject.name);
+        }
+
+        private void HandleCollisionExit(Collision other)
+        {
+            var conductor = other.gameObject.GetComponent<Conductor>();
+            if (conductor == null) return;
+            Connections.Remove(conductor.gameObject);
+            ConductorManager.IsDirty = true;
         }
     }
 }

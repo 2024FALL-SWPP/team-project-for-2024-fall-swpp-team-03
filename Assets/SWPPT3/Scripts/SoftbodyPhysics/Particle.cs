@@ -1,15 +1,16 @@
 using System;
+using PlasticGui.WorkspaceWindow.Configuration;
 using UnityEngine;
 
 namespace SWPPT3.SoftbodyPhysics
 {
-    public class RubberJump : MonoBehaviour
+    public class Particle : MonoBehaviour
     {
         private Rigidbody _rb;
 
         public SoftbodyGenerator _softbody;
 
-        public float jumpForce;
+        public float rubberForce;
 
         private void Awake()
         {
@@ -32,9 +33,7 @@ namespace SWPPT3.SoftbodyPhysics
                 {
                     if (contact.normal.y >= 0.7f)
                     {
-                        Vector3 force = Vector3.up * (_rb.mass * jumpForce);
-                        _rb.AddForce(force, ForceMode.Impulse);
-
+                        _softbody.SetDirty = true;
                         break; // 하나라도 조건 만족하면 탈출
                     }
                 }
@@ -57,9 +56,9 @@ namespace SWPPT3.SoftbodyPhysics
             _softbody.TriggerEnter(other);
         }
 
-        private void OnTriggerStay(Collider other)
+        private void OnTriggerExit(Collider other)
         {
-            _softbody.TriggerStay(other);
+            _softbody.TriggerExit(other);
         }
     }
 }
