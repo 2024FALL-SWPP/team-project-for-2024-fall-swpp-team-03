@@ -260,7 +260,7 @@ namespace SWPPT3.SoftbodyPhysics
             HandleTriggerEnterEvent?.Invoke(other);
         }
 
-        public void TriggerStay(Collider other)
+        public void TriggerExit(Collider other)
         {
             HandleTriggerExitEvent?.Invoke(other);
         }
@@ -270,7 +270,7 @@ namespace SWPPT3.SoftbodyPhysics
         private GameObject centerOfMasObj = null;
         private Rigidbody _rbOfCenter = null;
 
-        private PhysicMaterial _physicsMaterial = null;
+        public bool SetDirty;
 
         private bool _isJumpKey;
 
@@ -282,6 +282,7 @@ namespace SWPPT3.SoftbodyPhysics
 
         private void Awake()
         {
+            SetDirty = false;
             Softness = _script.Softness;
             Mass = _script.Mass;
             PhysicsRoughness = _script.PhysicsRoughness;
@@ -295,13 +296,6 @@ namespace SWPPT3.SoftbodyPhysics
             _jointsDict = new List<(int, int)>();
 
             _isJumpKey = false;
-
-            _physicsMaterial = new PhysicMaterial();
-            _physicsMaterial.bounciness = 0f;
-            _physicsMaterial.dynamicFriction = 0f;
-            _physicsMaterial.staticFriction = 0f;
-
-            _physicsMaterial.bounceCombine = PhysicMaterialCombine.Maximum;
 
             WritableVertices = new List<Vector3>();
             WritableNormals = new List<Vector3>();
@@ -370,7 +364,6 @@ namespace SWPPT3.SoftbodyPhysics
                 // add collider to each of vertex ( sphere collider )
                 var sphereColider = _tempObj.AddComponent<SphereCollider>() as SphereCollider;
                 sphereColider.radius = CollissionSurfaceOffset;
-                sphereColider.material = _physicsMaterial;
 
                 // add current collider to Collider list ;
                 _sphereColliderList.Add(sphereColider);
@@ -382,10 +375,11 @@ namespace SWPPT3.SoftbodyPhysics
                 _tempRigidBody.drag = PhysicsRoughness;
                 _tempRigidBody.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
 
-                var rubberJump = _tempObj.AddComponent<RubberJump>();
+                var rubberJump = _tempObj.AddComponent<Particle>();
 
                 OnRubberJump += rubberJump.SetActive;
                 rubberJump._softbody = this;
+                rubberJump.rubberForce = _script.RubberJump;
 
                 _rigidbodyList.Add(_tempRigidBody);
 
@@ -408,10 +402,6 @@ namespace SWPPT3.SoftbodyPhysics
             rootRB.mass = 1;
             rootRB.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
             _rigidbodyList.Add(rootRB);
-
-            // var rootSC = gameObject.AddComponent<SphereCollider>();
-            // rootSC.radius = CollissionSurfaceOffset;
-            // _sphereColliderList.Add(rootSC);
 
             _sphereColliderArray = _sphereColliderList.ToArray();
             _rigidbodyArray  = _rigidbodyList.ToArray();
@@ -551,7 +541,6 @@ namespace SWPPT3.SoftbodyPhysics
                 joint.xMotion = ConfigurableJointMotion.Locked;
                 joint.yMotion = ConfigurableJointMotion.Locked;
                 joint.zMotion = ConfigurableJointMotion.Locked;
-                // joint.connectedAnchor = _bufferJointAnchors[i];
             }
         }
 
@@ -563,7 +552,6 @@ namespace SWPPT3.SoftbodyPhysics
                 joint.xMotion = ConfigurableJointMotion.Limited;
                 joint.yMotion = ConfigurableJointMotion.Limited;
                 joint.zMotion = ConfigurableJointMotion.Limited;
-                // joint.connectedAnchor = _oriJointAnchorArray[i];
             }
         }
 
@@ -662,15 +650,6 @@ namespace SWPPT3.SoftbodyPhysics
                 }
            }
 
-           if (PlayerStates == SoftStates.Rubber && _isJumpKey == true)
-           {
-               IsRubberJump = true;
-           }
-           else
-           {
-               IsRubberJump = false;
-           }
-
            var setVertexUpdateJob = new SetVertexUpdateJob
            {
                LocalPositions = _optVerticesBuffer,
@@ -703,6 +682,25 @@ namespace SWPPT3.SoftbodyPhysics
                 var getConnectedAnchorHandle = getConnectedAnchorJob.Schedule(_jointsDictNa.Length,16, getVertexLocalPositionHandle);
                 getConnectedAnchorHandle.Complete();
             }
+            if (PlayerStates == SoftStates.Rubber && _isJumpKey == true)
+            {
+                IsRubberJump = true;
+            }
+            else
+            {
+                IsRubberJump = false;
+            }
+
+            if (IsRubberJump && SetDirty)
+            {
+                SoftbodyJump(_script.RubberJump);
+                Invoke("ResetDirty", _script.ResetSec);
+            }
+        }
+
+        public void ResetDirty()
+        {
+            SetDirty = false;
         }
 
         public void OnDestroy()
