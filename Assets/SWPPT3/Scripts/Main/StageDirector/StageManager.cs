@@ -20,7 +20,6 @@ namespace SWPPT3.Main.StageDirector
 
         public void Awake()
         {
-            Debug.Log("Stage Manager initialized");
             InitializeStage();
             StartStage();
             GameManager.Instance._stageManager = this;
