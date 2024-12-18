@@ -1,7 +1,11 @@
+#region
+
 using System;
 using JetBrains.Annotations;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
+
+#endregion
 
 namespace SWPPT3.Main.Utility.Singleton
 {

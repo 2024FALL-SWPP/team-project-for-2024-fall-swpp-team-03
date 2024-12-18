@@ -1,10 +1,12 @@
+#region
+
 using SWPPT3.Main.Manager;
 using SWPPT3.Main.PlayerLogic;
 using SWPPT3.Main.UI;
 using SWPPT3.Main.Utility.Singleton;
-using UnityEditor.SceneManagement;
 using UnityEngine;
-using UnityEngine.Events;
+
+#endregion
 
 namespace SWPPT3.Main.StageDirector
 {

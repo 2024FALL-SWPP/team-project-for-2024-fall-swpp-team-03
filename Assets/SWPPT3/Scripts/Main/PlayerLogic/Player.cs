@@ -1,11 +1,13 @@
+#region
+
 using System;
 using System.Collections.Generic;
-using SWPPT3.Main.Manager;
-using UnityEngine;
-using SWPPT3.Main.Prop;
-using UnityEngine.InputSystem;
 using SWPPT3.Main.PlayerLogic.State;
+using SWPPT3.Main.Prop;
 using SWPPT3.SoftbodyPhysics;
+using UnityEngine;
+
+#endregion
 
 namespace SWPPT3.Main.PlayerLogic
 {

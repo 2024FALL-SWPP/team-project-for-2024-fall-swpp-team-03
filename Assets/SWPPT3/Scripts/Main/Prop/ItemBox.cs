@@ -1,7 +1,8 @@
-using System;
-using SWPPT3.Main.PlayerLogic;
+#region
+
 using SWPPT3.Main.PlayerLogic.State;
-using UnityEngine;
+
+#endregion
 
 namespace SWPPT3.Main.Prop
 {

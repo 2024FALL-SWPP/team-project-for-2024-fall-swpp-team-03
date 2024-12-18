@@ -1,4 +1,8 @@
+#region
+
 using UnityEngine;
+
+#endregion
 
 namespace SWPPT3.Main.PlayerLogic
 {

@@ -1,6 +1,8 @@
+#region
+
 using SWPPT3.Main.Prop;
-using Unity.Collections;
-using UnityEngine;
+
+#endregion
 
 namespace SWPPT3.Main.PlayerLogic.State
 {

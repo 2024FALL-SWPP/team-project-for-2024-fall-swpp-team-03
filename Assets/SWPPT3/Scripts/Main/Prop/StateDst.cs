@@ -1,6 +1,9 @@
-using System;
+#region
+
 using System.Collections.Generic;
 using UnityEngine;
+
+#endregion
 
 namespace SWPPT3.Main.Prop
 {

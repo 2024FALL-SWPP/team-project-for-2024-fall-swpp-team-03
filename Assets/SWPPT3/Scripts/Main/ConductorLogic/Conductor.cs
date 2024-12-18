@@ -1,7 +1,9 @@
-using System;
+#region
+
 using System.Collections.Generic;
 using UnityEngine;
-using SWPPT3.Main.ConductorLogic;
+
+#endregion
 
 namespace SWPPT3.Main.ConductorLogic
 {
