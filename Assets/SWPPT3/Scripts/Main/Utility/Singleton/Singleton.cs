@@ -1,4 +1,8 @@
+#region
+
 using System;
+
+#endregion
 
 namespace SWPPT3.Main.Utility.Singleton
 {

@@ -1,14 +1,15 @@
-using System.Collections;
-using System.Collections.Generic;
+#region
+
 using SWPPT3.Main.Manager;
 using SWPPT3.Main.PlayerLogic;
 using SWPPT3.Main.PlayerLogic.State;
 using TMPro;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
+
+#endregion
 
 namespace SWPPT3.Main.UI
 {

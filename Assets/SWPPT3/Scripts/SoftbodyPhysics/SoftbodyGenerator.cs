@@ -1,13 +1,15 @@
+#region
+
 using System;
 using System.Collections.Generic;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Jobs;
-using UnityEditor;
-using UnityEditor.Profiling.Memory.Experimental;
 using UnityEngine;
 using UnityEngine.Jobs;
 using Random = UnityEngine.Random;
+
+#endregion
 
 namespace SWPPT3.SoftbodyPhysics
 {

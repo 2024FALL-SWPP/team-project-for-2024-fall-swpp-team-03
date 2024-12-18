@@ -1,8 +1,11 @@
-using System;
+#region
+
 using SWPPT3.Main.PlayerLogic;
 using SWPPT3.Main.PlayerLogic.State;
 using SWPPT3.SoftbodyPhysics;
 using UnityEngine;
+
+#endregion
 
 namespace SWPPT3.Main.ConductorLogic
 {

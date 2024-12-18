@@ -1,10 +1,13 @@
+#region
 
-using SWPPT3.Main.Utility.Singleton;
-using UnityEngine;
-using UnityEngine.Audio; // AudioMixer를 사용하기 위해 필요
 using System.Collections.Generic;
 using SWPPT3.Main.AudioLogic;
-using UnityEngine.Serialization;
+using SWPPT3.Main.Utility.Singleton;
+using UnityEngine;
+using UnityEngine.Audio;
+// AudioMixer를 사용하기 위해 필요
+
+#endregion
 
 namespace SWPPT3.Main.Manager
 {

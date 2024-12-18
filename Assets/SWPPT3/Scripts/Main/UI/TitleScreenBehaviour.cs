@@ -1,3 +1,5 @@
+#region
+
 using System;
 using SWPPT3.Main.Manager;
 using SWPPT3.Main.PlayerLogic;
@@ -5,6 +7,8 @@ using SWPPT3.Main.Utility;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
+
+#endregion
 
 namespace SWPPT3.Main.UI
 {

@@ -1,11 +1,13 @@
-using SWPPT3.Main.Utility.Singleton;
+#region
+
 using System;
-using System.Collections.Generic;
 using SWPPT3.Main.StageDirector;
-using UnityEditor.SceneManagement;
+using SWPPT3.Main.Utility.Singleton;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
+
+#endregion
 
 namespace SWPPT3.Main.Manager
 {

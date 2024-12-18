@@ -1,5 +1,8 @@
-using System;
+#region
+
 using SWPPT3.Main.Manager;
+
+#endregion
 
 namespace SWPPT3.Main.AudioLogic
 {

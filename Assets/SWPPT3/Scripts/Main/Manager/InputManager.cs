@@ -1,7 +1,10 @@
+#region
+
 using SWPPT3.Main.Generated;
 using SWPPT3.Main.Utility.Singleton;
 using UnityEngine;
-using UnityEngine.InputSystem;
+
+#endregion
 
 namespace SWPPT3.Main.Manager
 {
