@@ -400,12 +400,12 @@ namespace SWPPT3.SoftbodyPhysics
 
         private void OnEnable()
         {
-            Physics.ContactModifyEvent += ModificationEvent;
+            //Physics.ContactModifyEvent += ModificationEvent;
         }
 
         private void OnDisable()
         {
-            Physics.ContactModifyEvent -= ModificationEvent;
+            //Physics.ContactModifyEvent -= ModificationEvent;
         }
 
         public void SetHasModifiableContacts(bool enabled)
@@ -421,23 +421,24 @@ namespace SWPPT3.SoftbodyPhysics
             }
         }
 
-        public void ModificationEvent(PhysicsScene scene, NativeArray<ModifiableContactPair> pairs)
-        {
-            for (int i = 0; i < pairs.Length; i++)
-            {
-                var pair = pairs[i];
+        // public void ModificationEvent(PhysicsScene scene, NativeArray<ModifiableContactPair> pairs)
+        // {
+        //     Debug.Log("modify : softbody");
+        //     for (int i = 0; i < pairs.Length; i++)
+        //     {
+        //         var pair = pairs[i];
 
-                var properties = pair.massProperties;
-                properties.inverseMassScale = 1f;
-                properties.inverseInertiaScale = 1f;
-                properties.otherInverseMassScale = 0f;
-                properties.otherInverseInertiaScale = 0f;
+        //         var properties = pair.massProperties;
+        //         properties.inverseMassScale = 1f;
+        //         properties.inverseInertiaScale = 1f;
+        //         properties.otherInverseMassScale = 0f;
+        //         properties.otherInverseInertiaScale = 0f;
 
-                pair.massProperties = properties;
+        //         pair.massProperties = properties;
 
-                pairs[i] = pair;
-            }
-        }
+        //         pairs[i] = pair;
+        //     }
+        // }
 
         [BurstCompile]
         private struct GetBonePositionJob : IJobParallelForTransform
