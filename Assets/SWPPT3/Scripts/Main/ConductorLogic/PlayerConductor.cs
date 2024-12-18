@@ -1,5 +1,6 @@
 using SWPPT3.Main.PlayerLogic;
 using SWPPT3.Main.PlayerLogic.State;
+using SWPPT3.SoftbodyPhysics;
 using UnityEngine;
 
 namespace SWPPT3.Main.ConductorLogic
@@ -8,11 +9,13 @@ namespace SWPPT3.Main.ConductorLogic
     {
         [SerializeField]
         private Player _player;
+        private SoftbodyGenerator _softbodygenerator;
 
         private PlayerStates _previousState;
 
         private void Awake()
         {
+            _softbodygenerator = gameObject.GetComponent<SoftbodyGenerator>();
             _previousState = _player.CurrentState;
         }
 
@@ -28,6 +31,11 @@ namespace SWPPT3.Main.ConductorLogic
         public override bool IsConductive()
         {
             return _player.CurrentState == PlayerStates.Metal;
+        }
+
+        public void OncollisionEnter(Collision collision)
+        {
+            _softbodygenerator
         }
     }
 }
