@@ -1,14 +1,7 @@
 fileFormatVersion: 2
-<<<<<<<< HEAD:Assets/SWPPT3/Audio.meta
-guid: 7c7f260db289016428300a892eacd5ab
-folderAsset: yes
-|||||||| 6b73f6f:Assets/JMO Assets/Cartoon FX FREE (old legacy effects).unitypackage.meta
-guid: b18b93d4b5d00384ba417df18aeac5a3
-========
 guid: 710f7a15553caef4fa7d45b0b17850bb
->>>>>>>> main:Assets/SWPPT3/Scenes/Stage1test.unity.meta
 DefaultImporter:
   externalObjects: {}
-  userData: 
-  assetBundleName: 
-  assetBundleVariant: 
+  userData:
+  assetBundleName:
+  assetBundleVariant:
