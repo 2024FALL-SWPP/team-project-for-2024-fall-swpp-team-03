@@ -20,16 +20,11 @@ namespace SWPPT3.Main.Manager
         [SerializeField] private AudioSource failSound;
         [SerializeField] private AudioSource successSound;
 
-        [SerializeField]
-        private AudioLowPassFilter bgmLowPassFilter; // 추가된 필드
-
         [Header("Audio Mixer")]
         [SerializeField]
         private AudioMixer masterMixer;
         [SerializeField]
         private string bgmMixerGroupName = "BGM";
-
-        private List<BgmObject> bgmObjects;
 
         private float _bgmVolume;
         public float BGMVolume { get => _bgmVolume; set => _bgmVolume = value; }
@@ -37,22 +32,6 @@ namespace SWPPT3.Main.Manager
         public float SFXVolume { get => _sfxVolume; set => _sfxVolume = value; }
 
         private List<SfxObject> sfxObjects;
-
-        public void AddBgmObject(BgmObject bgm)
-        {
-            if (bgm != null && !bgmObjects.Contains(bgm))
-            {
-                bgmObjects.Add(bgm);
-            }
-        }
-
-        public void RemoveBgmObject(BgmObject bgm)
-        {
-            if (bgm != null && bgmObjects.Contains(bgm))
-            {
-                bgmObjects.Remove(bgm);
-            }
-        }
 
         public void AddSfxObject(SfxObject sfx)
         {
@@ -73,7 +52,6 @@ namespace SWPPT3.Main.Manager
 
         private void Awake()
         {
-            bgmObjects = new List<BgmObject>();
             sfxObjects = new List<SfxObject>();
             DontDestroyOnLoad(gameObject);
 
@@ -95,28 +73,6 @@ namespace SWPPT3.Main.Manager
         {
             SetBGMVolume(BGMVolume);
             SetSFXVolume(SFXVolume);
-            var state = GameManager.Instance.GameState;
-            switch (state)
-            {
-                case GameState.Playing:
-                case GameState.Ready:
-                case GameState.BeforeStart:
-                case GameState.Exit:
-                case GameState.OnOption:
-                    ApplyLowPassFilter(false);
-                    PlayBGM();
-                    break;
-                case GameState.Paused:
-                    ApplyLowPassFilter(true);
-                    break;
-                case GameState.GameOver:
-                    PlayFailSound();
-                    break;
-                case GameState.StageCleared:
-                    PlaySuccessSound();
-                    break;
-            }
-
         }
         #region BGM Methods
 
@@ -130,33 +86,29 @@ namespace SWPPT3.Main.Manager
             bgmSource.Stop();
         }
 
-        public void BgmSourcesStop()
-        {
-            foreach (var sound in bgmObjects)
-            {
-                sound.StopSound();
-            }
-        }
-
         public void PlayFailSound()
         {
-            BgmSourcesStop();
-            failSound.PlayOneShot(failSound.clip);
+            failSound.Play();
+        }
+
+        public void StopFailSound()
+        {
+            failSound.Stop();
+        }
+
+        public void StopSuccessSound()
+        {
+            successSound.Stop();
         }
 
         public void PlaySuccessSound()
         {
-            BgmSourcesStop();
-            successSound.PlayOneShot(successSound.clip);
+            successSound.Play();
         }
 
         public void SetBGMVolume(float volume)
         {
             bgmSource.volume = volume;
-            foreach (AudioObject audioObject in bgmObjects)
-            {
-                audioObject.SetVolume(volume);
-            }
             failSound.volume = volume;
             successSound.volume = volume;
         }
@@ -171,35 +123,6 @@ namespace SWPPT3.Main.Manager
 
         #endregion
 
-        #region Low-Pass Filter Control
 
-        public void ApplyLowPassFilter(bool apply, float cutoffFrequency = 500f, float transitionTime = 1.0f)
-        {
-            if (apply)
-            {
-                masterMixer.FindSnapshot("LowPass").TransitionTo(transitionTime);
-
-                bgmLowPassFilter.enabled = true;
-                bgmLowPassFilter.cutoffFrequency = cutoffFrequency;
-
-                foreach (BgmObject bgmObject in bgmObjects)
-                {
-                    bgmObject.ApplySlow(true);
-                }
-            }
-            else
-            {
-                masterMixer.FindSnapshot("Normal").TransitionTo(transitionTime);
-
-                bgmLowPassFilter.enabled = false;
-
-                foreach (BgmObject bgmObject in bgmObjects)
-                {
-                    bgmObject.ApplySlow(false);
-                }
-            }
-        }
-
-        #endregion
     }
 }
