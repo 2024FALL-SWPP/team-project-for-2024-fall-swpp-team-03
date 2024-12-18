@@ -18,9 +18,10 @@ namespace SWPPT3.Main.PlayerLogic.State
         {
             if (obstacle is ItemBox itemBox)
             {
-                player.Item[itemBox.ItemState] += 1;
-                Debug.Log(itemBox.ItemState);
-                itemBox.InteractWithPlayer();
+                player.SetItemCounts(0,
+                    itemBox.ItemState == PlayerStates.Metal ? player.Item[PlayerStates.Metal] + 1 : player.Item[PlayerStates.Metal],
+                    itemBox.ItemState == PlayerStates.Rubber ? player.Item[PlayerStates.Rubber] + 1 : player.Item[PlayerStates.Rubber]
+                );
             }
             else if (obstacle is PoisonPool)
             {
@@ -31,7 +32,7 @@ namespace SWPPT3.Main.PlayerLogic.State
             {
                 foreach(PlayerStates playerState in System.Enum.GetValues(typeof(PlayerStates)))
                 {
-                    player.Item[playerState] = 0;
+                    player.SetItemCounts(0,0,0);
                 }
                 player.TryChangeState(PlayerStates.Slime);
             }

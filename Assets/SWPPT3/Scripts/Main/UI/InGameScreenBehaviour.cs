@@ -30,7 +30,6 @@ namespace SWPPT3.Main.UI
         [SerializeField] private RectTransform _rubberButton;
         [SerializeField] private RectTransform _metalButton;
         [SerializeField] private RectTransform _slimeButton;
-        private float _maxDistance = 200f; // 최대 거리 (이 값에 따라 확대 감도가 달라짐)
         private Vector2 _screenCenter;
 
 
@@ -101,7 +100,6 @@ namespace SWPPT3.Main.UI
         }
         private void UpdateRadialScale()
         {
-            Vector2 mousePosition = Mouse.current.position.ReadValue();
             UpdateButtonScale();
         }
 
@@ -110,7 +108,7 @@ namespace SWPPT3.Main.UI
             Vector2 screenCenter = new Vector2(Screen.width / 2f, Screen.height / 2f);
             Vector2 relativePos = Mouse.current.position.ReadValue() - screenCenter;
 
-            if (relativePos.magnitude < 50f)
+            if (relativePos.magnitude < 50f || relativePos.magnitude > 100f)
             {
                 SetButtonScale(_slimeButton, 1.0f);
                 SetButtonScale(_metalButton, 1.0f);
@@ -121,24 +119,22 @@ namespace SWPPT3.Main.UI
                 float angle = Mathf.Atan2(relativePos.y, relativePos.x) * Mathf.Rad2Deg;
                 if (angle < 0) angle += 360f;
 
-                float scaleFactor = Mathf.Lerp(1.5f, 1.0f, relativePos.magnitude / _maxDistance);
-                scaleFactor = Mathf.Clamp(scaleFactor, 1.0f, 2.0f);
 
-                if (angle >= 0 && angle < 120)
+                if (angle <=90 && angle > 330)
                 {
-                    SetButtonScale(_slimeButton, scaleFactor);
+                    SetButtonScale(_slimeButton, 1.5f);
                     SetButtonScale(_metalButton, 1.0f);
                     SetButtonScale(_rubberButton, 1.0f);
                 }
-                else if (angle >= 120 && angle < 240)
+                else if (angle >= 90 && angle < 210)
                 {
-                    SetButtonScale(_metalButton, scaleFactor);
+                    SetButtonScale(_metalButton, 1.5f);
                     SetButtonScale(_rubberButton, 1.0f);
                     SetButtonScale(_slimeButton, 1.0f);
                 }
                 else
                 {
-                    SetButtonScale(_rubberButton, scaleFactor);
+                    SetButtonScale(_rubberButton, 1.5f);
                     SetButtonScale(_metalButton, 1.0f);
                     SetButtonScale(_slimeButton, 1.0f);
                 }
@@ -235,7 +231,6 @@ namespace SWPPT3.Main.UI
 
                 // 커서를 화면 중앙으로 이동
                 Vector2 screenCenter = new Vector2(Screen.width / 2f, Screen.height / 2f);
-
                 Mouse.current.WarpCursorPosition(screenCenter);
 
                 GameManager.Instance.GameState = GameState.OnChoice;
@@ -255,25 +250,38 @@ namespace SWPPT3.Main.UI
             Vector2 cursorPos = Mouse.current.position.ReadValue();
             Vector2 screenCenter = new Vector2(Screen.width / 2f, Screen.height / 2f);
             Vector2 relativePos = cursorPos - screenCenter;
-            if (relativePos.magnitude < 50f) return;
-            float angle = Mathf.Atan2(relativePos.y, relativePos.x) * Mathf.Rad2Deg;
-            if (angle < 0)
+            if (relativePos.magnitude < 50f || relativePos.magnitude > 100f)
             {
-                angle += 360f;
-            }
-
-            if (angle >= 0 && angle < 120)
-            {
-                _player.TryChangeState(PlayerStates.Rubber);
-            }
-            else if (angle >= 120 && angle < 240)
-            {
-                _player.TryChangeState(PlayerStates.Metal);
+                return;
             }
             else
             {
-                _player.TryChangeState(PlayerStates.Slime);
+
+                float angle = Mathf.Atan2(relativePos.y, relativePos.x) * Mathf.Rad2Deg;
+                if (angle < 0)
+                {
+                    angle += 360f;
+                }
+                Debug.Log(angle);
+
+                if (angle <=90 || angle >330 )
+                {
+                    Debug.Log("atRubber");
+                    _player.TryChangeState(PlayerStates.Rubber);
+                }
+                else if (angle >= 90 && angle < 210)
+                {
+                    Debug.Log("atMetal");
+                    _player.TryChangeState(PlayerStates.Metal);
+                }
+                else
+                {
+                    Debug.Log("Slime");
+                    _player.TryChangeState(PlayerStates.Slime);
+                }
+                Debug.Log("finish!");
             }
+
         }
 
 

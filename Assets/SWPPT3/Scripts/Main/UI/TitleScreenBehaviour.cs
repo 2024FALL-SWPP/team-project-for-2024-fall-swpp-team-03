@@ -94,7 +94,6 @@ namespace SWPPT3.Main.UI
             // _exitGame = transform.Find("ExitGame");
             // _optionScene = GameObject.Find("OptionScene");
 
-            Debug.Log($"{_optionScene == null}");
             var parentSlider = _optionScene.transform.Find("VerticalAlign");
             _bgmSlider = parentSlider.Find("BGMSlider").GetComponent<Slider>();
             _sfxSlider = parentSlider.Find("SoundEffectSlider").GetComponent<Slider>();
