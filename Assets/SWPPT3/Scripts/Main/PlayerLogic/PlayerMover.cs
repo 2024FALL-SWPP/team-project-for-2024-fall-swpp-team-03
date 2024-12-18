@@ -69,7 +69,7 @@ namespace SWPPT3.Main.PlayerLogic
         {
             _player = GetComponent<Player>();
             _softbody = GetComponent<SoftbodyGenerator>();
-            Physics.ContactModifyEvent += ModificationEvent;
+            //Physics.ContactModifyEvent += ModificationEvent;
             if(_softbody != null)
             {
                 _softbody.HandleCollisionEnterEvent += HandleCollisionEnter;
@@ -86,7 +86,7 @@ namespace SWPPT3.Main.PlayerLogic
 
         public void OnDisable()
         {
-            Physics.ContactModifyEvent -= ModificationEvent;
+            //Physics.ContactModifyEvent -= ModificationEvent;
             if (_softbody != null)
             {
                 _softbody.HandleCollisionEnterEvent -= HandleCollisionEnter;
@@ -97,29 +97,31 @@ namespace SWPPT3.Main.PlayerLogic
             }
         }
 
-        public void ModificationEvent(PhysicsScene scene, NativeArray<ModifiableContactPair> pairs)
-        {
-            for (int i = 0; i < pairs.Length; i++)
-            {
-                var pair = pairs[i];
-                var properties = pair.massProperties;
+        // public void ModificationEvent(PhysicsScene scene, NativeArray<ModifiableContactPair> pairs)
+        // {
+        //     Debug.Log("modify : playermover");
+        //     for (int i = 0; i < pairs.Length; i++)
+        //     {
+        //         var pair = pairs[i];
+        //         var properties = pair.massProperties;
+        //         Debug.Log(_rigidBodyId.ToString() + " " +  pair.bodyInstanceID.ToString() + " " + pair.otherBodyInstanceID.ToString());
 
-                if(_rigidBodyId == pair.bodyInstanceID)
-                {
-                    properties.otherInverseMassScale = 0f;
-                    properties.otherInverseInertiaScale = 0f;
-                }
-                if(_rigidBodyId == pair.otherBodyInstanceID)
-                {
-                    properties.inverseMassScale = 0f;
-                    properties.inverseInertiaScale = 0f;
-                }
+        //         if(_rigidBodyId == pair.bodyInstanceID)
+        //         {
+        //             properties.otherInverseMassScale = 0f;
+        //             properties.otherInverseInertiaScale = 0f;
+        //         }
+        //         if(_rigidBodyId == pair.otherBodyInstanceID)
+        //         {
+        //             properties.inverseMassScale = 0f;
+        //             properties.inverseInertiaScale = 0f;
+        //         }
 
-                pair.massProperties = properties;
+        //         pair.massProperties = properties;
 
-                pairs[i] = pair;
-            }
-        }
+        //         pairs[i] = pair;
+        //     }
+        // }
 
 
         private Vector3 GetMoveDirection()
