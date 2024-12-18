@@ -32,7 +32,7 @@ namespace SWPPT3.Main.PlayerLogic
 
         private void Start()
         {
-            _rigidBodyId = _rb.GetInstanceID();
+            _rigidBodyId = GetComponent<Rigidbody>().GetInstanceID();
             _moveSpeed = _playerScript.MoveSpeed;
             _rotationSpeed = _playerScript.RotationSpeed;
             _jumpForce = _playerScript.JumpForce;
