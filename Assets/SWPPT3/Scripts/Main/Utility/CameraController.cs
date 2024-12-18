@@ -53,7 +53,7 @@ namespace SWPPT3.Main.Utility
                 float mouseX = _lookInput.x * _mouseSensitivity;
                 float mouseY = _lookInput.y * _mouseSensitivity;
 
-                _currentRotation.x = Mathf.Clamp(_currentRotation.x - mouseY, -30f, 60f);
+                _currentRotation.x = Mathf.Clamp(_currentRotation.x - mouseY, -40f, 60f);
                 _currentRotation.y += mouseX;
 
                 Quaternion globalRotation = Quaternion.Euler(_currentRotation.x, _currentRotation.y, 0);
