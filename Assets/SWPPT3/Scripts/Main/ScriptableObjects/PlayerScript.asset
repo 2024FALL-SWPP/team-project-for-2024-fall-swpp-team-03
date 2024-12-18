@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _moveSpeed: 0.05
   _jumpForce: 300
-  _rotationSpeed: 5.07
+  _rotationSpeed: 5
   _normalcriteria: 0.7

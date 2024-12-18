@@ -16,3 +16,5 @@ MonoBehaviour:
   physicsRoughness: 2
   softness: 1
   damp: 0.5
+  rubberJump: 30
+  resetSec: 0.1
