@@ -633,6 +633,7 @@ namespace SWPPT3.SoftbodyPhysics
         public void SoftbodyJump(float jumpForce)
         {
             // _isJumping = true;
+            transform.Translate(0, 0.01f, 0);
             foreach (var rb in _rigidbodyArray)
             {
                 rb.AddForce(Vector3.up * (jumpForce * rb.mass));
@@ -724,8 +725,20 @@ namespace SWPPT3.SoftbodyPhysics
 
             if (IsRubberJump && SetDirty)
             {
+                YReflect();
                 SoftbodyJump(_script.RubberJump);
-                Invoke("ResetDirty", _script.ResetSec);
+                ResetDirty();
+            }
+        }
+
+        private void YReflect()
+        {
+            foreach (var rb in _rigidbodyArray)
+            {
+                if (rb.velocity.y < 0)
+                {
+                    rb.velocity = Vector3.Reflect(rb.velocity, Vector3.up);
+                }
             }
         }
 
