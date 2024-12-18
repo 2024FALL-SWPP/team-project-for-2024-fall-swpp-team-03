@@ -4,6 +4,7 @@ using SWPPT3.Main.Manager;
 using SWPPT3.Main.PlayerLogic.State;
 using SWPPT3.Main.Prop;
 using Unity.Collections;
+using SWPPT3.SoftbodyPhysics;
 using UnityEngine;
 
 namespace SWPPT3.Main.PlayerLogic
@@ -12,6 +13,8 @@ namespace SWPPT3.Main.PlayerLogic
     {
         [SerializeField] private PlayerScript _playerScript;
         private Player _player;
+        
+        private SoftbodyGenerator _softbody;
 
         private float _moveSpeed;
         private float _jumpForce;
@@ -31,6 +34,9 @@ namespace SWPPT3.Main.PlayerLogic
 
         private void Start()
         {
+            _player = GetComponent<Player>();
+            _softbody = GetComponent<SoftbodyGenerator>();
+
             _rigidBodyId = GetComponent<Rigidbody>().GetInstanceID();
             _moveSpeed = _playerScript.MoveSpeed;
             _rotationSpeed = _playerScript.RotationSpeed;
