@@ -35,7 +35,6 @@ namespace SWPPT3.Main.ConductorLogic
 
         public void OncollisionEnter(Collision collision)
         {
-            _softbodygenerator
         }
     }
 }
