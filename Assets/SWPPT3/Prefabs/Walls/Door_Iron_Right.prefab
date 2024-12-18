@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 3995533555668393492}
   - component: {fileID: 3995533555669523668}
   - component: {fileID: 3995533555671712283}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Door_Iron_Right
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 673128524182278544}
   - component: {fileID: 3365202234991289690}
   - component: {fileID: -7245588100522738561}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Dungeon_Straight_Half_Wall
   m_TagString: Untagged
   m_Icon: {fileID: 0}

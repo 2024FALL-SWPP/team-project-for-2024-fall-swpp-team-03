@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 210442451395286871}
   - component: {fileID: 210442451394319767}
   - component: {fileID: 6062068521311885227}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Dungeon_Wall_Var2
   m_TagString: Untagged
   m_Icon: {fileID: 0}

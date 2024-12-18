@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 1650678182676679927}
   - component: {fileID: 1650678182677777975}
   - component: {fileID: 2353167392789547346}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Basement_Var4
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 6720874801660998621}
   - component: {fileID: 8836536685214844695}
   - component: {fileID: 5786447715830749620}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Dungeon_CornerCrossing_Wall
   m_TagString: Untagged
   m_Icon: {fileID: 0}

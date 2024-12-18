@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 2954323153514462563}
   - component: {fileID: 2954323153513463715}
   - component: {fileID: 2954323153509355459}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: HoleFix_Half
   m_TagString: Untagged
   m_Icon: {fileID: 0}

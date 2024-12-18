@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 5950061519421629797}
   - component: {fileID: 3409902131117252381}
   - component: {fileID: 1672077519092890101}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Corridor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -110,7 +110,7 @@ GameObject:
   - component: {fileID: 909024572840605620}
   - component: {fileID: 2693472436541584579}
   - component: {fileID: 8196588851817491049}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Sphere.002
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -208,7 +208,7 @@ GameObject:
   - component: {fileID: 4346949213313954005}
   - component: {fileID: 850501353288892956}
   - component: {fileID: 7932052643856671199}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Sphere.001
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -305,7 +305,7 @@ GameObject:
   - component: {fileID: 5389256938853892070}
   - component: {fileID: 1873603964463304323}
   - component: {fileID: 6448090139222490127}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Ceiling
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -387,7 +387,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8947862836409095562}
   - component: {fileID: 9028732499164262673}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Round_Room
   m_TagString: Untagged
   m_Icon: {fileID: 0}
