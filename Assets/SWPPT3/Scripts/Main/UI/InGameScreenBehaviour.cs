@@ -120,7 +120,7 @@ namespace SWPPT3.Main.UI
                 if (angle < 0) angle += 360f;
 
 
-                if (angle <=90 && angle > 330)
+                if (angle <=90 || angle > 330)
                 {
                     SetButtonScale(_slimeButton, 1.5f);
                     SetButtonScale(_metalButton, 1.0f);
@@ -156,8 +156,9 @@ namespace SWPPT3.Main.UI
             _playTimeTmp.text = $"{min:D2}:{sec:D2}";
         }
 
-        private void NumUpdate()
+        public void NumUpdate()
         {
+            Debug.Log("Numupdate");
             _metalNumTmp.text = $"{_player.Item[PlayerStates.Metal]}";
             _rubberNumTmp.text = $"{_player.Item[PlayerStates.Rubber]}";
         }
@@ -266,20 +267,16 @@ namespace SWPPT3.Main.UI
 
                 if (angle <=90 || angle >330 )
                 {
-                    Debug.Log("atRubber");
                     _player.TryChangeState(PlayerStates.Rubber);
                 }
                 else if (angle >= 90 && angle < 210)
                 {
-                    Debug.Log("atMetal");
                     _player.TryChangeState(PlayerStates.Metal);
                 }
                 else
                 {
-                    Debug.Log("Slime");
                     _player.TryChangeState(PlayerStates.Slime);
                 }
-                Debug.Log("finish!");
             }
 
         }
