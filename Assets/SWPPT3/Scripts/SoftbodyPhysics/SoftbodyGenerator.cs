@@ -638,6 +638,8 @@ namespace SWPPT3.SoftbodyPhysics
 
             _lockingGameObject.SetActive(true);
 
+            _rbOfCenter.mass = Mass * 2;
+
 
             _fixed = true;
         }
@@ -670,6 +672,7 @@ namespace SWPPT3.SoftbodyPhysics
             }
 
             _fixed = false;
+            _rbOfCenter.mass = Mass;
 
             transform.position += Vector3.up * 0.1f;
 
@@ -716,9 +719,16 @@ namespace SWPPT3.SoftbodyPhysics
         {
             // _isJumping = true;
             transform.Translate(0, 0.01f, 0);
-            foreach (var rb in _particleRigidbodyArray)
+            if (_fixed)
             {
-                rb.AddForce(Vector3.up * (jumpForce * rb.mass));
+                rootRB.AddForce(Vector3.up * (jumpForce * rootRB.mass));
+            }
+            else
+            {
+                foreach (var rb in _particleRigidbodyArray)
+                {
+                    rb.AddForce(Vector3.up * (jumpForce * rb.mass));
+                }
             }
         }
 
@@ -839,11 +849,21 @@ namespace SWPPT3.SoftbodyPhysics
 
         private void YReflect()
         {
-            foreach (var rb in _particleRigidbodyArray)
+            if (_fixed)
             {
-                if (rb.velocity.y < 0)
+                if (_rbOfCenter.velocity.y < 0)
                 {
-                    rb.velocity = Vector3.Reflect(rb.velocity, Vector3.up);
+                    _rbOfCenter.velocity = Vector3.Reflect(_rbOfCenter.velocity, Vector3.up) * 1.1f;
+                }
+            }
+            else
+            {
+                foreach (var rb in _particleRigidbodyArray)
+                {
+                    if (rb.velocity.y < 0)
+                    {
+                        rb.velocity = Vector3.Reflect(rb.velocity, Vector3.up);
+                    }
                 }
             }
         }
@@ -861,6 +881,30 @@ namespace SWPPT3.SoftbodyPhysics
             if(_oriPositions.IsCreated) _oriPositions.Dispose();
             if(_jointsDictNa.IsCreated) _jointsDictNa.Dispose();
             if(_bufferJointAnchors.IsCreated) _bufferJointAnchors.Dispose();
+        }
+
+        private void OnCollisionEnter(Collision other)
+        {
+            foreach (var c in other.contacts)
+            {
+                if (c.normal.y >= 0.7f)
+                {
+                    SetDirty = true;
+                    break;
+                }
+            }
+
+            CollisionEnter(other);
+        }
+
+        private void OnCollisionStay(Collision collision)
+        {
+            CollisionStay(collision);
+        }
+
+        private void OnCollisionExit(Collision collision)
+        {
+            CollisionExit(collision);
         }
     }
 
