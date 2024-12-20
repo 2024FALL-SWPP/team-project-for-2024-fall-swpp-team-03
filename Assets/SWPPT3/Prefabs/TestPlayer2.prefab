@@ -66,7 +66,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 7ea5cfe07ca064031985a22bef0fec2b, type: 2}
+  - {fileID: 2100000, guid: ebd61090d76a44edb8de9dbc50528205, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -131,9 +131,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _meshRenderer: {fileID: 5865617930821872791}
-  _slimeMaterial: {fileID: 2100000, guid: 7ea5cfe07ca064031985a22bef0fec2b, type: 2}
+  _slimeMaterial: {fileID: 2100000, guid: ebd61090d76a44edb8de9dbc50528205, type: 2}
   _rubberMaterial: {fileID: 2100000, guid: 21165d66baa9949edbc4302d0636e546, type: 2}
   _metalMaterial: {fileID: 2100000, guid: 264f74bf3bd1b48c199dabcbaf507a00, type: 2}
+  _awakeSFX: {fileID: 0}
 --- !u!114 &-3614967427876102556
 MonoBehaviour:
   m_ObjectHideFlags: 0
