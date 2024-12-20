@@ -26,6 +26,8 @@ namespace SWPPT3.Main.PlayerLogic.State
         {
             isDirty = true;
 
+            Debug.Log("Prop");
+
             if (isDirty)
             {
                 isDirty = false;

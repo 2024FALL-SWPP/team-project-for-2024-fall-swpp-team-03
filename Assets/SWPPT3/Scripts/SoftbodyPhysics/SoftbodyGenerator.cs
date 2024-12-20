@@ -251,7 +251,7 @@ namespace SWPPT3.SoftbodyPhysics
 
                 var normal = pair.GetNormal(0);
 
-                if (Mathf.Abs(Vector3.Dot(normal, Vector3.up)) > 0.5f) // Normal is steep enough
+                if (normal.y > 0.7f) // Normal is steep enough
                 {
                     MakeOtherMassInf(ref pair);
                 }
@@ -259,7 +259,6 @@ namespace SWPPT3.SoftbodyPhysics
                 {
                     MakeOtherMassInf(ref pair);
                 }
-
 
                 pairs[i] = pair;
             }
@@ -566,6 +565,7 @@ namespace SWPPT3.SoftbodyPhysics
             _configurableJointsArray = _configurableJointList.ToArray();
 
             _jointsDictNa = new NativeArray<(int, int)>(_jointsDict.ToArray(), Allocator.Persistent);
+            _rigidbodyIDSet.Add(rootRB.GetInstanceID());
 
             CreateLockingObject();
 
@@ -621,14 +621,17 @@ namespace SWPPT3.SoftbodyPhysics
                 | MeshColliderCookingOptions.CookForFasterSimulation
                 | MeshColliderCookingOptions.EnableMeshCleaning
                 | MeshColliderCookingOptions.WeldColocatedVertices;
+
+            _lockingMeshCollider.hasModifiableContacts = true;
         }
 
         private bool _fixed = false;
 
         public void FixJoint()
         {
-            var mesh = GetDuplicateMesh();
+            // var mesh = GetDuplicateMesh();
             _lockingMeshCollider.sharedMesh = _originalMeshFilter.sharedMesh;
+            _lockingMeshCollider.hasModifiableContacts = true;
 
             foreach (var rb in _particleRigidbodyArray)
             {
@@ -636,9 +639,11 @@ namespace SWPPT3.SoftbodyPhysics
                 // rb.Sleep();
             }
 
+
             _lockingGameObject.SetActive(true);
 
             _rbOfCenter.mass = Mass * 2;
+            _rbOfCenter.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
 
 
             _fixed = true;
@@ -674,6 +679,7 @@ namespace SWPPT3.SoftbodyPhysics
             _fixed = false;
             _rbOfCenter.mass = Mass;
 
+            _rbOfCenter.constraints = RigidbodyConstraints.None;
             transform.position += Vector3.up * 0.1f;
 
             // EditorApplication.isPaused = true;
@@ -734,11 +740,14 @@ namespace SWPPT3.SoftbodyPhysics
 
         public void Move(Vector3 force)
         {
-            rootRB.MovePosition(rootRB.position + force / 2);
+            var curVel = Vector3.Scale(new Vector3(1, 0, 1), rootRB.velocity);
+            var delta = force - curVel;
+
+            rootRB.AddForce(delta, ForceMode.VelocityChange);
 
             foreach (var rb in _particleRigidbodyArray)
             {
-                rb.MovePosition(rb.position + force / 2);
+                rb.AddForce(delta, ForceMode.VelocityChange);
             }
         }
 
@@ -885,6 +894,7 @@ namespace SWPPT3.SoftbodyPhysics
 
         private void OnCollisionEnter(Collision other)
         {
+            Debug.Log("Fixed Collision");
             foreach (var c in other.contacts)
             {
                 if (c.normal.y >= 0.7f)
@@ -905,6 +915,16 @@ namespace SWPPT3.SoftbodyPhysics
         private void OnCollisionExit(Collision collision)
         {
             CollisionExit(collision);
+        }
+
+        private void OnTriggerEnter(Collider other)
+        {
+            TriggerEnter(other);
+        }
+
+        private void OnTriggerExit(Collider other)
+        {
+            TriggerExit(other);
         }
     }
 
