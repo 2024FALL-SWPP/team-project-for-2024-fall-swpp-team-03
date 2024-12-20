@@ -37,35 +37,26 @@ namespace SWPPT3.Main.Manager
         [SerializeField] CameraScript _cameraScript;
         [SerializeField] PlayerScript _playerScript;
 
-        private float cameraSensitivity;
-        private float cameraCoefficient;
+        private float _cameraSensitivity;
 
-        public float CameraCoffeicient
-        {
-            get { return cameraCoefficient; }
-            set { cameraCoefficient = value; }
-        }
-        public float CameraSensitivity{ get { return cameraSensitivity * cameraCoefficient; } }
+        public float CameraCoffeicient { get; set; }
 
-        private float rotationSensitivity;
-        private float rotationCoefficient;
+        public float CameraSensitivity => _cameraSensitivity * CameraCoffeicient;
 
-        public float RotationCoefficient
-        {
-            get { return rotationCoefficient; }
-            set { rotationCoefficient = value; }
-        }
-        public float RotationSensitivity{get{return rotationSensitivity * rotationCoefficient;} }
+        private float _rotationSensitivity;
 
+        public float RotationCoefficient { get; set; }
+
+        public float RotationSensitivity => _rotationSensitivity * RotationCoefficient;
 
 
         private void Awake()
         {
-            cameraSensitivity = _cameraScript.MouseSensitivity;
-            rotationSensitivity = _playerScript.RotationSpeed;
+            _cameraSensitivity = _cameraScript.MouseSensitivity;
+            _rotationSensitivity = _playerScript.RotationSpeed;
 
-            cameraCoefficient = 0.5f;
-            rotationCoefficient = 0.5f;
+            CameraCoffeicient = 0.5f;
+            RotationCoefficient = 0.5f;
             // Input System 초기화
             _inputActions = new AlcheslimeInput();
 

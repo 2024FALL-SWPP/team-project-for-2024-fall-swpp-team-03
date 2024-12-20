@@ -20,7 +20,7 @@ namespace SWPPT3.Main.PlayerLogic.State
 
     public abstract class PlayerState
     {
-        private bool isInGas = false;
+        private bool _isInGas;
 
         public virtual void InteractWithProp(Player player, PropBase obstacle)
         {
@@ -41,7 +41,7 @@ namespace SWPPT3.Main.PlayerLogic.State
             }
             else if (obstacle is Gas)
             {
-                if (isInGas == false)
+                if (_isInGas == false)
                 {
                     foreach(PlayerStates playerState in System.Enum.GetValues(typeof(PlayerStates)))
                     {
@@ -49,7 +49,7 @@ namespace SWPPT3.Main.PlayerLogic.State
                     }
                     player.TryChangeState(PlayerStates.Slime);
                     // player.GasSound();
-                    isInGas = true;
+                    _isInGas = true;
                 }
             }
             else if (obstacle is MagicCircle)
@@ -67,7 +67,7 @@ namespace SWPPT3.Main.PlayerLogic.State
             obstacle.StopInteractWithPlayer(player.CurrentState);
             if (obstacle is Gas)
             {
-                isInGas = false;
+                _isInGas = false;
             }
 
         }

@@ -24,7 +24,7 @@ namespace SWPPT3.Main.StageDirector
         {
             InitializeStage();
             StartStage();
-            GameManager.Instance._stageManager = this;
+            GameManager.Instance.StageManager = this;
             GameManager.Instance.GameState = GameState.Playing;
         }
 
