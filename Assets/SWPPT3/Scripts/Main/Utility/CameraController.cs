@@ -9,21 +9,14 @@ namespace SWPPT3.Main.Utility
 {
     public class CameraController : MonoBehaviour
     {
-        [SerializeField]
-        private Transform player;
+        [SerializeField] private Transform player;
+        [SerializeField] private CameraScript camerascript;
+        [SerializeField] private LayerMask cameraCollision;
 
         private float _mouseSensitivity;
-
-        [SerializeField]
-        private CameraScript camerascript;
-
         private Vector3 _currentRotation;
-
         private Vector2 _lookInput;
-
         private bool _isRightButton = false;
-
-        [SerializeField] private LayerMask cameraCollision;
 
         private void Start()
         {
@@ -31,9 +24,7 @@ namespace SWPPT3.Main.Utility
             {
                 Vector3 initialPosition = player.position - player.forward * camerascript.DistanceFromPlayer + Vector3.up * camerascript.CameraHeight;
                 transform.position = initialPosition;
-
                 transform.LookAt(player);
-
                 _currentRotation = transform.eulerAngles;
             }
 
@@ -50,7 +41,6 @@ namespace SWPPT3.Main.Utility
 
         private void Update()
         {
-            if (player == null) return;
             if (!_isRightButton && GameManager.Instance.GameState == GameState.Playing)
             {
                 float mouseX = _lookInput.x * _mouseSensitivity;
@@ -66,11 +56,12 @@ namespace SWPPT3.Main.Utility
                 transform.LookAt(player);
 
                 Vector3 rayDir = transform.position - player.position;
-                if (Physics.Raycast(player.position, rayDir, out RaycastHit hit, offset.magnitude , cameraCollision))
+                if (Physics.Raycast(player.position, rayDir, out RaycastHit hit, offset.magnitude, cameraCollision))
                 {
                     transform.position = hit.point - rayDir.normalized;
                 }
             }
+
             _mouseSensitivity = InputManager.Instance.CameraSensitivity;
         }
 
@@ -94,7 +85,6 @@ namespace SWPPT3.Main.Utility
                 InputManager.Instance.OnLook -= HandleLook;
                 InputManager.Instance.OnStartRotation -= HandleStartRotation;
             }
-
         }
     }
 }

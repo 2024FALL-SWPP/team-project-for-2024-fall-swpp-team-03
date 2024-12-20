@@ -28,25 +28,25 @@ namespace SWPPT3.Main.Manager
 
     public class GameManager : MonoSingleton<GameManager>
     {
-        public event Action<GameState> OnGameStateChanged;
+        public event Action<GameState, GameState> OnGameStateChanged;
 
-        private GameState gameState;
+        private GameState _gameState;
         public GameState GameState
         {
-            get => gameState;
+            get => _gameState;
             set
             {
-                if (gameState != value)
+                if (_gameState != value)
                 {
-                    HandleGameStateChanged(gameState, value);
+                    HandleGameStateChanged(_gameState, value);
                 }
             }
         }
-        private int stageNumber;
+        private int _stageNumber;
 
-        public int StageNumber { get => stageNumber; set => stageNumber = value; }
+        public int StageNumber { get => _stageNumber; set => _stageNumber = value; }
 
-        public StageManager _stageManager;
+        public StageManager StageManager;
         [SerializeField] private UnityEvent<bool> _onTryingLoadStatusChanged;
 
 
@@ -66,43 +66,34 @@ namespace SWPPT3.Main.Manager
 
         private void HandleGameStateChanged(GameState oldState, GameState newState)
         {
-            gameState = newState;
-            OnGameStateChanged?.Invoke(newState);
+            _gameState = newState;
+            OnGameStateChanged?.Invoke(oldState,newState);
 
             switch (newState)
             {
                 case GameState.BeforeStart:
-                    if (oldState == GameState.OnOption || oldState == GameState.Exit || oldState == GameState.OnHowto) break;
-                    BgmManager.Instance.StopAllBGM();
-                    BgmManager.Instance.PlayBGM();
-                    // UIManager.Instance.ShowStartStage();
                     break;
                 case GameState.Ready:
                     _onTryingLoadStatusChanged.Invoke(true);
                     LoadScene();
                     break;
                 case GameState.Playing:
-                    BgmManager.Instance.StopAllBGM();
                     _onTryingLoadStatusChanged.Invoke(false);
-                    _stageManager.ResumeStage();
+                    StageManager.ResumeStage();
                     break;
                 case GameState.Paused:
-                    _stageManager?.PauseStage();
+                    StageManager?.PauseStage();
                     break;
                 case GameState.GameOver:
-                    BgmManager.Instance.PlayFailSound();
-                    _stageManager?.FailStage();
-                    // UIManager.Instance.ShowFail();
+                    StageManager?.FailStage();
                     break;
                 case GameState.OnChoice:
-                    _stageManager?.PauseStage();
+                    StageManager?.PauseStage();
                     break;
                 case GameState.Exit:
                     break;
                 case GameState.StageCleared:
-                    BgmManager.Instance.PlaySuccessSound();
-                    _stageManager?.ClearStage();
-                    // UIManager.Instance.ShowClear();
+                    StageManager?.ClearStage();
                     break;
                 case GameState.OnOption:
                     break;
@@ -113,17 +104,15 @@ namespace SWPPT3.Main.Manager
 
         public void StageSelect(int stageNum)
         {
-            stageNumber = stageNum;
+            _stageNumber = stageNum;
             GameState = GameState.Ready;
         }
 
         public void LoadScene()
         {
-            BgmManager.Instance.StopFailSound();
-            BgmManager.Instance.StopSuccessSound();
             string sceneName;
 
-            switch (stageNumber)
+            switch (_stageNumber)
             {
                 case 0:
                     sceneName = "Tutorial 1";
@@ -147,7 +136,7 @@ namespace SWPPT3.Main.Manager
                     sceneName = "Stage 3";
                     break;
                 default:
-                    Debug.LogError($"Invalid stage number: {stageNumber}");
+                    Debug.LogError($"Invalid stage number: {_stageNumber}");
                     return;
             }
             SceneManager.LoadScene(sceneName);

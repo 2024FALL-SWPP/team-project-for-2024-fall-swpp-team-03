@@ -1,5 +1,6 @@
 #region
 
+using System;
 using System.Collections.Generic;
 using SWPPT3.Main.AudioLogic;
 using SWPPT3.Main.Utility.Singleton;
@@ -70,6 +71,33 @@ namespace SWPPT3.Main.Manager
             }
 
             bgmSource.Play();
+            GameManager.Instance.OnGameStateChanged += OnGameStateChanged;
+        }
+
+        public void OnGameStateChanged(GameState oldState, GameState newState)
+        {
+            switch (newState)
+            {
+                case GameState.BeforeStart:
+                    if (oldState == GameState.OnOption || oldState == GameState.Exit || oldState == GameState.OnHowto) break;
+                    StopAllBGM();
+                    PlayBGM();
+                    break;
+                case GameState.Playing:
+                    StopAllBGM();
+                    break;
+
+                case GameState.GameOver:
+                    PlayFailSound();
+                    break;
+
+                case GameState.StageCleared:
+                    PlaySuccessSound();
+                    break;
+
+                default:
+                    break;
+            }
         }
 
         public void Update()
@@ -77,6 +105,15 @@ namespace SWPPT3.Main.Manager
             SetBGMVolume(BGMVolume);
             SetSFXVolume(SFXVolume);
         }
+
+        public void OnDestroy()
+        {
+            if (GameManager.Instance != null)
+            {
+                GameManager.Instance.OnGameStateChanged -= OnGameStateChanged;
+            }
+        }
+
         #region BGM Methods
 
         public void PlayBGM()

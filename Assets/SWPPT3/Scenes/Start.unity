@@ -1178,15 +1178,30 @@ PrefabInstance:
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
+      objectReference: {fileID: 8796679117354199708}
+    - target: {fileID: 4173408739102159538, guid: d75084c0538324141925deab3531a83d,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Target
+      value: 
       objectReference: {fileID: 8796679117354199707}
     - target: {fileID: 4173408739102159538, guid: d75084c0538324141925deab3531a83d,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: Play
+      objectReference: {fileID: 0}
+    - target: {fileID: 4173408739102159538, guid: d75084c0538324141925deab3531a83d,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
       value: ClickMainMenu
       objectReference: {fileID: 0}
     - target: {fileID: 4173408739102159538, guid: d75084c0538324141925deab3531a83d,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: UnityEngine.AudioSource, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 4173408739102159538, guid: d75084c0538324141925deab3531a83d,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
       value: SWPPT3.Main.UI.TitleScreenBehaviour, Main
       objectReference: {fileID: 0}
     - target: {fileID: 4631719241790745394, guid: d75084c0538324141925deab3531a83d,
@@ -1268,3 +1283,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f8081d2bc70a14f869ad12c0e41c7245, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!82 &8796679117354199708 stripped
+AudioSource:
+  m_CorrespondingSourceObject: {fileID: 5829864584153669684, guid: d75084c0538324141925deab3531a83d,
+    type: 3}
+  m_PrefabInstance: {fileID: 8796679117354199706}
+  m_PrefabAsset: {fileID: 0}
