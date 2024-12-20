@@ -159,7 +159,6 @@ namespace SWPPT3.Main.UI
 
         public void NumUpdate()
         {
-            Debug.Log("Numupdate");
             _metalNumTmp.text = $"{_player.Item[PlayerStates.Metal]}";
             _rubberNumTmp.text = $"{_player.Item[PlayerStates.Rubber]}";
         }

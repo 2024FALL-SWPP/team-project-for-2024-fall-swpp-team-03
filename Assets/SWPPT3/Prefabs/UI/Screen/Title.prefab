@@ -146,6 +146,7 @@ MonoBehaviour:
         m_CallState: 2
   _playerScript: {fileID: 11400000, guid: f12859c2ce46745c0a5a97778dd768ae, type: 2}
   _cameraScript: {fileID: 11400000, guid: 5beda284128254b12adf1cd7dfd8284e, type: 2}
+  _bgmScript: {fileID: 11400000, guid: 310ebe93ea1c27645aeabe0f68550879, type: 2}
   _optionScene: {fileID: 2777941070604438708}
   _howtoScreen: {fileID: 7743382469759035108}
 --- !u!1 &8988044887325575896

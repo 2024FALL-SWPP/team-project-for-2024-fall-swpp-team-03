@@ -571,7 +571,6 @@ namespace SWPPT3.SoftbodyPhysics
 
             foreach (var sc in _sphereColliderArray)
             {
-                Debug.Log("hasmodifiablaContacts true");
                 sc.hasModifiableContacts = true;
                 Physics.IgnoreCollision(_lockingMeshCollider, sc, true);
             }

@@ -24,28 +24,30 @@ namespace SWPPT3.Main.UI
         Stage4,
         Stage5,
         Option,
-        Howto,
     }
 
     public class TitleScreenBehaviour : MonoBehaviour
     {
         [SerializeField] private UnityEvent<bool> _onTryingExitStatusChanged;
         [SerializeField] private UnityEvent<bool> _onTryingOptionStatusChanged;
-        [SerializeField] private UnityEvent<bool> _onTryingHowtoStatusChanged;
+
+        [SerializeField] private PlayerScript _playerScript;
+        [SerializeField] private CameraScript _cameraScript;
+        [SerializeField] private BGMScript _bgmScript;
+
 
         [SerializeField] private GameObject _optionScene;
-        [SerializeField] private GameObject _howtoScreen;
-
-        private TextMeshProUGUI _bgmValue;
-        private TextMeshProUGUI _sfxValue;
-        private TextMeshProUGUI _cameraSensitivity;
-        private TextMeshProUGUI _rotationSensitivity;
-
 
         private Slider _bgmSlider;
         private Slider _sfxSlider;
         private Slider _cameraSensitivitySlider;
         private Slider _rotationSensitivitySlider;
+
+        private TextMeshProUGUI _bgmText;
+        private TextMeshProUGUI _soundText;
+        private TextMeshProUGUI _cameraSensivityText;
+        private TextMeshProUGUI _rotationSensivityText;
+
 
         public void OnButtonClick(int type)
         {
@@ -71,20 +73,8 @@ namespace SWPPT3.Main.UI
                 case ButtonClickType.Option:
                     ClickOption();
                     break;
-                case ButtonClickType.Howto:
-                    ClickHowto();
-                    break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(type), type, null);
-            }
-        }
-
-        public void ClickHowto()
-        {
-            if (GameManager.Instance.GameState == GameState.BeforeStart)
-            {
-                _howtoScreen.SetActive(true);
-                GameManager.Instance.GameState = GameState.OnHowto;
             }
         }
 
@@ -101,7 +91,6 @@ namespace SWPPT3.Main.UI
         {
             GameManager.Instance.GameState = GameState.BeforeStart;
             _optionScene.SetActive(false);
-            _howtoScreen.SetActive(false);
             _onTryingExitStatusChanged.Invoke(false);
         }
 
@@ -124,10 +113,15 @@ namespace SWPPT3.Main.UI
             _cameraSensitivitySlider = parentSlider.Find("CameraSensitivitySlider").GetComponent<Slider>();
             _rotationSensitivitySlider = parentSlider.Find("RotationSensitivitySlider").GetComponent<Slider>();
 
-            _bgmValue = parentSlider.Find("BGMSlider/Value").GetComponent<TextMeshProUGUI>();
-            _sfxValue = parentSlider.Find("SoundEffectSlider/Value").GetComponent<TextMeshProUGUI>();
-            _cameraSensitivity = parentSlider.Find("CameraSensitivitySlider/Value").GetComponent<TextMeshProUGUI>();
-            _rotationSensitivity = parentSlider.Find("RotationSensitivitySlider/Value").GetComponent<TextMeshProUGUI>();
+            _bgmText = parentSlider.Find("BGMSlider").Find("Value").GetComponent<TextMeshProUGUI>();
+            _soundText = parentSlider.Find("SoundEffectSlider").Find("Value").GetComponent<TextMeshProUGUI>();
+            _cameraSensivityText = parentSlider.Find("CameraSensitivitySlider").Find("Value").GetComponent<TextMeshProUGUI>();
+            _rotationSensivityText = parentSlider.Find("RotationSensitivitySlider").Find("Value").GetComponent<TextMeshProUGUI>();
+
+            _cameraSensitivitySlider.value = _cameraScript.MouseSensitivity;
+            _rotationSensitivitySlider.value = _playerScript.RotationSpeed;
+            _bgmSlider.value = _bgmScript.BgmVolume;
+            _sfxSlider.value = _bgmScript.SfxVolume;
 
             if (InputManager.Instance != null)
             {
@@ -137,24 +131,25 @@ namespace SWPPT3.Main.UI
             {
                 Debug.LogError("InputManager is null");
             }
-
-            _bgmSlider.value = BgmManager.Instance.BGMVolume;
-            _sfxSlider.value = BgmManager.Instance.SFXVolume;
-            _cameraSensitivitySlider.value = InputManager.Instance.CameraCoffeicient;
-            _rotationSensitivitySlider.value = InputManager.Instance.RotationCoefficient;
         }
 
         public void Update()
         {
-            InputManager.Instance.CameraCoffeicient =  _cameraSensitivitySlider.value;
-            InputManager.Instance.RotationCoefficient = _rotationSensitivitySlider.value;
-            BgmManager.Instance.BGMVolume = _bgmSlider.value;
-            BgmManager.Instance.SFXVolume = _sfxSlider.value;
+            if (GameManager.Instance.GameState == GameState.OnOption)
+            {
+                _cameraScript.MouseSensitivity = _cameraSensitivitySlider.value;
+                _playerScript.RotationSpeed = _rotationSensitivitySlider.value;
+                _bgmScript.BgmVolume = _bgmSlider.value;
+                _bgmScript.SfxVolume = _sfxSlider.value;
 
-            _bgmValue.text = $"{(int)(_bgmSlider.value*100)}";
-            _sfxValue.text = $"{(int)(_sfxSlider.value*100)}";
-            _cameraSensitivity.text = $"{(int)(_cameraSensitivitySlider.value*100)}";
-            _rotationSensitivity.text = $"{(int)(_rotationSensitivitySlider.value*100)}";
+                BgmManager.Instance.BGMVolume = _bgmSlider.value;
+                BgmManager.Instance.SFXVolume = _sfxSlider.value;
+
+                _bgmText.text = $"{Mathf.RoundToInt(_bgmSlider.value * 100)}";
+                _soundText.text = $"{Mathf.RoundToInt(_sfxSlider.value * 100)}";
+                _cameraSensivityText.text = $"{Mathf.RoundToInt(_cameraSensitivitySlider.value * 100)}";
+                _rotationSensivityText.text = $"{Mathf.RoundToInt(_rotationSensitivitySlider.value * 100)}";
+            }
         }
 
         private void HandleEsc()
@@ -175,4 +170,3 @@ namespace SWPPT3.Main.UI
         }
     }
 }
-
