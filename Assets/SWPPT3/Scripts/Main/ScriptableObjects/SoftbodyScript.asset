@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1473d3df9778433e9c9a8f1015f8a109, type: 3}
   m_Name: SoftbodyScript
   m_EditorClassIdentifier: 
-  mass: 0.1
-  physicsRoughness: 2
-  softness: 1
+  mass: 1
+  physicsRoughness: 1
+  softness: 50
   damp: 0.5
   rubberJump: 30
   resetSec: 0.1
