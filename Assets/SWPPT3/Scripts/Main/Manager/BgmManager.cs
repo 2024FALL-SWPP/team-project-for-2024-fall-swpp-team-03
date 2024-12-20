@@ -52,6 +52,8 @@ namespace SWPPT3.Main.Manager
 
         private void Awake()
         {
+            _bgmVolume = 0.5f;
+            _sfxVolume = 0.5f;
             sfxObjects = new List<SfxObject>();
             DontDestroyOnLoad(gameObject);
 

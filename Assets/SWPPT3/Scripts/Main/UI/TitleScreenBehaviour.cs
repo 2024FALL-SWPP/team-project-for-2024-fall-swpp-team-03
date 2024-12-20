@@ -1,6 +1,7 @@
 #region
 
 using System;
+using SWPPT3.Main.AudioLogic;
 using SWPPT3.Main.Manager;
 using SWPPT3.Main.PlayerLogic;
 using SWPPT3.Main.Utility;
@@ -29,10 +30,6 @@ namespace SWPPT3.Main.UI
     {
         [SerializeField] private UnityEvent<bool> _onTryingExitStatusChanged;
         [SerializeField] private UnityEvent<bool> _onTryingOptionStatusChanged;
-
-        [SerializeField] private PlayerScript _playerScript;
-        [SerializeField] private CameraScript _cameraScript;
-
 
         [SerializeField] private GameObject _optionScene;
 
@@ -124,12 +121,17 @@ namespace SWPPT3.Main.UI
             {
                 Debug.LogError("InputManager is null");
             }
+
+            _bgmSlider.value = BgmManager.Instance.BGMVolume;
+            _sfxSlider.value = BgmManager.Instance.SFXVolume;
+            _cameraSensitivitySlider.value = InputManager.Instance.CameraCoffeicient;
+            _rotationSensitivitySlider.value = InputManager.Instance.RotationCoefficient;
         }
 
         public void Update()
         {
-            _cameraScript.MouseSensitivity = _cameraSensitivitySlider.value * 5;
-            _playerScript.RotationSpeed = _rotationSensitivitySlider.value * 10;
+            InputManager.Instance.CameraCoffeicient =  _cameraSensitivitySlider.value;
+            InputManager.Instance.RotationCoefficient = _rotationSensitivitySlider.value;
             BgmManager.Instance.BGMVolume = _bgmSlider.value;
             BgmManager.Instance.SFXVolume = _sfxSlider.value;
 

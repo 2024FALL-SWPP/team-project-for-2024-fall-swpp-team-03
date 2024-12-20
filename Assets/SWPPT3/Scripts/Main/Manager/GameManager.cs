@@ -53,6 +53,10 @@ namespace SWPPT3.Main.Manager
         {
             _onTryingLoadStatusChanged.Invoke(false);
             Debug.Log("Game Manager Awake");
+            while (!BgmManager.Instance || !AudioManager.Instance || !InputManager.Instance)
+            {
+            }
+            SceneManager.LoadScene("Start");
         }
 
         public void OnDestroy()
