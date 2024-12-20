@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 6910271054388101844}
   - component: {fileID: 8647687129597965854}
   - component: {fileID: 8143509069661972072}
+  - component: {fileID: 2210749225842245586}
   m_Layer: 0
   m_Name: Electric_Wire
   m_TagString: Untagged
@@ -99,3 +100,24 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 4536773283001372330, guid: c0369acd046324b52bc74f11ed775ef5, type: 3}
+--- !u!95 &2210749225842245586
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7134332726337394635}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 713da195f5ba7ca468fd526b9cf11e5f, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
