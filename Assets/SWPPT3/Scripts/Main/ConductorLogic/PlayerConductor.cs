@@ -79,8 +79,6 @@ namespace SWPPT3.Main.ConductorLogic
                 _stayMap.Remove(k);
             }
 
-            Debug.Log(_connectedObjects.Count);
-
             if (_removeSet.Count != 0)
             {
                 ConductorManager.IsDirty = true;

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Jobs;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Jobs;
 using Random = UnityEngine.Random;
@@ -19,6 +20,13 @@ namespace SWPPT3.SoftbodyPhysics
         Metal,
         Rubber,
     }
+
+    public struct JointData
+    {
+        public Rigidbody ConnectedBody;
+        public Vector3 ConnectedAnchor;
+    }
+
     public class SoftbodyGenerator : MonoBehaviour
     {
         [SerializeField] private SoftbodyScript _script;
@@ -27,14 +35,19 @@ namespace SWPPT3.SoftbodyPhysics
         private List<Vector3> WritableVertices { get; set; }
         private List<Vector3> WritableNormals { get; set; }
 
-        private readonly List<SphereCollider> _sphereColliderList = new List<SphereCollider>();
+        private readonly List<SphereCollider> _sphereColliderList = new();
         private SphereCollider[] _sphereColliderArray;
 
-        private List<Rigidbody> _rigidbodyList = new List<Rigidbody>();
-        private Rigidbody[] _rigidbodyArray;
-        private HashSet<int> _rigidbodyIdSet = new HashSet<int>();
+        private List<Rigidbody> _particleRigidBodyList = new();
+        private Rigidbody[] _particleRigidbodyArray;
+
+        private HashSet<int> _rigidbodyIDSet = new();
 
         private Rigidbody rootRB;
+
+        private List<Vector2Int> noDupesListOfSprings = new();
+
+        private List<JointData> _jointDatas = new();
 
         public event Action<bool> OnRubberJump;
 
@@ -53,7 +66,6 @@ namespace SWPPT3.SoftbodyPhysics
             }
         }
 
-
         public SoftStates PlayerStates { get; set; }
 
 
@@ -66,6 +78,9 @@ namespace SWPPT3.SoftbodyPhysics
         private List<Vector3> _oriJointAnchorsList;
         private Vector3[] _oriJointAnchorArray;
         private NativeArray<Vector3> _bufferJointAnchors;
+
+        private readonly List<ConfigurableJoint> _jointsConnectedCenter = new();
+        private ConfigurableJoint[] _jointsConnectedCenterArr;
 
         private List<ConfigurableJoint> _configurableJointList;
         private ConfigurableJoint[] _configurableJointsArray;
@@ -80,7 +95,12 @@ namespace SWPPT3.SoftbodyPhysics
         private Mesh _writableMesh;
 
         private List<GameObject> _phyisicedVertexes;
-        private new Dictionary<int, int> _vertexDictunery;
+        private new Dictionary<int, int> _vertexDictionary;
+
+        private GameObject _lockingGameObject;
+        private MeshCollider _lockingMeshCollider;
+
+        private List<Vector3> _originalPositionList;
 
         private bool _isSlime = true;
         public bool IsSlime
@@ -88,7 +108,8 @@ namespace SWPPT3.SoftbodyPhysics
             get => _isSlime;
             set => _isSlime = value;
         }
-        /** public variable to controll softbody **/
+
+        /** public variable to control softbody **/
         private float _collissionSurfaceOffset = 0.1f;
         public float CollissionSurfaceOffset
         {
@@ -123,6 +144,7 @@ namespace SWPPT3.SoftbodyPhysics
                 Springlimit.spring = _softness;
             }
         }
+
         private float _damp = .5f;
         public float Damp
         {
@@ -140,6 +162,7 @@ namespace SWPPT3.SoftbodyPhysics
                 Springlimit.damper = _damp;
             }
         }
+
         private float _mass = 1f;
         public float Mass
         {
@@ -151,12 +174,12 @@ namespace SWPPT3.SoftbodyPhysics
             {
                 _mass = value;
                 if (_phyisicedVertexes != null)
-                    foreach (var rb in _rigidbodyArray)
+                    foreach (var rb in _particleRigidbodyArray)
                         rb.mass = _mass;
             }
         }
 
-        private bool _debugMode = false;
+        private bool _debugMode = true;
         public bool DebugMode
         {
             get
@@ -193,7 +216,7 @@ namespace SWPPT3.SoftbodyPhysics
             set {
                 _physicsRoughness = value;
                 if (_phyisicedVertexes != null)
-                    foreach (var rb in _rigidbodyArray)
+                    foreach (var rb in _particleRigidbodyArray)
                         rb.drag = PhysicsRoughness;
             }
         }
@@ -245,13 +268,13 @@ namespace SWPPT3.SoftbodyPhysics
             {
                 var properties = pair.massProperties;
 
-                if(_rigidbodyIdSet.Contains(pair.bodyInstanceID))
+                if(_rigidbodyIDSet.Contains(pair.bodyInstanceID))
                 {
                     properties.otherInverseMassScale = 0f;
                     properties.otherInverseInertiaScale = 0f;
                 }
 
-                if(_rigidbodyIdSet.Contains(pair.otherBodyInstanceID))
+                if(_rigidbodyIDSet.Contains(pair.otherBodyInstanceID))
                 {
                     properties.inverseMassScale = 0f;
                     properties.inverseInertiaScale = 0f;
@@ -316,8 +339,6 @@ namespace SWPPT3.SoftbodyPhysics
             Damp = _script.Damp;
             RubberJump = _script.RubberJump;
 
-            // CollissionSurfaceOffset = _script.CollissionSurfaceOffset;
-
             _oriJointAnchorsList = new List<Vector3>();
             _configurableJointList = new List<ConfigurableJoint>();
             _jointsDict = new List<(int, int)>();
@@ -336,6 +357,7 @@ namespace SWPPT3.SoftbodyPhysics
             _oriPositions = new NativeArray<Vector3>(_originalMeshFilter.mesh.vertices, Allocator.Persistent);
 
             var localToWorld = transform.localToWorldMatrix;
+
             for (int i = 0; i < WritableVertices.Count; ++i)
             {
                 WritableVertices[i] = localToWorld.MultiplyPoint3x4(WritableVertices[i]);
@@ -347,100 +369,99 @@ namespace SWPPT3.SoftbodyPhysics
             _writableMesh.SetNormals(WritableNormals);
             _writableMesh.triangles = WritableTris;
             _originalMeshFilter.mesh = _writableMesh;
+
             // remove duplicated vertex
-            var _optimizedVertex = new List<Vector3>();
+            var optimizedVertex = new List<Vector3>();
 
             // first column = original vertex index , last column = optimized vertex index
-            _vertexDictunery = new Dictionary<int, int>();
+            _vertexDictionary = new Dictionary<int, int>();
+
             for (int i = 0; i < WritableVertices.Count; i++)
             {
                 bool isVertexDuplicated = false;
-                for (int j = 0; j < _optimizedVertex.Count; j++)
-                    if (_optimizedVertex[j] == WritableVertices[i])
+                for (int j = 0; j < optimizedVertex.Count; j++)
+                    if (optimizedVertex[j] == WritableVertices[i])
                     {
                         isVertexDuplicated = true;
-                        _vertexDictunery.Add(i, j);
+                        _vertexDictionary.Add(i, j);
                         break;
                     }
                 if (!isVertexDuplicated)
                 {
-                    _optimizedVertex.Add(WritableVertices[i]);
-                    _vertexDictunery.Add(i, _optimizedVertex.Count - 1);
+                    optimizedVertex.Add(WritableVertices[i]);
+                    _vertexDictionary.Add(i, optimizedVertex.Count - 1);
                 }
             }
 
             _optToOriDic = new NativeArray<int>(WritableVertices.Count, Allocator.Persistent);
             for (int i = 0; i < WritableVertices.Count; ++i)
             {
-                _optToOriDic[i] = _vertexDictunery[i];
+                _optToOriDic[i] = _vertexDictionary[i];
             }
 
-
             // create balls at each of vertex also center of mass
-            foreach (var vertecs in _optimizedVertex)
+            foreach (var vertex in optimizedVertex)
             {
-                var _tempObj = new GameObject("Point "+ _optimizedVertex.IndexOf(vertecs));
+                var newPoint = new GameObject("Point "+ optimizedVertex.IndexOf(vertex));
 
                 if (!DebugMode)
-                    _tempObj.hideFlags = HideFlags.HideAndDontSave;
+                    newPoint.hideFlags = HideFlags.HideAndDontSave;
 
-                _tempObj.transform.parent = this.transform;
-                _tempObj.transform.position = vertecs;
-
+                newPoint.transform.parent = transform;
+                newPoint.transform.position = vertex;
+                // _originalPositionList.Add(vertex);
 
                 // add collider to each of vertex ( sphere collider )
-                var sphereColider = _tempObj.AddComponent<SphereCollider>() as SphereCollider;
-                sphereColider.radius = CollissionSurfaceOffset;
+                var sphereCollider = newPoint.AddComponent<SphereCollider>();
+                sphereCollider.radius = CollissionSurfaceOffset;
 
                 // add current collider to Collider list ;
-                _sphereColliderList.Add(sphereColider);
-
+                _sphereColliderList.Add(sphereCollider);
 
                 // add rigidBody to each of vertex
-                var _tempRigidBody = _tempObj.AddComponent<Rigidbody>();
-                _tempRigidBody.mass = Mass / _optimizedVertex.Count;
-                _tempRigidBody.drag = PhysicsRoughness;
-                _tempRigidBody.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
+                var newRigidBody = newPoint.AddComponent<Rigidbody>();
+                newRigidBody.mass = Mass / optimizedVertex.Count;
+                newRigidBody.drag = PhysicsRoughness;
+                newRigidBody.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
 
-                var rubberJump = _tempObj.AddComponent<Particle>();
+                var rubberJump = newPoint.AddComponent<Particle>();
 
                 OnRubberJump += rubberJump.SetActive;
                 rubberJump._softbody = this;
                 rubberJump.rubberForce = _script.RubberJump;
 
-                _rigidbodyList.Add(_tempRigidBody);
-                _rigidbodyIdSet.Add(_tempRigidBody.GetInstanceID());
-                Debug.Log(_tempRigidBody.GetInstanceID());
+                _particleRigidBodyList.Add(newRigidBody);
+                _rigidbodyIDSet.Add(newRigidBody.GetInstanceID());
+                // Debug.Log(newRigidBody.GetInstanceID());
 
-                _tempObj.AddComponent<DebugColorGameObject>().Color = Random.ColorHSV();
+                newPoint.AddComponent<DebugColorGameObject>().Color = Random.ColorHSV();
 
-                _phyisicedVertexes.Add(_tempObj);
+                _phyisicedVertexes.Add(newPoint);
             }
-
-
 
             // calculate center of mass
             Vector3 tempCenter = Vector3.zero;
 
-            foreach (var vertecs in _optimizedVertex)
-                tempCenter = new Vector3(tempCenter.x + vertecs.x, tempCenter.y + vertecs.y,tempCenter.z + vertecs.z );
-
+            foreach (var vertex in optimizedVertex)
+                tempCenter = new Vector3(tempCenter.x + vertex.x, tempCenter.y + vertex.y,tempCenter.z + vertex.z );
 
             // Add sphere collider and rigidbody to root object
             rootRB = gameObject.GetComponent<Rigidbody>();
-            rootRB.mass = 1;
+            rootRB.mass = Mass;
             rootRB.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
-            _rigidbodyList.Add(rootRB);
+            // _particleRigidBodyList.Add(rootRB);
 
             _sphereColliderArray = _sphereColliderList.ToArray();
-            _rigidbodyArray  = _rigidbodyList.ToArray();
+            _particleRigidbodyArray  = _particleRigidBodyList.ToArray();
 
 
-            _optVerticesTransform = new TransformAccessArray(_rigidbodyArray.Length);
-            for (int i = 0; i < _rigidbodyArray.Length; ++i)
+            _optVerticesTransform = new TransformAccessArray(_particleRigidbodyArray.Length);
+
+            foreach (var t in _particleRigidbodyArray)
             {
-                _optVerticesTransform.Add(_rigidbodyArray[i].transform);
+                _optVerticesTransform.Add(t.transform);
             }
+
             _optVerticesBuffer = new NativeArray<Vector3>(_optVerticesTransform.length, Allocator.Persistent);
 
             // IGNORE COLLISTION BETWEEN ALL OF THE VERTEXES AND CENTER OFF MASS
@@ -454,14 +475,16 @@ namespace SWPPT3.SoftbodyPhysics
 
             // extract Lines from quad of mesh
             List<Vector2Int> tempListOfSprings = new List<Vector2Int>();
+
             bool isFirstTrisOfQuad = true;
             for (int i=0;i<WritableTris.Length;i+=3)
             {
-                int index0 = _vertexDictunery[WritableTris[i]];
-                int index1 = _vertexDictunery[WritableTris[i+1]];
-                int index2 = _vertexDictunery[WritableTris[i+2]];
+                int index0 = _vertexDictionary[WritableTris[i]];
+                int index1 = _vertexDictionary[WritableTris[i+1]];
+                int index2 = _vertexDictionary[WritableTris[i+2]];
 
                 tempListOfSprings.Add(new Vector2Int(index1, index2));
+
                 // this System convert Tris To Quad
                 if (isFirstTrisOfQuad)
                 {
@@ -496,6 +519,7 @@ namespace SWPPT3.SoftbodyPhysics
                     }
 
                 }
+
                 if (isDuplicated == false)
                     noDupesListOfSprings.Add(tempListOfSprings[i]);
             }
@@ -509,11 +533,11 @@ namespace SWPPT3.SoftbodyPhysics
                 float distanceBetween = Vector3.Distance(thisGameObject.transform.position, destinationBody.transform.position);
 
                 _jointsDict.Add((jointIndex.x, jointIndex.y));
-
-
+                thisBodyJoint.autoConfigureConnectedAnchor = false;
 
                 // configure current spring joint
                 thisBodyJoint.connectedBody = destinationBody;
+                thisBodyJoint.connectedAnchor = thisGameObject.transform.position - destinationBody.transform.position;
 
                 thisBodyJoint.xMotion = ConfigurableJointMotion.Limited;
                 thisBodyJoint.yMotion = ConfigurableJointMotion.Limited;
@@ -528,31 +552,13 @@ namespace SWPPT3.SoftbodyPhysics
 
                 _oriJointAnchorsList.Add(thisBodyJoint.connectedAnchor);
                 _configurableJointList.Add(thisBodyJoint);
+                _jointDatas.Add(new JointData { ConnectedAnchor = thisBodyJoint.connectedAnchor, ConnectedBody = thisBodyJoint.connectedBody});
             }
 
             centerOfMasObj = gameObject;
             _rbOfCenter = rootRB;
 
-
-            // Decelare Center of mass variable
-            for (int i = 0 ; i < _phyisicedVertexes.Count; i++ )
-            {
-                var jointIndex = _phyisicedVertexes[i];
-                var destinationBodyJoint = jointIndex.AddComponent<ConfigurableJoint>();
-
-                destinationBodyJoint.xMotion = ConfigurableJointMotion.Limited;
-                destinationBodyJoint.yMotion = ConfigurableJointMotion.Limited;
-                destinationBodyJoint.zMotion = ConfigurableJointMotion.Limited;
-
-                destinationBodyJoint.connectedBody = rootRB;
-                destinationBodyJoint.linearLimitSpring = new SoftJointLimitSpring { spring = Softness, damper = Damp};
-
-                destinationBodyJoint.massScale = 0.001f;
-
-                _jointsDict.Add((i,_rigidbodyList.Count - 1));
-                _oriJointAnchorsList.Add(jointIndex.transform.localPosition - _rbOfCenter.transform.localPosition);
-                _configurableJointList.Add(destinationBodyJoint);
-            }
+            DeclareCenterMassVariable();
 
             _oriJointAnchorArray = _oriJointAnchorsList.ToArray();
             _bufferJointAnchors = new NativeArray<Vector3>(_oriJointAnchorArray.Length, Allocator.Persistent);
@@ -561,38 +567,117 @@ namespace SWPPT3.SoftbodyPhysics
 
             _jointsDictNa = new NativeArray<(int, int)>(_jointsDict.ToArray(), Allocator.Persistent);
 
+            CreateLockingObject();
+
             foreach (var sc in _sphereColliderArray)
             {
                 Debug.Log("hasmodifiablaContacts true");
                 sc.hasModifiableContacts = true;
+                Physics.IgnoreCollision(_lockingMeshCollider, sc, true);
+            }
+
+            void DeclareCenterMassVariable()
+            {
+                // Decelare Center of mass variable
+                for (int i = 0 ; i < _phyisicedVertexes.Count; i++ )
+                {
+                    var jointIndex = _phyisicedVertexes[i];
+                    var destinationBodyJoint = jointIndex.AddComponent<ConfigurableJoint>();
+
+                    destinationBodyJoint.autoConfigureConnectedAnchor = false;
+
+                    destinationBodyJoint.xMotion = ConfigurableJointMotion.Limited;
+                    destinationBodyJoint.yMotion = ConfigurableJointMotion.Limited;
+                    destinationBodyJoint.zMotion = ConfigurableJointMotion.Limited;
+
+                    destinationBodyJoint.connectedBody = rootRB;
+                    destinationBodyJoint.connectedAnchor = jointIndex.transform.position - centerOfMasObj.transform.position;
+
+                    destinationBodyJoint.linearLimitSpring = new SoftJointLimitSpring { spring = Softness, damper = Damp};
+
+                    destinationBodyJoint.massScale = 0.001f;
+
+                    _jointsDict.Add((i,_particleRigidBodyList.Count - 1));
+                    _oriJointAnchorsList.Add(jointIndex.transform.localPosition - _rbOfCenter.transform.localPosition);
+                    _configurableJointList.Add(destinationBodyJoint);
+                    _jointDatas.Add(new JointData { ConnectedAnchor = destinationBodyJoint.connectedAnchor, ConnectedBody = destinationBodyJoint.connectedBody});
+                    _jointsConnectedCenter.Add(destinationBodyJoint);
+                }
             }
         }
 
+        private void CreateLockingObject()
+        {
+            _lockingGameObject = new GameObject();
+            _lockingGameObject.transform.SetParent(gameObject.transform);
+            _lockingGameObject.transform.localPosition = Vector3.zero;
+            _lockingGameObject.transform.localRotation = Quaternion.identity;
+            _lockingGameObject.transform.localScale = Vector3.one;
+
+            _lockingMeshCollider = _lockingGameObject.AddComponent<MeshCollider>();
+            _lockingMeshCollider.convex = true;
+            _lockingMeshCollider.cookingOptions =
+                MeshColliderCookingOptions.UseFastMidphase
+                | MeshColliderCookingOptions.CookForFasterSimulation
+                | MeshColliderCookingOptions.EnableMeshCleaning
+                | MeshColliderCookingOptions.WeldColocatedVertices;
+        }
+
+        private bool _fixed = false;
+
         public void FixJoint()
         {
-            for (int i = 0; i < _configurableJointsArray.Length; i++)
+            var mesh = GetDuplicateMesh();
+            _lockingMeshCollider.sharedMesh = _originalMeshFilter.sharedMesh;
+
+            foreach (var rb in _particleRigidbodyArray)
             {
-                var joint = _configurableJointsArray[i];
-                joint.xMotion = ConfigurableJointMotion.Locked;
-                joint.yMotion = ConfigurableJointMotion.Locked;
-                joint.zMotion = ConfigurableJointMotion.Locked;
+                rb.gameObject.SetActive(false);
+                // rb.Sleep();
             }
+
+            _lockingGameObject.SetActive(true);
+
+            _rbOfCenter.mass = Mass * 2;
+
+
+            _fixed = true;
         }
 
         public void FreeJoint()
         {
-            for (int i = 0; i < _configurableJointsArray.Length; i++)
+            _lockingGameObject.SetActive(false);
+
+            var prevPosList = new List<Vector3>();
+
+            foreach (var rb in _particleRigidbodyArray)
             {
-                var joint = _configurableJointsArray[i];
-                joint.xMotion = ConfigurableJointMotion.Limited;
-                joint.yMotion = ConfigurableJointMotion.Limited;
-                joint.zMotion = ConfigurableJointMotion.Limited;
+                rb.gameObject.SetActive(true);
             }
+
+            for (int i = 0; i < _configurableJointList.Count; i++)
+            {
+                _configurableJointList[i].connectedAnchor = _jointDatas[i].ConnectedAnchor;
+                _configurableJointList[i].connectedBody = _jointDatas[i].ConnectedBody;
+                _configurableJointList[i].axis = _configurableJointList[i].axis;
+            }
+
+            // IGNORE COLLISTION BETWEEN ALL OF THE VERTEXES AND CENTER OFF MASS
+            foreach (var collider1 in _sphereColliderArray)
+            {
+                foreach (var collider2 in _sphereColliderArray)
+                {
+                    Physics.IgnoreCollision(collider1, collider2, true);
+                }
+            }
+
+            _fixed = false;
+            _rbOfCenter.mass = Mass;
+
+            transform.position += Vector3.up * 0.1f;
+
+            // EditorApplication.isPaused = true;
         }
-
-        List<Vector2Int> noDupesListOfSprings = new List<Vector2Int>();
-
-
 
         public void SetSlime()
         {
@@ -634,9 +719,16 @@ namespace SWPPT3.SoftbodyPhysics
         {
             // _isJumping = true;
             transform.Translate(0, 0.01f, 0);
-            foreach (var rb in _rigidbodyArray)
+            if (_fixed)
             {
-                rb.AddForce(Vector3.up * (jumpForce * rb.mass));
+                rootRB.AddForce(Vector3.up * (jumpForce * rootRB.mass));
+            }
+            else
+            {
+                foreach (var rb in _particleRigidbodyArray)
+                {
+                    rb.AddForce(Vector3.up * (jumpForce * rb.mass));
+                }
             }
         }
 
@@ -644,12 +736,11 @@ namespace SWPPT3.SoftbodyPhysics
         {
             rootRB.MovePosition(rootRB.position + force / 2);
 
-            foreach (var rb in _rigidbodyArray)
+            foreach (var rb in _particleRigidbodyArray)
             {
                 rb.MovePosition(rb.position + force / 2);
             }
         }
-
 
         public void Update()
         {
@@ -659,39 +750,43 @@ namespace SWPPT3.SoftbodyPhysics
             Damp = _script.Damp;
             // RubberJump = _script.RubberJump;
 
-           if (DebugMode)
-           {
-                foreach (var jointIndex in noDupesListOfSprings)
+            if (DebugMode)
+            {
+                 foreach (var jointIndex in noDupesListOfSprings)
+                 {
+                     Debug.DrawLine(
+                         _phyisicedVertexes[jointIndex.x].transform.position
+                         , _phyisicedVertexes[jointIndex.y].transform.position
+                         , _phyisicedVertexes[jointIndex.x].GetComponent<DebugColorGameObject>().Color
+                     );
+
+                 }
+                 foreach (var jointIndex in noDupesListOfSprings)
+                 {
+                     Debug.DrawLine(
+                           _phyisicedVertexes[jointIndex.x].transform.position
+                         , centerOfMasObj.transform.position
+                         , Color.red
+                     );
+
+                 }
+            }
+
+            if (!_fixed)
+            {
+                var setVertexUpdateJob = new SetVertexUpdateJob
                 {
-                    Debug.DrawLine(
-                        _phyisicedVertexes[jointIndex.x].transform.position
-                        , _phyisicedVertexes[jointIndex.y].transform.position
-                        , _phyisicedVertexes[jointIndex.x].GetComponent<DebugColorGameObject>().Color
-                    );
+                    LocalPositions = _optVerticesBuffer,
+                    OptToOriDic = _optToOriDic,
+                    OriPositions = _oriPositions,
+                };
 
-                }
-                foreach (var jointIndex in noDupesListOfSprings)
-                {
-                    Debug.DrawLine(
-                          _phyisicedVertexes[jointIndex.x].transform.position
-                        , centerOfMasObj.transform.position
-                        , Color.red
-                    );
-
-                }
-           }
-
-           var setVertexUpdateJob = new SetVertexUpdateJob
-           {
-               LocalPositions = _optVerticesBuffer,
-               OptToOriDic = _optToOriDic,
-               OriPositions = _oriPositions
-           };
-           var setVertexUpdateHandle = setVertexUpdateJob.Schedule(_oriPositions.Length, 16);
-           setVertexUpdateHandle.Complete();
-           _originalMeshFilter.mesh.vertices = _oriPositions.ToArray();
-           _originalMeshFilter.mesh.RecalculateBounds();
-           _originalMeshFilter.mesh.RecalculateNormals();
+                var setVertexUpdateHandle = setVertexUpdateJob.Schedule(_oriPositions.Length, 16);
+                setVertexUpdateHandle.Complete();
+                _originalMeshFilter.mesh.vertices = _oriPositions.ToArray();
+                _originalMeshFilter.mesh.RecalculateBounds();
+                _originalMeshFilter.mesh.RecalculateNormals();
+            }
         }
 
         public void FixedUpdate()
@@ -731,13 +826,44 @@ namespace SWPPT3.SoftbodyPhysics
             }
         }
 
+        public Mesh GetDuplicateMesh()
+        {
+            var mesh = _originalMeshFilter.mesh;
+
+            return new Mesh()
+            {
+                vertices = mesh.vertices,
+                triangles = mesh.triangles,
+                normals = mesh.normals,
+                tangents = mesh.tangents,
+                bounds = mesh.bounds,
+                uv = mesh.uv,
+            };
+        }
+
+        public void SetMeshCollider(Mesh mesh)
+        {
+            var meshCollider = new MeshCollider();
+            meshCollider.sharedMesh = mesh;
+        }
+
         private void YReflect()
         {
-            foreach (var rb in _rigidbodyArray)
+            if (_fixed)
             {
-                if (rb.velocity.y < 0)
+                if (_rbOfCenter.velocity.y < 0)
                 {
-                    rb.velocity = Vector3.Reflect(rb.velocity, Vector3.up);
+                    _rbOfCenter.velocity = Vector3.Reflect(_rbOfCenter.velocity, Vector3.up) * 1.1f;
+                }
+            }
+            else
+            {
+                foreach (var rb in _particleRigidbodyArray)
+                {
+                    if (rb.velocity.y < 0)
+                    {
+                        rb.velocity = Vector3.Reflect(rb.velocity, Vector3.up);
+                    }
                 }
             }
         }
@@ -756,6 +882,30 @@ namespace SWPPT3.SoftbodyPhysics
             if(_jointsDictNa.IsCreated) _jointsDictNa.Dispose();
             if(_bufferJointAnchors.IsCreated) _bufferJointAnchors.Dispose();
         }
+
+        private void OnCollisionEnter(Collision other)
+        {
+            foreach (var c in other.contacts)
+            {
+                if (c.normal.y >= 0.7f)
+                {
+                    SetDirty = true;
+                    break;
+                }
+            }
+
+            CollisionEnter(other);
+        }
+
+        private void OnCollisionStay(Collision collision)
+        {
+            CollisionStay(collision);
+        }
+
+        private void OnCollisionExit(Collision collision)
+        {
+            CollisionExit(collision);
+        }
     }
 
     /// <summary>
@@ -772,6 +922,7 @@ namespace SWPPT3.SoftbodyPhysics
             Buffer[index] = transform.localPosition;
         }
     }
+
     [BurstCompile]
     public struct GetConnectedAnchorJob : IJobParallelFor
     {
@@ -807,19 +958,9 @@ namespace SWPPT3.SoftbodyPhysics
         }
 
     }
+
     public class DebugColorGameObject : MonoBehaviour
     {
         public Color Color { get; set; }
     }
-
-    // [CustomEditor(typeof(SoftbodyGenerator))]
-    // public class LookAtPointEditor : Editor
-    // {
-    //     public override void OnInspectorGUI()
-    //     {
-    //         SoftbodyGenerator softbody = target as SoftbodyGenerator;
-
-    //         softbody.DebugMode = EditorGUILayout.Toggle("#Debug mod", softbody.DebugMode);
-    //     }
-    // }
 }
