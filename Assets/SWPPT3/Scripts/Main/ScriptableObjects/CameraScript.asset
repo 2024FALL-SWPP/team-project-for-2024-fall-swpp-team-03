@@ -12,6 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 75c42be13130492ba36a283c9f04cb21, type: 3}
   m_Name: CameraScript
   m_EditorClassIdentifier: 
-  mouseSensitivity: 0.2
-  distanceFromPlayer: 2
+  mouseSensitivity: 2.535
+  distanceFromPlayer: 3
   cameraHeight: 1.1
+  rayCastOffset: 2
+  rayminDistance: 0.01

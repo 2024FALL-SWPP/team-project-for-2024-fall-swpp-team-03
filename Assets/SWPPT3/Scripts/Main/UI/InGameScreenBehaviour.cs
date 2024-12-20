@@ -31,13 +31,13 @@ namespace SWPPT3.Main.UI
         [SerializeField] private RectTransform _rubberButton;
         [SerializeField] private RectTransform _metalButton;
         [SerializeField] private RectTransform _slimeButton;
-        private Vector2 _screenCenter;
+
+        [SerializeField] private PlayerScript _playerScript;
 
 
         public void ClickResume()
         {
             Cursor.visible = false;
-            //Debug.Log("click reusme");
             GameManager.Instance.GameState = GameState.Playing;
             _onTryingPauseStatusChanged.Invoke(false);
         }
@@ -109,7 +109,7 @@ namespace SWPPT3.Main.UI
             Vector2 screenCenter = new Vector2(Screen.width / 2f, Screen.height / 2f);
             Vector2 relativePos = Mouse.current.position.ReadValue() - screenCenter;
 
-            if (relativePos.magnitude < 50f || relativePos.magnitude > 100f)
+            if (relativePos.magnitude < _playerScript.MinRadial || relativePos.magnitude > _playerScript.MaxRadial)
             {
                 SetButtonScale(_slimeButton, 1.0f);
                 SetButtonScale(_metalButton, 1.0f);
@@ -252,7 +252,7 @@ namespace SWPPT3.Main.UI
             Vector2 cursorPos = Mouse.current.position.ReadValue();
             Vector2 screenCenter = new Vector2(Screen.width / 2f, Screen.height / 2f);
             Vector2 relativePos = cursorPos - screenCenter;
-            if (relativePos.magnitude < 50f || relativePos.magnitude > 100f)
+            if (relativePos.magnitude < _playerScript.MinRadial || relativePos.magnitude > _playerScript.MaxRadial)
             {
                 return;
             }
