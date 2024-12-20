@@ -17,6 +17,8 @@ namespace SWPPT3.Main.UI
     {
         [SerializeField] private Player _player;
 
+        [SerializeField] private PlayerScript _playerScript;
+
         [SerializeField] private UnityEvent<bool> _onTryingPauseStatusChanged;
         [SerializeField] private UnityEvent<bool> _onTryingLoadStatusChanged;
         [SerializeField] private UnityEvent<bool> _onTryingFailStatusChanged;

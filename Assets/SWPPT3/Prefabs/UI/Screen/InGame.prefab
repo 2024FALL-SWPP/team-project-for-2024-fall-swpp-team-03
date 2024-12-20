@@ -2787,7 +2787,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: afed51d9e83eb4f98833701c0d99d9db, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _player: {fileID: 0}
+  _player: {fileID: 5865617930821872779, guid: b63037d539f98bc42a98baf0281987bd, type: 3}
+  _playerScript: {fileID: 11400000, guid: f12859c2ce46745c0a5a97778dd768ae, type: 2}
   _onTryingPauseStatusChanged:
     m_PersistentCalls:
       m_Calls:
