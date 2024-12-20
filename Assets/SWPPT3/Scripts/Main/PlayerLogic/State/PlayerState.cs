@@ -48,7 +48,7 @@ namespace SWPPT3.Main.PlayerLogic.State
                         player.SetItemCounts(0,0,0);
                     }
                     player.TryChangeState(PlayerStates.Slime);
-                    player.GasSound();
+                    // player.GasSound();
                     isInGas = true;
                 }
             }
