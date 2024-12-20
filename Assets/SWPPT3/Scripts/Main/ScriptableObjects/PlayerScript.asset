@@ -16,3 +16,5 @@ MonoBehaviour:
   _jumpForce: 300
   _rotationSpeed: 5.07
   _normalcriteria: 0.7
+  _minRadial: 50
+  _maxRadial: 180

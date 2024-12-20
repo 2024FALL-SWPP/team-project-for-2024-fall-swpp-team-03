@@ -194,6 +194,21 @@ PrefabInstance:
       propertyPath: _cameraTransform
       value: 
       objectReference: {fileID: 514911108}
+    - target: {fileID: 5865617930821872791, guid: b63037d539f98bc42a98baf0281987bd,
+        type: 3}
+      propertyPath: m_Materials.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5865617930821872791, guid: b63037d539f98bc42a98baf0281987bd,
+        type: 3}
+      propertyPath: m_Materials.Array.data[1]
+      value: 
+      objectReference: {fileID: 2100000, guid: 264f74bf3bd1b48c199dabcbaf507a00, type: 2}
+    - target: {fileID: 5865617930821872791, guid: b63037d539f98bc42a98baf0281987bd,
+        type: 3}
+      propertyPath: m_Materials.Array.data[2]
+      value: 
+      objectReference: {fileID: 2100000, guid: 264f74bf3bd1b48c199dabcbaf507a00, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b63037d539f98bc42a98baf0281987bd, type: 3}
 --- !u!4 &10624040 stripped

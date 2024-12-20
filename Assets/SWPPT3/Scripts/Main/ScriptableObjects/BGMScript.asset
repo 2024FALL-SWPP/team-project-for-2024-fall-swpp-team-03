@@ -9,11 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 75c42be13130492ba36a283c9f04cb21, type: 3}
-  m_Name: CameraScript
+  m_Script: {fileID: 11500000, guid: f8ba68597c38490db8e5eac59da64a83, type: 3}
+  m_Name: BGMScript
   m_EditorClassIdentifier: 
-  mouseSensitivity: 2.535
-  distanceFromPlayer: 3
-  cameraHeight: 1.1
-  rayCastOffset: 2
-  rayminDistance: 0.01
+  _bgmVolume: 0
+  _sfxVolume: 0
