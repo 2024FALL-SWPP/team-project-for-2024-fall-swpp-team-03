@@ -251,16 +251,17 @@ namespace SWPPT3.SoftbodyPhysics
                 var pair = pairs[i];
 
                 var sum = Vector3.zero;
+
                 for (int j = 0; j < pair.contactCount; j++)
                 {
-                    sum += pair.GetNormal(j);
+                    if (pair.GetNormal(j).y > 0.7f)
+                    {
+                        MakeOtherMassInf(ref pair);
+                        break;
+                    }
                 }
 
-                if (sum.normalized.y > 0.7f) // Normal is steep enough
-                {
-                    MakeOtherMassInf(ref pair);
-                }
-                else if (_shouldNotMoveAnything)
+                if (_shouldNotMoveAnything)
                 {
                     MakeOtherMassInf(ref pair);
                 }
@@ -426,6 +427,7 @@ namespace SWPPT3.SoftbodyPhysics
                 var newRigidBody = newPoint.AddComponent<Rigidbody>();
                 newRigidBody.mass = Mass / optimizedVertex.Count;
                 newRigidBody.drag = PhysicsRoughness;
+                newRigidBody.angularDrag = PhysicsRoughness;
                 newRigidBody.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
 
                 var rubberJump = newPoint.AddComponent<Particle>();
@@ -455,6 +457,8 @@ namespace SWPPT3.SoftbodyPhysics
             rootRB = gameObject.GetComponent<Rigidbody>();
             rootRB.mass = Mass;
             rootRB.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
+            rootRB.drag = _physicsRoughness;
+            rootRB.angularDrag = _physicsRoughness;
             // _particleRigidBodyList.Add(rootRB);
 
             _sphereColliderArray = _sphereColliderList.ToArray();
@@ -659,9 +663,6 @@ namespace SWPPT3.SoftbodyPhysics
 
             _rbOfCenter.mass = Mass * 2;
             _rbOfCenter.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
-
-            _lockingMeshCollider.hasModifiableContacts = true;
-
 
             _fixed = true;
         }
