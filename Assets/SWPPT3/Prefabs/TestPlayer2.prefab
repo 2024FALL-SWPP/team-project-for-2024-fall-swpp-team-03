@@ -151,6 +151,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _script: {fileID: 11400000, guid: 9a8ab858636d14f22a69db749d270fec, type: 2}
+  _physicMaterial: {fileID: 13400000, guid: 1da1e813cb8754a44a846e46de2d7466, type: 2}
   SetDirty: 0
 --- !u!114 &5481324099820973624
 MonoBehaviour:
