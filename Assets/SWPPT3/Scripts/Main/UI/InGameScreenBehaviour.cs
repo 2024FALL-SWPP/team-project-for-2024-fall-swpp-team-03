@@ -109,7 +109,7 @@ namespace SWPPT3.Main.UI
             Vector2 screenCenter = new Vector2(Screen.width / 2f, Screen.height / 2f);
             Vector2 relativePos = Mouse.current.position.ReadValue() - screenCenter;
 
-            if (relativePos.magnitude < 50f || relativePos.magnitude > 100f)
+            if (relativePos.magnitude < _playerScript.MinRadial )
             {
                 SetButtonScale(_slimeButton, 1.0f);
                 SetButtonScale(_metalButton, 1.0f);
@@ -252,7 +252,7 @@ namespace SWPPT3.Main.UI
             Vector2 cursorPos = Mouse.current.position.ReadValue();
             Vector2 screenCenter = new Vector2(Screen.width / 2f, Screen.height / 2f);
             Vector2 relativePos = cursorPos - screenCenter;
-            if (relativePos.magnitude < 50f || relativePos.magnitude > 100f)
+            if (relativePos.magnitude < _playerScript.MinRadial )
             {
                 return;
             }
