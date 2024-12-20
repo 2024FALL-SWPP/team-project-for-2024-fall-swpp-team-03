@@ -17,8 +17,6 @@ namespace SWPPT3.Main.UI
     {
         [SerializeField] private Player _player;
 
-        [SerializeField] private PlayerScript _playerScript;
-
         [SerializeField] private UnityEvent<bool> _onTryingPauseStatusChanged;
         [SerializeField] private UnityEvent<bool> _onTryingLoadStatusChanged;
         [SerializeField] private UnityEvent<bool> _onTryingFailStatusChanged;
@@ -33,13 +31,17 @@ namespace SWPPT3.Main.UI
         [SerializeField] private RectTransform _rubberButton;
         [SerializeField] private RectTransform _metalButton;
         [SerializeField] private RectTransform _slimeButton;
-        private Vector2 _screenCenter;
+
+        [SerializeField] private RectTransform _rubberHover;
+        [SerializeField] private RectTransform _metalHover;
+        [SerializeField] private RectTransform _slimeHover;
+
+        [SerializeField] private PlayerScript _playerScript;
 
 
         public void ClickResume()
         {
             Cursor.visible = false;
-            //Debug.Log("click reusme");
             GameManager.Instance.GameState = GameState.Playing;
             _onTryingPauseStatusChanged.Invoke(false);
         }
@@ -63,21 +65,6 @@ namespace SWPPT3.Main.UI
                 GameManager.Instance.StageNumber++;
                 GameManager.Instance.GameState = GameState.Ready;
             }
-        }
-
-        public void ChangeSlime()
-        {
-            _player.TryChangeState(PlayerStates.Slime);
-        }
-
-        public void ChangeMetal()
-        {
-            _player.TryChangeState(PlayerStates.Metal);
-        }
-
-        public void ChangeRubber()
-        {
-            _player.TryChangeState(PlayerStates.Rubber);
         }
 
         public void ShowRadialUI()
@@ -113,42 +100,41 @@ namespace SWPPT3.Main.UI
 
             if (relativePos.magnitude < _playerScript.MinRadial )
             {
-                SetButtonScale(_slimeButton, 1.0f);
-                SetButtonScale(_metalButton, 1.0f);
-                SetButtonScale(_rubberButton, 1.0f);
+                _slimeHover.gameObject.SetActive(false);
+                _metalHover.gameObject.SetActive(false);
+                _rubberHover.gameObject.SetActive(false);
             }
             else
             {
                 float angle = Mathf.Atan2(relativePos.y, relativePos.x) * Mathf.Rad2Deg;
                 if (angle < 0) angle += 360f;
-
-
                 if (angle <=90 || angle > 330)
                 {
-                    SetButtonScale(_slimeButton, 1.5f);
-                    SetButtonScale(_metalButton, 1.0f);
-                    SetButtonScale(_rubberButton, 1.0f);
+                    if (_rubberButton.gameObject.activeSelf)
+                    {
+                        _rubberHover.gameObject.SetActive(true);
+                        _metalHover.gameObject.SetActive(false);
+                        _slimeHover.gameObject.SetActive(false);
+                    }
                 }
                 else if (angle >= 90 && angle < 210)
                 {
-                    SetButtonScale(_metalButton, 1.5f);
-                    SetButtonScale(_rubberButton, 1.0f);
-                    SetButtonScale(_slimeButton, 1.0f);
+                    if (_metalButton.gameObject.activeSelf)
+                    {
+                        _metalHover.gameObject.SetActive(true);
+                        _slimeHover.gameObject.SetActive(false);
+                        _rubberHover.gameObject.SetActive(false);
+                    }
                 }
                 else
                 {
-                    SetButtonScale(_rubberButton, 1.5f);
-                    SetButtonScale(_metalButton, 1.0f);
-                    SetButtonScale(_slimeButton, 1.0f);
+                    if (_slimeButton.gameObject.activeSelf)
+                    {
+                        _slimeHover.gameObject.SetActive(true);
+                        _metalHover.gameObject.SetActive(false);
+                        _rubberHover.gameObject.SetActive(false);
+                    }
                 }
-            }
-        }
-
-        private void SetButtonScale(RectTransform button, float scale)
-        {
-            if (button.gameObject.activeSelf)
-            {
-                button.localScale = new Vector3(scale, scale, 1.0f);
             }
         }
 
@@ -161,7 +147,6 @@ namespace SWPPT3.Main.UI
 
         public void NumUpdate()
         {
-            Debug.Log("Numupdate");
             _metalNumTmp.text = $"{_player.Item[PlayerStates.Metal]}";
             _rubberNumTmp.text = $"{_player.Item[PlayerStates.Rubber]}";
         }
@@ -187,10 +172,6 @@ namespace SWPPT3.Main.UI
             {
                 InputManager.Instance.OnEsc += HandleEsc;
                 InputManager.Instance.OnStartTransform += HandleTransform;
-            }
-            else
-            {
-                Debug.LogError("InputManager is null");
             }
 
             _player.OnItemChanged += NumUpdate;
