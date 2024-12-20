@@ -870,11 +870,6 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 5966643958025044885, guid: 152114a9dca8eaf46a7e6b65ae4d0641,
         type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 5966643958025044885, guid: 152114a9dca8eaf46a7e6b65ae4d0641,
-        type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
       value: ClickMainMenu
       objectReference: {fileID: 0}
