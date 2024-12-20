@@ -24,14 +24,17 @@ namespace SWPPT3.Main.UI
         Stage4,
         Stage5,
         Option,
+        Howto,
     }
 
     public class TitleScreenBehaviour : MonoBehaviour
     {
         [SerializeField] private UnityEvent<bool> _onTryingExitStatusChanged;
         [SerializeField] private UnityEvent<bool> _onTryingOptionStatusChanged;
+        [SerializeField] private UnityEvent<bool> _onTryingHowtoStatusChanged;
 
         [SerializeField] private GameObject _optionScene;
+        [SerializeField] private GameObject _howtoScreen;
 
         private TextMeshProUGUI _bgmValue;
         private TextMeshProUGUI _sfxValue;
@@ -68,8 +71,20 @@ namespace SWPPT3.Main.UI
                 case ButtonClickType.Option:
                     ClickOption();
                     break;
+                case ButtonClickType.Howto:
+                    ClickHowto();
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(type), type, null);
+            }
+        }
+
+        public void ClickHowto()
+        {
+            if (GameManager.Instance.GameState == GameState.BeforeStart)
+            {
+                _howtoScreen.SetActive(true);
+                GameManager.Instance.GameState = GameState.OnHowto;
             }
         }
 
@@ -86,6 +101,7 @@ namespace SWPPT3.Main.UI
         {
             GameManager.Instance.GameState = GameState.BeforeStart;
             _optionScene.SetActive(false);
+            _howtoScreen.SetActive(false);
             _onTryingExitStatusChanged.Invoke(false);
         }
 

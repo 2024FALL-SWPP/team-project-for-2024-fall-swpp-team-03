@@ -22,7 +22,8 @@ namespace SWPPT3.Main.Manager
         GameOver,
         Exit,
         StageCleared,
-        OnOption
+        OnOption,
+        OnHowto
     }
 
     public class GameManager : MonoSingleton<GameManager>
@@ -106,6 +107,8 @@ namespace SWPPT3.Main.Manager
                     // UIManager.Instance.ShowClear();
                     break;
                 case GameState.OnOption:
+                    break;
+                case GameState.OnHowto:
                     break;
             }
         }
