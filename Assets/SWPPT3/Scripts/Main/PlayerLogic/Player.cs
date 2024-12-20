@@ -117,10 +117,12 @@ namespace SWPPT3.Main.PlayerLogic
                     { PlayerStates.Rubber, 0 },
                 };
             }
-            OnItemChanged?.Invoke();
+
             Item[PlayerStates.Slime] = newSlimeCount;
             Item[PlayerStates.Metal] = newMetalCount;
             Item[PlayerStates.Rubber] = newRubberCount;
+
+            OnItemChanged?.Invoke();
         }
     }
 }
