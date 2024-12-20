@@ -1,6 +1,8 @@
 #region
 
 using SWPPT3.Main.Generated;
+using SWPPT3.Main.PlayerLogic;
+using SWPPT3.Main.Utility;
 using SWPPT3.Main.Utility.Singleton;
 using UnityEngine;
 
@@ -32,10 +34,38 @@ namespace SWPPT3.Main.Manager
         public delegate void EscAction();
         public event EscAction OnEsc;
 
+        [SerializeField] CameraScript _cameraScript;
+        [SerializeField] PlayerScript _playerScript;
+
+        private float cameraSensitivity;
+        private float cameraCoefficient;
+
+        public float CameraCoffeicient
+        {
+            get { return cameraCoefficient; }
+            set { cameraCoefficient = value; }
+        }
+        public float CameraSensitivity{ get { return cameraSensitivity * cameraCoefficient; } }
+
+        private float rotationSensitivity;
+        private float rotationCoefficient;
+
+        public float RotationCoefficient
+        {
+            get { return rotationCoefficient; }
+            set { rotationCoefficient = value; }
+        }
+        public float RotationSensitivity{get{return rotationSensitivity * rotationCoefficient;} }
+
 
 
         private void Awake()
         {
+            cameraSensitivity = _cameraScript.MouseSensitivity;
+            rotationSensitivity = _playerScript.RotationSpeed;
+
+            cameraCoefficient = 0.5f;
+            rotationCoefficient = 0.5f;
             // Input System 초기화
             _inputActions = new AlcheslimeInput();
 

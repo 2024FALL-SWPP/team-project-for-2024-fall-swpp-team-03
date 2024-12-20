@@ -52,6 +52,8 @@ namespace SWPPT3.Main.Manager
 
         private void Awake()
         {
+            _bgmVolume = 0.5f;
+            _sfxVolume = 0.5f;
             sfxObjects = new List<SfxObject>();
             DontDestroyOnLoad(gameObject);
 
@@ -67,6 +69,8 @@ namespace SWPPT3.Main.Manager
                     }
                 }
             }
+
+            bgmSource.Play();
         }
 
         public void Update()
@@ -106,6 +110,13 @@ namespace SWPPT3.Main.Manager
             successSound.Play();
         }
 
+        public void StopAllBGM()
+        {
+            bgmSource.Stop();
+            successSound.Stop();
+            failSound.Stop();
+        }
+
         public void SetBGMVolume(float volume)
         {
             bgmSource.volume = volume;
@@ -126,3 +137,7 @@ namespace SWPPT3.Main.Manager
 
     }
 }
+
+
+
+

@@ -424,9 +424,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 2260890801939880965}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b82a01bccaf4ff28f58e79be7afa62b, type: 3}
+  m_Script: {fileID: 11500000, guid: 2554e6a2d92942341b780e5483501c95, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _statefulProp: {fileID: -5949059289826174206}
   audioSource: {fileID: -6318554207776044122}
 --- !u!1 &2821579047454051318
 GameObject:

@@ -53,6 +53,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/SWPPT3/Scenes/Tutorial 2.unity
     guid: 33231c6b6c797485aa4354fb05c1fc4e
+  - enabled: 1
+    path: Assets/SWPPT3/Scenes/EmptyStart.unity
+    guid: 3547d07f9921d46799f5ba4ed80eb089
   m_configObjects:
     com.unity.addressableassets: {fileID: 11400000, guid: b01f91319d8c9ba4db8bea7be7272105,
       type: 2}

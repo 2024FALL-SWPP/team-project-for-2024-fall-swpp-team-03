@@ -1,3 +1,4 @@
+
 #region
 
 using System;
@@ -37,8 +38,7 @@ namespace SWPPT3.Main.Manager
             {
                 if (gameState != value)
                 {
-                    gameState = value;
-                    HandleGameStateChanged(gameState);
+                    HandleGameStateChanged(gameState, value);
                 }
             }
         }
@@ -53,16 +53,29 @@ namespace SWPPT3.Main.Manager
         public void Awake()
         {
             _onTryingLoadStatusChanged.Invoke(false);
+            Debug.Log("Game Manager Awake");
+            while (!BgmManager.Instance || !AudioManager.Instance || !InputManager.Instance)
+            {
+            }
+            SceneManager.LoadScene("Start");
+        }
+
+        public void OnDestroy()
+        {
+            Debug.Log("Game Manager OnDestroy");
         }
 
 
-        private void HandleGameStateChanged(GameState newState)
+        private void HandleGameStateChanged(GameState oldState, GameState newState)
         {
+            gameState = newState;
             OnGameStateChanged?.Invoke(newState);
 
             switch (newState)
             {
                 case GameState.BeforeStart:
+                    if (oldState == GameState.OnOption || oldState == GameState.Exit) break;
+                    BgmManager.Instance.StopAllBGM();
                     BgmManager.Instance.PlayBGM();
                     // UIManager.Instance.ShowStartStage();
                     break;
@@ -71,6 +84,7 @@ namespace SWPPT3.Main.Manager
                     LoadScene();
                     break;
                 case GameState.Playing:
+                    BgmManager.Instance.StopAllBGM();
                     _onTryingLoadStatusChanged.Invoke(false);
                     _stageManager.ResumeStage();
                     break;
@@ -97,22 +111,6 @@ namespace SWPPT3.Main.Manager
                 case GameState.OnHowto:
                     break;
             }
-        }
-
-        private void InitializeStage()
-        {
-            //loadingscene을 켜고
-            LoadScene();
-            if (_stageManager != null)
-            {
-                _stageManager.InitializeStage();
-            }
-            //loadingscene 끄기
-        }
-
-        public void ResetStage()
-        {
-            InitializeStage();
         }
 
         public void StageSelect(int stageNum)
@@ -160,3 +158,4 @@ namespace SWPPT3.Main.Manager
 
     }
 }
+

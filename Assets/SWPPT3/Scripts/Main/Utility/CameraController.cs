@@ -71,7 +71,7 @@ namespace SWPPT3.Main.Utility
                     transform.position = hit.point - rayDir.normalized;
                 }
             }
-            _mouseSensitivity = camerascript.MouseSensitivity;
+            _mouseSensitivity = InputManager.Instance.CameraSensitivity;
         }
 
         private void HandleLook(Vector2 lookInput)

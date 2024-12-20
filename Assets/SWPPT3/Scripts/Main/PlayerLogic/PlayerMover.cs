@@ -36,7 +36,7 @@ namespace SWPPT3.Main.PlayerLogic
         {
             _rigidBodyId = GetComponent<Rigidbody>().GetInstanceID();
             _moveSpeed = _playerScript.MoveSpeed;
-            _rotationSpeed = _playerScript.RotationSpeed;
+            _rotationSpeed = InputManager.Instance.RotationSensitivity;
             _jumpForce = _playerScript.JumpForce;
             _playerTransform = transform;
             if (InputManager.Instance != null)
