@@ -2,6 +2,8 @@
 
 using System;
 using System.Collections.Generic;
+using SWPPT3.Main.AudioLogic;
+using SWPPT3.Main.Manager;
 using SWPPT3.Main.PlayerLogic.State;
 using SWPPT3.Main.Prop;
 using SWPPT3.SoftbodyPhysics;
@@ -25,6 +27,8 @@ namespace SWPPT3.Main.PlayerLogic
         [SerializeField] private Material _rubberMaterial;
         [SerializeField] private Material _metalMaterial;
 
+        [SerializeField] private AudioSource _awakeSFX;
+
 
 
         public event Action OnItemChanged;
@@ -43,6 +47,8 @@ namespace SWPPT3.Main.PlayerLogic
 
         private void Awake()
         {
+            _awakeSFX.volume = BgmManager.Instance.SFXVolume;
+            _awakeSFX.Play();
             _softbody = GetComponent<SoftbodyGenerator>();
             if (Item == null)
             {

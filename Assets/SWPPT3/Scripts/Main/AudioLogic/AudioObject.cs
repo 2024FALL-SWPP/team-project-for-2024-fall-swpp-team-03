@@ -11,33 +11,50 @@ namespace SWPPT3.Main.AudioLogic
     public abstract class AudioObject : MonoBehaviour
     {
 
+        [SerializeField]
         private StatefulProp _statefulProp;
-
-        public void OnEnable()
-        {
-            _statefulProp = GetComponent<StatefulProp>();
-        }
 
         [SerializeField]
         protected AudioSource audioSource;
 
-
         public abstract void PlaySound();
 
-        private bool isActive = false;
+        private bool isActive;
+
+        private bool isPlayer;
+        public void Awake()
+        {
+            isActive = false;
+            if (_statefulProp != null)
+            {
+                isPlayer = false;
+            }
+            else
+            {
+                isPlayer = true;
+            }
+        }
 
         public void Update()
         {
-            if (!isActive && _statefulProp.State)
+            if (!isPlayer)
             {
-                PlaySound();
-                isActive = true;
+                if (!isActive && _statefulProp.State)
+                {
+                    PlaySound();
+                    isActive = true;
+                }
+                else if (isActive && !_statefulProp.State)
+                {
+                    isActive = false;
+                    StopSound();
+                }
             }
-            else if (isActive && !_statefulProp.State)
+            else
             {
-                isActive = false;
-                StopSound();
+                Debug.Log("Player");
             }
+
         }
 
         public void SetVolume(float volume)

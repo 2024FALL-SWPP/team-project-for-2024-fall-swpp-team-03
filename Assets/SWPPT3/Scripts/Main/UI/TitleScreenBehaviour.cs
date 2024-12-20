@@ -4,6 +4,7 @@ using System;
 using SWPPT3.Main.Manager;
 using SWPPT3.Main.PlayerLogic;
 using SWPPT3.Main.Utility;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -34,6 +35,12 @@ namespace SWPPT3.Main.UI
 
 
         [SerializeField] private GameObject _optionScene;
+
+        private TextMeshProUGUI _bgmValue;
+        private TextMeshProUGUI _sfxValue;
+        private TextMeshProUGUI _cameraSensitivity;
+        private TextMeshProUGUI _rotationSensitivity;
+
 
         private Slider _bgmSlider;
         private Slider _sfxSlider;
@@ -104,6 +111,11 @@ namespace SWPPT3.Main.UI
             _cameraSensitivitySlider = parentSlider.Find("CameraSensitivitySlider").GetComponent<Slider>();
             _rotationSensitivitySlider = parentSlider.Find("RotationSensitivitySlider").GetComponent<Slider>();
 
+            _bgmValue = parentSlider.Find("BGMSlider/Value").GetComponent<TextMeshProUGUI>();
+            _sfxValue = parentSlider.Find("SoundEffectSlider/Value").GetComponent<TextMeshProUGUI>();
+            _cameraSensitivity = parentSlider.Find("CameraSensitivitySlider/Value").GetComponent<TextMeshProUGUI>();
+            _rotationSensitivity = parentSlider.Find("RotationSensitivitySlider/Value").GetComponent<TextMeshProUGUI>();
+
             if (InputManager.Instance != null)
             {
                 InputManager.Instance.OnEsc += HandleEsc;
@@ -120,6 +132,11 @@ namespace SWPPT3.Main.UI
             _playerScript.RotationSpeed = _rotationSensitivitySlider.value * 10;
             BgmManager.Instance.BGMVolume = _bgmSlider.value;
             BgmManager.Instance.SFXVolume = _sfxSlider.value;
+
+            _bgmValue.text = $"{(int)(_bgmSlider.value*100)}";
+            _sfxValue.text = $"{(int)(_sfxSlider.value*100)}";
+            _cameraSensitivity.text = $"{(int)(_cameraSensitivitySlider.value*100)}";
+            _rotationSensitivity.text = $"{(int)(_rotationSensitivitySlider.value*100)}";
         }
 
         private void HandleEsc()
@@ -140,3 +157,4 @@ namespace SWPPT3.Main.UI
         }
     }
 }
+

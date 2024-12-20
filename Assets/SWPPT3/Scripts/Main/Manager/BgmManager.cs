@@ -67,6 +67,8 @@ namespace SWPPT3.Main.Manager
                     }
                 }
             }
+
+            bgmSource.Play();
         }
 
         public void Update()
@@ -106,6 +108,13 @@ namespace SWPPT3.Main.Manager
             successSound.Play();
         }
 
+        public void StopAllBGM()
+        {
+            bgmSource.Stop();
+            successSound.Stop();
+            failSound.Stop();
+        }
+
         public void SetBGMVolume(float volume)
         {
             bgmSource.volume = volume;
@@ -126,3 +135,7 @@ namespace SWPPT3.Main.Manager
 
     }
 }
+
+
+
+
