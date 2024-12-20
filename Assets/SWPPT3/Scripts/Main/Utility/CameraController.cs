@@ -62,29 +62,14 @@ namespace SWPPT3.Main.Utility
                 Quaternion globalRotation = Quaternion.Euler(_currentRotation.x, _currentRotation.y, 0);
                 Vector3 offset = globalRotation * new Vector3(0, camerascript.CameraHeight, -camerascript.DistanceFromPlayer);
 
-                Vector3 targetPosition = player.position + offset;
-                Vector3 rayDir = targetPosition - player.position;
-                float minimumHeightOffset = camerascript.RayCastOffset;
-                if (targetPosition.y < player.position.y + minimumHeightOffset)
-                {
-                    targetPosition.y = player.position.y + minimumHeightOffset;
-                }
-                if (Physics.Raycast(player.position, rayDir, out RaycastHit hit, offset.magnitude, cameraCollision))
-                {
-                    transform.position = hit.point;
-                    if (transform.position.y < player.position.y + minimumHeightOffset)
-                    {
-                        Vector3 adjustedPosition = transform.position;
-                        adjustedPosition.y = player.position.y + minimumHeightOffset;
-                        transform.position = adjustedPosition;
-                    }
-                }
-                else
-                {
-                    transform.position = targetPosition;
-                }
-
+                transform.position = player.position + offset;
                 transform.LookAt(player);
+
+                Vector3 rayDir = transform.position - player.position;
+                if (Physics.Raycast(player.position, rayDir, out RaycastHit hit, offset.magnitude , cameraCollision))
+                {
+                    transform.position = hit.point - rayDir.normalized;
+                }
             }
             _mouseSensitivity = InputManager.Instance.CameraSensitivity;
         }
@@ -109,13 +94,6 @@ namespace SWPPT3.Main.Utility
                 InputManager.Instance.OnLook -= HandleLook;
                 InputManager.Instance.OnStartRotation -= HandleStartRotation;
             }
-
-        }
-
-        public void Debugray()
-        {
-            Vector3 rayDir = transform.position - player.position;
-            Debug.Log("player.position:"+player.position+"transform.position:"+transform.position+"rayDir.normalized"+rayDir.normalized);
 
         }
     }

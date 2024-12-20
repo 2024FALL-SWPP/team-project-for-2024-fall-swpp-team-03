@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mass: 1
   physicsRoughness: 1
-  softness: 50
+  softness: 100
   damp: 0.5
   rubberJump: 30
   resetSec: 0.1

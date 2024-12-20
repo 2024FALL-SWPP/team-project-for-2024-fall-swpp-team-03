@@ -132,16 +132,6 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: -50
       objectReference: {fileID: 0}
-    - target: {fileID: 68067859781286350, guid: c49dcfce4b66e466aaa8e88d918e900e,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 68067860826783118, guid: c49dcfce4b66e466aaa8e88d918e900e,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 68067861069492496, guid: c49dcfce4b66e466aaa8e88d918e900e,
         type: 3}
       propertyPath: m_Pivot.x
@@ -251,11 +241,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: BottomButton
-      objectReference: {fileID: 0}
-    - target: {fileID: 68067861069492503, guid: c49dcfce4b66e466aaa8e88d918e900e,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c49dcfce4b66e466aaa8e88d918e900e, type: 3}
@@ -413,11 +398,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: LeftButton
-      objectReference: {fileID: 0}
-    - target: {fileID: 72320500060854466, guid: 0efbcd521d8024d97801544c3e3ed468,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 72320500060854467, guid: 0efbcd521d8024d97801544c3e3ed468,
         type: 3}
