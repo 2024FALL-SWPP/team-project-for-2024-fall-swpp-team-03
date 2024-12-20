@@ -31,17 +31,13 @@ namespace SWPPT3.Main.UI
         [SerializeField] private RectTransform _rubberButton;
         [SerializeField] private RectTransform _metalButton;
         [SerializeField] private RectTransform _slimeButton;
-
-        [SerializeField] private RectTransform _rubberHover;
-        [SerializeField] private RectTransform _metalHover;
-        [SerializeField] private RectTransform _slimeHover;
-
-        [SerializeField] private PlayerScript _playerScript;
+        private Vector2 _screenCenter;
 
 
         public void ClickResume()
         {
             Cursor.visible = false;
+            //Debug.Log("click reusme");
             GameManager.Instance.GameState = GameState.Playing;
             _onTryingPauseStatusChanged.Invoke(false);
         }
@@ -113,42 +109,35 @@ namespace SWPPT3.Main.UI
             Vector2 screenCenter = new Vector2(Screen.width / 2f, Screen.height / 2f);
             Vector2 relativePos = Mouse.current.position.ReadValue() - screenCenter;
 
-            if (relativePos.magnitude < _playerScript.MinRadial || relativePos.magnitude > _playerScript.MaxRadial)
+            if (relativePos.magnitude < 50f || relativePos.magnitude > 100f)
             {
-                _slimeHover.gameObject.SetActive(false);
-                _metalHover.gameObject.SetActive(false);
-                _rubberHover.gameObject.SetActive(false);
+                SetButtonScale(_slimeButton, 1.0f);
+                SetButtonScale(_metalButton, 1.0f);
+                SetButtonScale(_rubberButton, 1.0f);
             }
             else
             {
                 float angle = Mathf.Atan2(relativePos.y, relativePos.x) * Mathf.Rad2Deg;
                 if (angle < 0) angle += 360f;
+
+
                 if (angle <=90 || angle > 330)
                 {
-                    if (_rubberButton.gameObject.activeSelf)
-                    {
-                        _rubberHover.gameObject.SetActive(true);
-                        _metalHover.gameObject.SetActive(false);
-                        _slimeHover.gameObject.SetActive(false);
-                    }
+                    SetButtonScale(_slimeButton, 1.5f);
+                    SetButtonScale(_metalButton, 1.0f);
+                    SetButtonScale(_rubberButton, 1.0f);
                 }
                 else if (angle >= 90 && angle < 210)
                 {
-                    if (_metalButton.gameObject.activeSelf)
-                    {
-                        _metalHover.gameObject.SetActive(true);
-                        _slimeHover.gameObject.SetActive(false);
-                        _rubberHover.gameObject.SetActive(false);
-                    }
+                    SetButtonScale(_metalButton, 1.5f);
+                    SetButtonScale(_rubberButton, 1.0f);
+                    SetButtonScale(_slimeButton, 1.0f);
                 }
                 else
                 {
-                    if (_slimeButton.gameObject.activeSelf)
-                    {
-                        _slimeHover.gameObject.SetActive(true);
-                        _metalHover.gameObject.SetActive(false);
-                        _rubberHover.gameObject.SetActive(false);
-                    }
+                    SetButtonScale(_rubberButton, 1.5f);
+                    SetButtonScale(_metalButton, 1.0f);
+                    SetButtonScale(_slimeButton, 1.0f);
                 }
             }
         }
@@ -170,6 +159,7 @@ namespace SWPPT3.Main.UI
 
         public void NumUpdate()
         {
+            Debug.Log("Numupdate");
             _metalNumTmp.text = $"{_player.Item[PlayerStates.Metal]}";
             _rubberNumTmp.text = $"{_player.Item[PlayerStates.Rubber]}";
         }
@@ -262,7 +252,7 @@ namespace SWPPT3.Main.UI
             Vector2 cursorPos = Mouse.current.position.ReadValue();
             Vector2 screenCenter = new Vector2(Screen.width / 2f, Screen.height / 2f);
             Vector2 relativePos = cursorPos - screenCenter;
-            if (relativePos.magnitude < _playerScript.MinRadial || relativePos.magnitude > _playerScript.MaxRadial)
+            if (relativePos.magnitude < 50f || relativePos.magnitude > 100f)
             {
                 return;
             }

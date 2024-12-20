@@ -30,6 +30,7 @@ namespace SWPPT3.SoftbodyPhysics
     public class SoftbodyGenerator : MonoBehaviour
     {
         [SerializeField] private SoftbodyScript _script;
+        [SerializeField] private PhysicMaterial _physicMaterial;
 
         private MeshFilter _originalMeshFilter;
         private List<Vector3> WritableVertices { get; set; }
@@ -249,9 +250,13 @@ namespace SWPPT3.SoftbodyPhysics
             {
                 var pair = pairs[i];
 
-                var normal = pair.GetNormal(0);
+                var sum = Vector3.zero;
+                for (int j = 0; j < pair.contactCount; j++)
+                {
+                    sum += pair.GetNormal(j);
+                }
 
-                if (normal.y > 0.7f) // Normal is steep enough
+                if (sum.normalized.y > 0.7f) // Normal is steep enough
                 {
                     MakeOtherMassInf(ref pair);
                 }
@@ -435,6 +440,8 @@ namespace SWPPT3.SoftbodyPhysics
 
                 newPoint.AddComponent<DebugColorGameObject>().Color = Random.ColorHSV();
 
+                sphereCollider.sharedMaterial = _physicMaterial;
+
                 _phyisicedVertexes.Add(newPoint);
             }
 
@@ -542,12 +549,19 @@ namespace SWPPT3.SoftbodyPhysics
                 thisBodyJoint.yMotion = ConfigurableJointMotion.Limited;
                 thisBodyJoint.zMotion = ConfigurableJointMotion.Limited;
 
+                thisBodyJoint.angularXMotion = ConfigurableJointMotion.Limited;
+                thisBodyJoint.angularYMotion = ConfigurableJointMotion.Limited;
+                thisBodyJoint.angularZMotion = ConfigurableJointMotion.Limited;
+
                 //thisBodyJoint.
 
                 Springlimit.damper = Damp;
                 Springlimit.spring = Softness;
 
+
                 thisBodyJoint.linearLimitSpring = Springlimit;
+                thisBodyJoint.angularXLimitSpring = Springlimit;
+                thisBodyJoint.angularYZLimitSpring = Springlimit;
 
                 _oriJointAnchorsList.Add(thisBodyJoint.connectedAnchor);
                 _configurableJointList.Add(thisBodyJoint);
@@ -571,6 +585,7 @@ namespace SWPPT3.SoftbodyPhysics
 
             foreach (var sc in _sphereColliderArray)
             {
+                Debug.Log("hasmodifiablaContacts true");
                 sc.hasModifiableContacts = true;
                 Physics.IgnoreCollision(_lockingMeshCollider, sc, true);
             }
@@ -615,6 +630,7 @@ namespace SWPPT3.SoftbodyPhysics
 
             _lockingMeshCollider = _lockingGameObject.AddComponent<MeshCollider>();
             _lockingMeshCollider.convex = true;
+            _lockingMeshCollider.sharedMaterial = _physicMaterial;
             _lockingMeshCollider.cookingOptions =
                 MeshColliderCookingOptions.UseFastMidphase
                 | MeshColliderCookingOptions.CookForFasterSimulation
@@ -643,6 +659,8 @@ namespace SWPPT3.SoftbodyPhysics
 
             _rbOfCenter.mass = Mass * 2;
             _rbOfCenter.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
+
+            _lockingMeshCollider.hasModifiableContacts = true;
 
 
             _fixed = true;

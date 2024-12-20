@@ -2867,13 +2867,9 @@ MonoBehaviour:
   _metalNumTmp: {fileID: 2895323979621877206}
   _rubberNumTmp: {fileID: 818430995981542076}
   _radialUI: {fileID: 8488859834885466518}
-  _rubberButton: {fileID: 8488859835786804939}
+  _rubberButton: {fileID: 8488859835809235302}
   _metalButton: {fileID: 8488859835077312272}
-  _slimeButton: {fileID: 8488859835809235302}
-  _rubberHover: {fileID: 8488859834268363996}
-  _metalHover: {fileID: 8488859835629220295}
-  _slimeHover: {fileID: 8488859834755351846}
-  _playerScript: {fileID: 11400000, guid: f12859c2ce46745c0a5a97778dd768ae, type: 2}
+  _slimeButton: {fileID: 8488859835786804939}
 --- !u!1 &4169080372856693958
 GameObject:
   m_ObjectHideFlags: 0
@@ -5703,7 +5699,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &8488859834885466513
 RectTransform:
   m_ObjectHideFlags: 0
