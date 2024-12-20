@@ -113,7 +113,7 @@ namespace SWPPT3.Main.UI
             Vector2 screenCenter = new Vector2(Screen.width / 2f, Screen.height / 2f);
             Vector2 relativePos = Mouse.current.position.ReadValue() - screenCenter;
 
-            if (relativePos.magnitude < _playerScript.MinRadial || relativePos.magnitude > _playerScript.MaxRadial)
+            if (relativePos.magnitude < _playerScript.MinRadial )
             {
                 _slimeHover.gameObject.SetActive(false);
                 _metalHover.gameObject.SetActive(false);
@@ -262,7 +262,7 @@ namespace SWPPT3.Main.UI
             Vector2 cursorPos = Mouse.current.position.ReadValue();
             Vector2 screenCenter = new Vector2(Screen.width / 2f, Screen.height / 2f);
             Vector2 relativePos = cursorPos - screenCenter;
-            if (relativePos.magnitude < _playerScript.MinRadial || relativePos.magnitude > _playerScript.MaxRadial)
+            if (relativePos.magnitude < _playerScript.MinRadial )
             {
                 return;
             }
