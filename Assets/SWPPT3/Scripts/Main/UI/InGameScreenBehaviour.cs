@@ -32,6 +32,10 @@ namespace SWPPT3.Main.UI
         [SerializeField] private RectTransform _metalButton;
         [SerializeField] private RectTransform _slimeButton;
 
+        [SerializeField] private RectTransform _rubberHover;
+        [SerializeField] private RectTransform _metalHover;
+        [SerializeField] private RectTransform _slimeHover;
+
         [SerializeField] private PlayerScript _playerScript;
 
 
@@ -111,33 +115,40 @@ namespace SWPPT3.Main.UI
 
             if (relativePos.magnitude < _playerScript.MinRadial || relativePos.magnitude > _playerScript.MaxRadial)
             {
-                SetButtonScale(_slimeButton, 1.0f);
-                SetButtonScale(_metalButton, 1.0f);
-                SetButtonScale(_rubberButton, 1.0f);
+                _slimeHover.gameObject.SetActive(false);
+                _metalHover.gameObject.SetActive(false);
+                _rubberHover.gameObject.SetActive(false);
             }
             else
             {
                 float angle = Mathf.Atan2(relativePos.y, relativePos.x) * Mathf.Rad2Deg;
                 if (angle < 0) angle += 360f;
-
-
                 if (angle <=90 || angle > 330)
                 {
-                    SetButtonScale(_slimeButton, 1.5f);
-                    SetButtonScale(_metalButton, 1.0f);
-                    SetButtonScale(_rubberButton, 1.0f);
+                    if (_rubberButton.gameObject.activeSelf)
+                    {
+                        _rubberHover.gameObject.SetActive(true);
+                        _metalHover.gameObject.SetActive(false);
+                        _slimeHover.gameObject.SetActive(false);
+                    }
                 }
                 else if (angle >= 90 && angle < 210)
                 {
-                    SetButtonScale(_metalButton, 1.5f);
-                    SetButtonScale(_rubberButton, 1.0f);
-                    SetButtonScale(_slimeButton, 1.0f);
+                    if (_metalButton.gameObject.activeSelf)
+                    {
+                        _metalHover.gameObject.SetActive(true);
+                        _slimeHover.gameObject.SetActive(false);
+                        _rubberHover.gameObject.SetActive(false);
+                    }
                 }
                 else
                 {
-                    SetButtonScale(_rubberButton, 1.5f);
-                    SetButtonScale(_metalButton, 1.0f);
-                    SetButtonScale(_slimeButton, 1.0f);
+                    if (_slimeButton.gameObject.activeSelf)
+                    {
+                        _slimeHover.gameObject.SetActive(true);
+                        _metalHover.gameObject.SetActive(false);
+                        _rubberHover.gameObject.SetActive(false);
+                    }
                 }
             }
         }
