@@ -15,6 +15,7 @@ namespace SWPPT3.Main.PlayerLogic
         [SerializeField] private PlayerScript _playerScript;
         private SoftbodyGenerator _softbody;
         private Player _player;
+        private PlayerSound _playerSound;
 
         private float _moveSpeed;
         private float _jumpForce;
@@ -30,11 +31,9 @@ namespace SWPPT3.Main.PlayerLogic
 
         private bool isRightButton = false;
 
-        private int _rigidBodyId;
-
         private void Start()
         {
-            _rigidBodyId = GetComponent<Rigidbody>().GetInstanceID();
+            _playerSound = GetComponent<PlayerSound>();
             _moveSpeed = _playerScript.MoveSpeed;
             _rotationSpeed = InputManager.Instance.RotationSensitivity;
             _jumpForce = _playerScript.JumpForce;
@@ -72,7 +71,6 @@ namespace SWPPT3.Main.PlayerLogic
         {
             _player = GetComponent<Player>();
             _softbody = GetComponent<SoftbodyGenerator>();
-            //Physics.ContactModifyEvent += ModificationEvent;
             if(_softbody != null)
             {
                 _softbody.HandleCollisionEnterEvent += HandleCollisionEnter;
@@ -89,7 +87,6 @@ namespace SWPPT3.Main.PlayerLogic
 
         public void OnDisable()
         {
-            //Physics.ContactModifyEvent -= ModificationEvent;
             if (_softbody != null)
             {
                 _softbody.HandleCollisionEnterEvent -= HandleCollisionEnter;
@@ -99,33 +96,6 @@ namespace SWPPT3.Main.PlayerLogic
                 _softbody.HandleTriggerExitEvent -= HandleTriggerExit;
             }
         }
-
-        // public void ModificationEvent(PhysicsScene scene, NativeArray<ModifiableContactPair> pairs)
-        // {
-        //     Debug.Log("modify : playermover");
-        //     for (int i = 0; i < pairs.Length; i++)
-        //     {
-        //         var pair = pairs[i];
-        //         var properties = pair.massProperties;
-        //         Debug.Log(_rigidBodyId.ToString() + " " +  pair.bodyInstanceID.ToString() + " " + pair.otherBodyInstanceID.ToString());
-
-        //         if(_rigidBodyId == pair.bodyInstanceID)
-        //         {
-        //             properties.otherInverseMassScale = 0f;
-        //             properties.otherInverseInertiaScale = 0f;
-        //         }
-        //         if(_rigidBodyId == pair.otherBodyInstanceID)
-        //         {
-        //             properties.inverseMassScale = 0f;
-        //             properties.inverseInertiaScale = 0f;
-        //         }
-
-        //         pair.massProperties = properties;
-
-        //         pairs[i] = pair;
-        //     }
-        // }
-
 
         private Vector3 GetMoveDirection()
         {
@@ -157,6 +127,7 @@ namespace SWPPT3.Main.PlayerLogic
         {
             if (_groundedObjects.Count > 0 && GameManager.Instance.GameState == GameState.Playing)
             {
+                _playerSound.PlaySound(Sounds.Jump);
                 _softbody.SoftbodyJump(_jumpForce);
                 _softbody.ResetDirty();
             }

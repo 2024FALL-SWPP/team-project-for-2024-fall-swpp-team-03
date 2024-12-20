@@ -10,7 +10,14 @@ namespace SWPPT3.Main.PlayerLogic.State
     {
         public override void InteractWithProp(Player player, PropBase obstacle)
         {
-            base.InteractWithProp(player, obstacle);
+            if (obstacle is WoodBox box || obstacle is MetalBox metalBox)
+            {
+                player.CollisionSound();
+            }
+            else
+            {
+                base.InteractWithProp(player, obstacle);
+            }
         }
     }
 }

@@ -398,7 +398,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _statefulProp: {fileID: -5949059289826174206}
-  audioSource: {fileID: -6318554207776044122}
+  activeSource: {fileID: -6318554207776044122}
+  deActiveSource: {fileID: -6318554207776044122}
 --- !u!1 &2821579047454051318
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,19 +1,18 @@
-#region
-
 using SWPPT3.Main.Manager;
-
-#endregion
 
 namespace SWPPT3.Main.AudioLogic
 {
-    public class SfxObject : AudioObject
+    public class OnlyOnSfx : AudioObject
     {
-        public override void PlaySound()
+        public override void DeActivateSound()
         {
-            audioSource.PlayOneShot(audioSource.clip);
         }
 
-        public void Awake()
+        public override void SetVolume(float volume)
+        {
+            activeSource.volume = volume;
+        }
+        public void Start()
         {
             BgmManager.Instance.AddSfxObject(this);
         }
@@ -22,5 +21,6 @@ namespace SWPPT3.Main.AudioLogic
         {
             BgmManager.Instance.RemoveSfxObject(this);
         }
+
     }
 }

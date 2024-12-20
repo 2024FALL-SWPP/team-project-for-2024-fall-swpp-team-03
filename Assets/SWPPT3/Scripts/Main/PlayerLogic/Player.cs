@@ -27,9 +27,7 @@ namespace SWPPT3.Main.PlayerLogic
         [SerializeField] private Material _rubberMaterial;
         [SerializeField] private Material _metalMaterial;
 
-        [SerializeField] private AudioSource _awakeSFX;
-
-
+        private PlayerSound _playerSound;
 
         public event Action OnItemChanged;
 
@@ -47,8 +45,8 @@ namespace SWPPT3.Main.PlayerLogic
 
         private void Awake()
         {
-            _awakeSFX.volume = BgmManager.Instance.SFXVolume;
-            _awakeSFX.Play();
+            _playerSound = GetComponent<PlayerSound>();
+            _playerSound.PlaySound(Sounds.Awake);
             _softbody = GetComponent<SoftbodyGenerator>();
             if (Item == null)
             {
@@ -73,6 +71,8 @@ namespace SWPPT3.Main.PlayerLogic
                 OnItemChanged?.Invoke();
                 _currentState = newState;
 
+                _playerSound.PlaySound(Sounds.Change);
+
                 if (newState == PlayerStates.Rubber)
                 {
                     _meshRenderer.material = _rubberMaterial;
@@ -93,6 +93,21 @@ namespace SWPPT3.Main.PlayerLogic
             Debug.Log(_currentState);
         }
 
+        public void GasSound()
+        {
+            _playerSound.PlaySound(Sounds.Gas);
+        }
+
+        public void ItemSound()
+        {
+            _playerSound.PlaySound(Sounds.Item);
+        }
+
+        public void CollisionSound()
+        {
+            _playerSound.PlaySound(Sounds.Collision);
+        }
+
         public void InteractWithProp(PropBase prop)
         {
             PlayerState.InteractWithProp(this, prop);
@@ -103,9 +118,12 @@ namespace SWPPT3.Main.PlayerLogic
             PlayerState.StopInteractWithProp(this, prop);
         }
 
-        private void OnDestroy()
+        public void PlusItemCounts(PlayerStates itemState)
         {
+            Item[itemState]++;
+            OnItemChanged?.Invoke();
         }
+
         public void SetItemCounts(int newSlimeCount, int newMetalCount, int newRubberCount)
         {
             if (Item == null)

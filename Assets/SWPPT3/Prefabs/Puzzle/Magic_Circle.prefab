@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 4292224605778392407}
   - component: {fileID: 6610104453504445420}
   - component: {fileID: -6746277800683262869}
-  - component: {fileID: 3844503040026586146}
+  - component: {fileID: -2180186093598385956}
   m_Layer: 0
   m_Name: Magic_Circle
   m_TagString: Untagged
@@ -189,7 +189,7 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!114 &3844503040026586146
+--- !u!114 &-2180186093598385956
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -198,11 +198,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 1210940401247049791}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2554e6a2d92942341b780e5483501c95, type: 3}
+  m_Script: {fileID: 11500000, guid: 6cf1dfd3cfa341e0b697a59c1365e554, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _statefulProp: {fileID: 6610104453504445420}
-  audioSource: {fileID: -6746277800683262869}
+  activeSource: {fileID: -6746277800683262869}
+  deActiveSource: {fileID: 0}
 --- !u!1 &1716672640784942158
 GameObject:
   m_ObjectHideFlags: 0

@@ -247,4 +247,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _statefulProp: {fileID: 8519930249369358979}
-  audioSource: {fileID: 9054789786534664684}
+  activeSource: {fileID: 9054789786534664684}
+  deActiveSource: {fileID: 9054789786534664684}
