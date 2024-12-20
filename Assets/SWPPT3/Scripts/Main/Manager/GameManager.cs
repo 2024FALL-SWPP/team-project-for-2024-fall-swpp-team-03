@@ -54,9 +54,7 @@ namespace SWPPT3.Main.Manager
         {
             _onTryingLoadStatusChanged.Invoke(false);
             Debug.Log("Game Manager Awake");
-            while (!BgmManager.Instance || !AudioManager.Instance || !InputManager.Instance)
-            {
-            }
+
             SceneManager.LoadScene("Start");
         }
 
@@ -74,7 +72,7 @@ namespace SWPPT3.Main.Manager
             switch (newState)
             {
                 case GameState.BeforeStart:
-                    if (oldState == GameState.OnOption || oldState == GameState.Exit) break;
+                    if (oldState == GameState.OnOption || oldState == GameState.Exit || oldState == GameState.OnHowto) break;
                     BgmManager.Instance.StopAllBGM();
                     BgmManager.Instance.PlayBGM();
                     // UIManager.Instance.ShowStartStage();

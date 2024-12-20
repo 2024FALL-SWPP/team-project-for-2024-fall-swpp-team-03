@@ -31,21 +31,21 @@ namespace SWPPT3.Main.Manager
         private float _sfxVolume;
         public float SFXVolume { get => _sfxVolume; set => _sfxVolume = value; }
 
-        private List<SfxObject> sfxObjects;
+        private List<AudioObject> audioObjects;
 
-        public void AddSfxObject(SfxObject sfx)
+        public void AddSfxObject(AudioObject audioObject)
         {
-            if (sfx != null && !sfxObjects.Contains(sfx))
+            if (audioObject != null && !audioObjects.Contains(audioObject))
             {
-                sfxObjects.Add(sfx);
+                audioObjects.Add(audioObject);
             }
         }
 
-        public void RemoveSfxObject(SfxObject sfx)
+        public void RemoveSfxObject(AudioObject audioObject)
         {
-            if (sfx != null && sfxObjects.Contains(sfx))
+            if (audioObject != null && audioObjects.Contains(audioObject))
             {
-                sfxObjects.Remove(sfx);
+                audioObjects.Remove(audioObject);
             }
         }
 
@@ -54,8 +54,7 @@ namespace SWPPT3.Main.Manager
         {
             _bgmVolume = 0.5f;
             _sfxVolume = 0.5f;
-            sfxObjects = new List<SfxObject>();
-            DontDestroyOnLoad(gameObject);
+            audioObjects = new List<AudioObject>();
 
             if (masterMixer != null)
             {
@@ -126,7 +125,7 @@ namespace SWPPT3.Main.Manager
 
         public void SetSFXVolume(float volume)
         {
-            foreach (var audioObject in sfxObjects)
+            foreach (var audioObject in audioObjects)
             {
                 audioObject.SetVolume(volume);
             }

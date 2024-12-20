@@ -8,6 +8,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
+using UnityEngine.Search;
 
 #endregion
 
@@ -26,6 +27,7 @@ namespace SWPPT3.Main.UI
         [SerializeField] private TextMeshProUGUI _playTimeTmp;
         [SerializeField] private TextMeshProUGUI _metalNumTmp;
         [SerializeField] private TextMeshProUGUI _rubberNumTmp;
+        [SerializeField] private TextMeshProUGUI _stageTmp;
 
         [SerializeField] private GameObject _radialUI;
         [SerializeField] private RectTransform _rubberButton;
@@ -37,6 +39,9 @@ namespace SWPPT3.Main.UI
         [SerializeField] private RectTransform _slimeHover;
 
         [SerializeField] private PlayerScript _playerScript;
+
+        [SerializeField] private AudioSource _escAudio;
+        [SerializeField] private AudioSource _radialAudio;
 
 
         public void ClickResume()
@@ -145,7 +150,7 @@ namespace SWPPT3.Main.UI
             _playTimeTmp.text = $"{min:D2}:{sec:D2}";
         }
 
-        public void NumUpdate()
+        private void NumUpdate()
         {
             _metalNumTmp.text = $"{_player.Item[PlayerStates.Metal]}";
             _rubberNumTmp.text = $"{_player.Item[PlayerStates.Rubber]}";
@@ -167,6 +172,9 @@ namespace SWPPT3.Main.UI
         // Start is called before the first frame update
         void Start()
         {
+            _escAudio.volume = BgmManager.Instance.SFXVolume;
+            _radialAudio.volume = BgmManager.Instance.SFXVolume;
+
             Cursor.visible = false;
             if (InputManager.Instance != null)
             {
@@ -183,6 +191,23 @@ namespace SWPPT3.Main.UI
             _onTryingFailStatusChanged.Invoke(false);
             _onTryingClearStatusChanged.Invoke(false);
             _onTryingChoiceStatusChanged.Invoke(false);
+
+            switch (GameManager.Instance.StageNumber)
+            {
+                case 0:
+                    _stageTmp.text = "T1";
+                    break;
+                case 1:
+                    _stageTmp.text = "T2";
+                    break;
+                case 2:
+                case 3:
+                case 4:
+                case 5:
+                case 6:
+                    _stageTmp.text = $"S{GameManager.Instance.StageNumber-1}";
+                    break;
+            }
         }
 
         // Update is called once per frame
@@ -201,6 +226,7 @@ namespace SWPPT3.Main.UI
         {
             if (GameManager.Instance.GameState == GameState.Playing)
             {
+                _escAudio.Play();
                 Cursor.visible = true;
                 GameManager.Instance.GameState = GameState.Paused;
                 _onTryingPauseStatusChanged.Invoke(true);
@@ -211,6 +237,7 @@ namespace SWPPT3.Main.UI
         {
             if (GameManager.Instance.GameState == GameState.Playing && isClick)
             {
+                _radialAudio.Play();
                 Cursor.visible = true;
                 // Cursor.lockState = CursorLockMode.None;
 

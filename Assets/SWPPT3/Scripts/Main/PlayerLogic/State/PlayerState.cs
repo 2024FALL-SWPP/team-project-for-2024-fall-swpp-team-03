@@ -20,56 +20,55 @@ namespace SWPPT3.Main.PlayerLogic.State
 
     public abstract class PlayerState
     {
-        private bool isDirty = false;
+        private bool isInGas = false;
 
         public virtual void InteractWithProp(Player player, PropBase obstacle)
         {
-            isDirty = true;
-
-            Debug.Log("Prop");
-
-            if (isDirty)
+            if (obstacle is ItemBox itemBox)
             {
-                isDirty = false;
-                if (obstacle is ItemBox itemBox)
+                if (!itemBox.MarkedToBeDestroyed)
                 {
-                    if (!itemBox.MarkedToBeDestroyed)
-                    {
-                        itemBox.InteractWithPlayer();
+                    itemBox.InteractWithPlayer();
 
-                        player.SetItemCounts(0,
-                            itemBox.ItemState == PlayerStates.Metal ? player.Item[PlayerStates.Metal] + 1 : player.Item[PlayerStates.Metal],
-                            itemBox.ItemState == PlayerStates.Rubber ? player.Item[PlayerStates.Rubber] + 1 : player.Item[PlayerStates.Rubber]
-                        );
-                    }
+                    player.PlusItemCounts(itemBox.ItemState);
+                    player.ItemSound();
                 }
-                else if (obstacle is PoisonPool)
-                {
-                    // Debug.Log("collide with Poison pool");
-                    GameManager.Instance.GameState = GameState.GameOver;
-                }
-                else if (obstacle is Gas)
+            }
+            else if (obstacle is PoisonPool)
+            {
+                // Debug.Log("collide with Poison pool");
+                GameManager.Instance.GameState = GameState.GameOver;
+            }
+            else if (obstacle is Gas)
+            {
+                if (isInGas == false)
                 {
                     foreach(PlayerStates playerState in System.Enum.GetValues(typeof(PlayerStates)))
                     {
                         player.SetItemCounts(0,0,0);
                     }
                     player.TryChangeState(PlayerStates.Slime);
+                    // player.GasSound();
+                    isInGas = true;
                 }
-                else if (obstacle is MagicCircle)
-                {
-                    GameManager.Instance.GameState = GameState.StageCleared;
-                }
-                else
-                {
-                    obstacle.InteractWithPlayer(player.CurrentState);
-                }
+            }
+            else if (obstacle is MagicCircle)
+            {
+                GameManager.Instance.GameState = GameState.StageCleared;
+            }
+            else
+            {
+                obstacle.InteractWithPlayer(player.CurrentState);
             }
         }
 
         public virtual void StopInteractWithProp(Player player, PropBase obstacle)
         {
             obstacle.StopInteractWithPlayer(player.CurrentState);
+            if (obstacle is Gas)
+            {
+                isInGas = false;
+            }
 
         }
     }
