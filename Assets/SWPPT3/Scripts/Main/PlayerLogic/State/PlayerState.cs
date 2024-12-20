@@ -33,12 +33,15 @@ namespace SWPPT3.Main.PlayerLogic.State
                 isDirty = false;
                 if (obstacle is ItemBox itemBox)
                 {
-                    itemBox.InteractWithPlayer();
+                    if (!itemBox.MarkedToBeDestroyed)
+                    {
+                        itemBox.InteractWithPlayer();
 
-                    player.SetItemCounts(0,
-                        itemBox.ItemState == PlayerStates.Metal ? player.Item[PlayerStates.Metal] + 1 : player.Item[PlayerStates.Metal],
-                        itemBox.ItemState == PlayerStates.Rubber ? player.Item[PlayerStates.Rubber] + 1 : player.Item[PlayerStates.Rubber]
-                    );
+                        player.SetItemCounts(0,
+                            itemBox.ItemState == PlayerStates.Metal ? player.Item[PlayerStates.Metal] + 1 : player.Item[PlayerStates.Metal],
+                            itemBox.ItemState == PlayerStates.Rubber ? player.Item[PlayerStates.Rubber] + 1 : player.Item[PlayerStates.Rubber]
+                        );
+                    }
                 }
                 else if (obstacle is PoisonPool)
                 {
