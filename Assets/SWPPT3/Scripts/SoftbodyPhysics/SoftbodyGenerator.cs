@@ -865,15 +865,20 @@ namespace SWPPT3.SoftbodyPhysics
             if (PlayerStates == SoftStates.Rubber && _isJumpKey == true)
             {
                 IsRubberJump = true;
+                _physicMaterial.bounciness = 1;
+                _physicMaterial.bounceCombine = PhysicMaterialCombine.Maximum;
             }
             else
             {
                 IsRubberJump = false;
+
+                _physicMaterial.bounciness = 0;
+                _physicMaterial.bounceCombine = PhysicMaterialCombine.Minimum;
             }
 
             if (IsRubberJump && SetDirty)
             {
-                YReflect();
+                // YReflect();
                 SoftbodyJump(_script.RubberJump);
                 ResetDirty();
             }
