@@ -1,6 +1,17 @@
 {
-	"name": "SoftbodyPhysics",
+    "name": "SoftbodyPhysics",
+    "rootNamespace": "",
     "references": [
-      "Unity.Burst"
-    ]
+        "Unity.Burst",
+        "Whinarn.UnityMeshSimplifier.Runtime"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
 }

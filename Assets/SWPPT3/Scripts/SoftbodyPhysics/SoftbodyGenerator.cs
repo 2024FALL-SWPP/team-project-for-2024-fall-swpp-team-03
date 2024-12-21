@@ -5,9 +5,9 @@ using System.Collections.Generic;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Jobs;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.Jobs;
+using UnityMeshSimplifier;
 using Random = UnityEngine.Random;
 
 #endregion
@@ -254,10 +254,21 @@ namespace SWPPT3.SoftbodyPhysics
 
                 for (int j = 0; j < pair.contactCount; j++)
                 {
-                    if (pair.GetNormal(j).y > 0.7f)
+                    if (_rigidbodyIDSet.Contains(pair.bodyInstanceID))
                     {
-                        MakeOtherMassInf(ref pair);
-                        break;
+                        if (pair.GetNormal(j).y > 0.7f)
+                        {
+                            MakeOtherMassInf(ref pair);
+                            break;
+                        }
+                    }
+                    else if (_rigidbodyIDSet.Contains(pair.otherBodyInstanceID))
+                    {
+                        if (-pair.GetNormal(j).y > 0.7f)
+                        {
+                            MakeOtherMassInf(ref pair);
+                            break;
+                        }
                     }
                 }
 
@@ -361,19 +372,8 @@ namespace SWPPT3.SoftbodyPhysics
 
             _oriPositions = new NativeArray<Vector3>(_originalMeshFilter.mesh.vertices, Allocator.Persistent);
 
-            var localToWorld = transform.localToWorldMatrix;
-
-            for (int i = 0; i < WritableVertices.Count; ++i)
-            {
-                WritableVertices[i] = localToWorld.MultiplyPoint3x4(WritableVertices[i]);
-            }
-
-            _writableMesh = new Mesh();
+            _writableMesh = _originalMeshFilter.mesh;
             _writableMesh.MarkDynamic();
-            _writableMesh.SetVertices(WritableVertices);
-            _writableMesh.SetNormals(WritableNormals);
-            _writableMesh.triangles = WritableTris;
-            _originalMeshFilter.mesh = _writableMesh;
 
             // remove duplicated vertex
             var optimizedVertex = new List<Vector3>();
@@ -413,7 +413,7 @@ namespace SWPPT3.SoftbodyPhysics
                     newPoint.hideFlags = HideFlags.HideAndDontSave;
 
                 newPoint.transform.parent = transform;
-                newPoint.transform.position = vertex;
+                newPoint.transform.localPosition = vertex;
                 // _originalPositionList.Add(vertex);
 
                 // add collider to each of vertex ( sphere collider )
@@ -639,17 +639,40 @@ namespace SWPPT3.SoftbodyPhysics
                 MeshColliderCookingOptions.UseFastMidphase
                 | MeshColliderCookingOptions.CookForFasterSimulation
                 | MeshColliderCookingOptions.EnableMeshCleaning
-                | MeshColliderCookingOptions.WeldColocatedVertices;
+                | MeshColliderCookingOptions.WeldColocatedVertices
+                ;
 
             _lockingMeshCollider.hasModifiableContacts = true;
         }
 
         private bool _fixed = false;
+        private Mesh _hullMesh;
 
         public void FixJoint()
         {
-            // var mesh = GetDuplicateMesh();
-            _lockingMeshCollider.sharedMesh = _originalMeshFilter.sharedMesh;
+            if (_hullMesh == null)
+            {
+                _hullMesh = new Mesh();
+                _hullMesh.MarkDynamic();
+                _lockingMeshCollider.sharedMesh = _hullMesh;
+            }
+
+            _hullMesh.SetVertices(WritableVertices);
+            _hullMesh.SetTriangles(WritableTris, 0);
+            _hullMesh.SetNormals(WritableNormals);
+
+            var simp = new MeshSimplifier();
+            simp.Initialize(_hullMesh);
+            simp.SimplifyMesh(0.2f);
+
+            _hullMesh.SetTriangles(simp.GetSubMeshTriangles(0), 0);
+            _hullMesh.SetVertices(simp.Vertices);
+            _hullMesh.RecalculateBounds();
+            _hullMesh.MarkModified();
+
+            Physics.BakeMesh(_hullMesh.GetInstanceID(), true);
+
+            _lockingMeshCollider.convex = true;
             _lockingMeshCollider.hasModifiableContacts = true;
 
             foreach (var rb in _particleRigidbodyArray)
@@ -810,9 +833,12 @@ namespace SWPPT3.SoftbodyPhysics
 
                 var setVertexUpdateHandle = setVertexUpdateJob.Schedule(_oriPositions.Length, 16);
                 setVertexUpdateHandle.Complete();
-                _originalMeshFilter.mesh.vertices = _oriPositions.ToArray();
-                _originalMeshFilter.mesh.RecalculateBounds();
-                _originalMeshFilter.mesh.RecalculateNormals();
+
+                _writableMesh.SetVertices(_oriPositions);
+                _writableMesh.RecalculateBounds();
+                _writableMesh.RecalculateNormals();
+                _writableMesh.RecalculateTangents();
+                _writableMesh.MarkModified();
             }
         }
 
