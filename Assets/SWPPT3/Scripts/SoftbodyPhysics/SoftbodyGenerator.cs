@@ -259,6 +259,11 @@ namespace SWPPT3.SoftbodyPhysics
                         if (pair.GetNormal(j).y > 0.7f)
                         {
                             MakeOtherMassInf(ref pair);
+
+                            if (IsRubberJump)
+                            {
+                                pair.SetBounciness(j, 1);
+                            }
                             break;
                         }
                     }
@@ -267,6 +272,11 @@ namespace SWPPT3.SoftbodyPhysics
                         if (-pair.GetNormal(j).y > 0.7f)
                         {
                             MakeOtherMassInf(ref pair);
+
+                            if (IsRubberJump)
+                            {
+                                pair.SetBounciness(j, 1);
+                            }
                             break;
                         }
                     }
@@ -865,15 +875,10 @@ namespace SWPPT3.SoftbodyPhysics
             if (PlayerStates == SoftStates.Rubber && _isJumpKey == true)
             {
                 IsRubberJump = true;
-                _physicMaterial.bounciness = 1;
-                _physicMaterial.bounceCombine = PhysicMaterialCombine.Maximum;
             }
             else
             {
                 IsRubberJump = false;
-
-                _physicMaterial.bounciness = 0;
-                _physicMaterial.bounceCombine = PhysicMaterialCombine.Minimum;
             }
 
             if (IsRubberJump && SetDirty)
