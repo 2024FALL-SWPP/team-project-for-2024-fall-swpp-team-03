@@ -18,6 +18,13 @@ namespace SWPPT3.Main.ConductorLogic
             {
                 connectedStateSource.State = state;
             }
+            if (state)
+            {
+                Animator receptorAnimation = transform.GetComponent<Animator>();
+                receptorAnimation.SetBool("IsOn", true);
+                Animator emmiterAnimation = transform.parent.Find("Electric_Wire").GetComponent<Animator>();
+                emmiterAnimation.SetBool("IsOn", true);
+            }
             //Debug.Log("Receptor:"+state);
         }
     }
