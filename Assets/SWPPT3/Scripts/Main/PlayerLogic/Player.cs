@@ -69,9 +69,18 @@ namespace SWPPT3.Main.PlayerLogic
                 if (newState != PlayerStates.Slime) Item[newState]--;
 
                 OnItemChanged?.Invoke();
+                if (_currentState != newState)
+                {
+                    if (newState == PlayerStates.Slime)
+                    {
+                        _playerSound.PlaySound(Sounds.Slime);
+                    }
+                    else
+                    {
+                        _playerSound.PlaySound(Sounds.Change);
+                    }
+                }
                 _currentState = newState;
-
-                _playerSound.PlaySound(Sounds.Change);
 
                 if (newState == PlayerStates.Rubber)
                 {
@@ -91,11 +100,6 @@ namespace SWPPT3.Main.PlayerLogic
             }
 
             Debug.Log(_currentState);
-        }
-
-        public void GasSound()
-        {
-            _playerSound.PlaySound(Sounds.Gas);
         }
 
         public void ItemSound()

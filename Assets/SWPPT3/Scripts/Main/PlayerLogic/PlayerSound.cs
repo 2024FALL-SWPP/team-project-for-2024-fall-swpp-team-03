@@ -9,7 +9,7 @@ namespace SWPPT3.Main.PlayerLogic
         Awake,
         Jump,
         Collision,
-        Gas,
+        Slime,
         Change,
         Item
     }
@@ -19,7 +19,7 @@ namespace SWPPT3.Main.PlayerLogic
 
         [SerializeField] private AudioSource _jumpSFX;
         [SerializeField] private AudioSource _collisionSFX;
-        [SerializeField] private AudioSource _gasSFX;
+        [SerializeField] private AudioSource _slimeSFX;
         [SerializeField] private AudioSource _changeSFX;
         [SerializeField] private AudioSource _itemSFX;
 
@@ -36,8 +36,8 @@ namespace SWPPT3.Main.PlayerLogic
                 case Sounds.Collision:
                     CollideSound();
                     break;
-                case Sounds.Gas:
-                    GasSound();
+                case Sounds.Slime:
+                    SlimeSound();
                     break;
                 case Sounds.Change:
                     ChangeSound();
@@ -63,9 +63,9 @@ namespace SWPPT3.Main.PlayerLogic
             _changeSFX.Play();
         }
 
-        private void GasSound()
+        private void SlimeSound()
         {
-            _gasSFX.Play();
+            _slimeSFX.Play();
         }
 
         private void CollideSound()
@@ -83,7 +83,7 @@ namespace SWPPT3.Main.PlayerLogic
             _awakeSFX.volume = BgmManager.Instance.SFXVolume;
             _jumpSFX.volume = BgmManager.Instance.SFXVolume;
             _changeSFX.volume = BgmManager.Instance.SFXVolume;
-            _gasSFX.volume = BgmManager.Instance.SFXVolume;
+            _slimeSFX.volume = BgmManager.Instance.SFXVolume;
             _collisionSFX.volume = BgmManager.Instance.SFXVolume;
             _itemSFX.volume = BgmManager.Instance.SFXVolume;
 
